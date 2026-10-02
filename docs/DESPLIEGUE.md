@@ -22,7 +22,7 @@ El repo ya está preparado. Tú solo tienes que hacer los pasos de la web (unos 
    - **Repository:** `idgn10/boxeo-mvp`
    - **Branch:** `main`
    - **Main file path:** `app.py`
-   - **App URL:** el subdominio que quieras, por ejemplo `esquina-boxeo` → `https://esquina-boxeo.streamlit.app`
+   - **App URL:** el subdominio que quieras, por ejemplo `thecorner-boxeo` → `https://thecorner-boxeo.streamlit.app`
 4. Abre **Advanced settings**:
    - **Python version:** elige **3.11** (es con la que está probado todo).
    - **Secrets:** déjalo vacío por ahora. Solo si quieres el vídeo en el ejemplo, pon:

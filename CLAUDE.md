@@ -42,7 +42,7 @@ boxeo-mvp/
   README.md
   requirements.txt
   config.yaml            # umbrales y pesos del scoring (editable por Ignacio)
-  app.py                 # interfaz Streamlit (nombre provisional del producto: "Esquina")
+  app.py                 # interfaz Streamlit (nombre del producto: "The Corner")
   packages.txt           # librerias del sistema para Streamlit Cloud
   scripts/
     download_model.py

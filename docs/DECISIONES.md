@@ -12,8 +12,7 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
 
 ## 2. Rediseño de la app
 
-- **Nombre: "Esquina"** (la esquina del boxeador es donde el entrenador da los consejos entre asaltos).
-  Es provisional: se cambia en una línea (`APP_NAME` y `TAGLINE` en `app.py`).
+- **Nombre: "The Corner"** (antes "Esquina"; decidido por Ignacio). Se cambia en `APP_NAME` de `app.py`.
 - **Tema oscuro propio** con acento dorado (`.streamlit/config.toml`) y la misma paleta en la ficha,
   la gráfica y el vídeo: azul = mano izquierda, naranja = mano derecha, rojo = guardia baja.
 - **Flujo en 3 pasos visibles** (sube, analizamos, mejora). La guardia se elige en la propia pantalla
@@ -80,3 +79,18 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   minutos. Si hiciera falta, una opción sin tocar umbrales es analizar uno de cada dos fotogramas en los
   vídeos de 60 fps (habría que revisar que la detección sigue igual). No lo he hecho.
 - Los pasos de la web están en `docs/DESPLIEGUE.md`.
+
+## 6. Rediseño visual "The Corner" (inspirado en un gimnasio de boxeo de Madrid, sin su marca)
+
+- **Solo aspecto:** tema en `.streamlit/config.toml` y un único `styles.css` que carga `app.py`. No cambia
+  nada del análisis, la detección ni la puntuación (la nota de los clips sale igual).
+- **Orden de secciones:** (01) Tu nota, (02) Consejos, (03) Tu sesión (la gráfica), (04) Momentos para revisar
+  y (05) Detalle. Los momentos van con el **vídeo al lado** (en el móvil, justo debajo del vídeo), porque sus
+  botones mueven el vídeo: si estuvieran al final de la página habría que subir para ver el salto.
+- **Gráfica:** izquierda en negro, derecha en cobre, guardia baja en el rojo apagado de los niveles (es un
+  aviso, igual que en los momentos y las notas bajas). Los golpes cortos, más claros.
+- **El esqueleto del vídeo mantiene sus colores** (azul izquierda, naranja derecha): cambiarlos exigiría
+  regenerar los vídeos y no es parte del rediseño de la interfaz.
+- **Franja:** "Tu entrenador entre asaltos" en movimiento suave; se queda quieta si el sistema pide reducir animaciones.
+- **No se puede desde la app:** traducir "Upload" y "300MB per file" del selector de archivos (los pone
+  Streamlit), ni ocultar el botón "Manage app" y la insignia que añade Streamlit Community Cloud fuera de la app.

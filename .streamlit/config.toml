@@ -6,10 +6,34 @@ maxUploadSize = 300
 [client]
 toolbarMode = "minimal"
 
+# Tema claro de The Corner. El resto del estilo está en styles.css (lo carga app.py).
 [theme]
-base = "dark"
-primaryColor = "#E8B33F"
-backgroundColor = "#0F1218"
-secondaryBackgroundColor = "#171C25"
-textColor = "#EEF1F6"
-font = "sans serif"
+base = "light"
+primaryColor = "#161616"
+backgroundColor = "#F7F7F7"
+secondaryBackgroundColor = "#EFEDE4"
+textColor = "#161616"
+linkColor = "#161616"
+borderColor = "#D9D9D9"
+showWidgetBorder = true
+baseRadius = "20px"
+buttonRadius = "full"
+# Las fuentes se cargan desde Google Fonts con @import en styles.css; aquí solo se nombran (con respaldo)
+font = "'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif"
+headingFont = "'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif"
+# Avisos (st.info, st.success, st.warning, st.error) en tonos apagados que combinan con la paleta
+blueColor = "#161616"
+blueBackgroundColor = "#ECEADF"
+blueTextColor = "#161616"
+greenColor = "#5F8A62"
+greenBackgroundColor = "#E6ECE3"
+greenTextColor = "#3D6342"
+orangeColor = "#B8862F"
+orangeBackgroundColor = "#F4ECDC"
+orangeTextColor = "#6E521C"
+yellowColor = "#B8862F"
+yellowBackgroundColor = "#F4ECDC"
+yellowTextColor = "#6E521C"
+redColor = "#B0533C"
+redBackgroundColor = "#F4E4DE"
+redTextColor = "#843A28"

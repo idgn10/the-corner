@@ -9,22 +9,19 @@ from pathlib import Path
 import cv2
 import streamlit as st
 
-from boxeo.card import CSS, header_html, hero_html, legend_html, metrics_html, tips_html
+from boxeo.card import header_html, hero_html, legend_html, metrics_html, section_html, strip_html, tips_html
 from boxeo.charts import session_chart
 from boxeo.pipeline import ROOT, analyze, load_config
 from scripts.download_model import ensure_model
 
-APP_NAME = "Esquina"
+APP_NAME = "The Corner"
 TAGLINE = ("Graba tu sombra, súbela y en un minuto sabrás cómo están tu guardia, tu extensión y tu ritmo, "
            "con consejos concretos para tu próxima sesión.")
+STRIP = "Tu entrenador entre asaltos"
 DEMO_DIR = ROOT / "demo"   # metrics.json (en git) + annotated.mp4 (solo en local, ver docs/DECISIONES.md)
 
 st.set_page_config(page_title=f"{APP_NAME} · Análisis de boxeo", page_icon="🥊", layout="wide")
-st.html(CSS + """<style>
-.block-container{max-width:1150px;padding-top:2rem}
-div[data-testid="stFileUploaderDropzone"]{border:1.5px dashed #3A4458;border-radius:14px}
-[data-testid="stVideo"] video, video{max-height:72vh;border-radius:14px;background:#000}
-</style>""")
+st.html(f"<style>{(ROOT / 'styles.css').read_text(encoding='utf-8')}</style>")  # todo el estilo visual
 
 cfg = load_config()
 
@@ -79,43 +76,49 @@ def _friendly_error(e):
 
 # ---------- Paso 1: subir ----------
 
+def _top(step):
+    st.html(header_html(APP_NAME, TAGLINE, step=step))
+    st.html(strip_html(STRIP))
+
+
 def upload_view():
-    st.html(header_html(APP_NAME, TAGLINE, step=1))
+    _top(step=1)
     left, right = st.columns([3, 2], gap="large")
 
-    with right:
-        with st.container(border=True):
-            st.markdown("#### Cómo grabar para que salga bien")
-            st.markdown(
-                "- 📱 **Móvil fijo**, apoyado o en trípode, con la cámara trasera.\n"
-                "- 🧍 **Cuerpo entero** en el plano, de lado o en diagonal.\n"
-                "- 💡 **Buena luz** y solo tú en la imagen.\n"
-                "- ⏱️ **20-60 segundos** de sombra o saco, con jabs y directos."
-            )
-        with st.container(border=True):
-            st.markdown("#### ¿No tienes un vídeo a mano?")
-            st.caption("Mira un análisis de ejemplo ya hecho, sin subir nada.")
-            if st.button("Ver un ejemplo", icon="▶️", width="stretch"):
-                _load_demo()
-                if "result" in st.session_state:
-                    st.rerun()
-            if st.session_state.pop("demo_missing", False):
-                st.warning("El ejemplo no está disponible en esta instalación.")
-
     with left:
-        with st.container(border=True):
-            st.markdown("#### Sube tu vídeo")
+        st.html(section_html(0, "Empieza aquí", "Sube tu vídeo"))
+        with st.container(key="tc-card-upload"):
             stance = st.segmented_control(
                 "¿Con qué guardia boxeas?", ["orthodox", "southpaw"], default=cfg["stance"], required=True,
                 format_func=lambda s: "Diestro (izquierda adelante)" if s == "orthodox" else "Zurdo (derecha adelante)",
             )
             upload = st.file_uploader("Vídeo en MP4 o MOV (el del móvil vale tal cual)",
                                       type=["mp4", "mov", "m4v"])
-            if upload is None:
-                st.caption("Cuando lo subas, pulsa **Analizar mi vídeo**. Tarda alrededor de un minuto.")
             go = st.button("Analizar mi vídeo", type="primary", disabled=upload is None, width="stretch")
+            if upload is None:
+                st.html('<div class="tc"><div class="tc-note">Cuando lo subas, pulsa <b>Analizar mi vídeo</b>. '
+                        "Tarda alrededor de un minuto.</div></div>")
             if go and upload is not None:
                 process(upload, stance)
+
+    with right:
+        st.html(section_html(0, "Antes de grabar", "Cómo grabar"))
+        with st.container(key="tc-card-howto"):
+            st.html('<div class="tc tc-howto"><ol>'
+                    "<li><span><b>Móvil fijo</b>, apoyado o en trípode, con la cámara trasera.</span></li>"
+                    "<li><span><b>Cuerpo entero</b> en el plano, de lado o en diagonal.</span></li>"
+                    "<li><span><b>Buena luz</b> y solo tú en la imagen.</span></li>"
+                    "<li><span><b>20-60 segundos</b> de sombra o saco, con jabs y directos.</span></li>"
+                    "</ol></div>")
+        with st.container(key="tc-card-demo"):
+            st.html('<div class="tc"><div class="tc-card-title">¿Sin vídeo a mano?</div>'
+                    '<div class="tc-card-sub">Mira un análisis de ejemplo ya hecho, sin subir nada.</div></div>')
+            if st.button("Ver un ejemplo", width="stretch"):
+                _load_demo()
+                if "result" in st.session_state:
+                    st.rerun()
+            if st.session_state.pop("demo_missing", False):
+                st.warning("El ejemplo no está disponible en esta instalación.")
 
 
 # ---------- Paso 2: procesar ----------
@@ -158,7 +161,7 @@ def _seek(t):
 def results_view():
     r = st.session_state["result"]
     m = r["metrics"]
-    st.html(header_html(APP_NAME, TAGLINE, step=3))
+    _top(step=3)
 
     if st.session_state.get("source") == "demo":
         st.info("Estás viendo un **análisis de ejemplo** ya hecho. Sube tu vídeo para ver el tuyo.")
@@ -170,37 +173,42 @@ def results_view():
         st.warning("**No hemos detectado golpes en este vídeo.** Comprueba que se te ve el cuerpo entero, "
                    "con la cámara fija de lado o en diagonal, y que lanzas golpes rectos estirando el brazo.")
         _video_block(r)
-        st.button("Probar con otro vídeo", type="primary", on_click=_reset)
+        st.button("Probar con otro vídeo", type="primary", on_click=_reset, width="stretch")
         return
 
     c1, c2 = st.columns([5, 6], gap="large")
     with c1:
+        st.html(section_html(1, "Tu nota", "Así ha ido"))
         st.html(hero_html(r))
     with c2:
+        st.html(section_html(2, "Consejos", "Tu plan para la próxima sesión"))
         st.html(tips_html(r))
 
-    st.write("")
-    vertical = r.get("size", [9, 16])[1] > r.get("size", [9, 16])[0]
-    cv, cs = st.columns([2, 3] if vertical else [1, 1], gap="large")
-    with cv:
-        _video_block(r)
-    with cs:
-        st.markdown("#### Tu sesión, segundo a segundo")
+    st.html(section_html(3, "Tu sesión", "Segundo a segundo"))
+    with st.container(key="tc-card-chart"):
         st.html(legend_html())
         st.altair_chart(session_chart(r), width="stretch", theme=None)
+
+    # El video va junto a los momentos: cada boton lo lleva a ese segundo y en el movil queda justo encima
+    st.html(section_html(4, "Momentos para revisar", "Revisa tu guardia"))
+    vertical = r.get("size", [9, 16])[1] > r.get("size", [9, 16])[0]
+    cv, cm = st.columns([2, 3] if vertical else [1, 1], gap="large")
+    with cv:
+        _video_block(r)
+    with cm:
         _moments(r)
 
-    st.write("")
+    st.html(section_html(5, "Detalle", "Detalle de tu técnica"))
     st.html(metrics_html(r, cfg))
 
     st.write("")
-    b1, b2, _ = st.columns([1, 1, 2])
+    b1, b2 = st.columns(2, gap="small")
     b1.button("Analizar otro vídeo", type="primary", on_click=_reset, width="stretch")
     b2.download_button("Descargar datos (JSON)", json.dumps(r, ensure_ascii=False, indent=2),
                        file_name=f"{Path(r['video']).stem}_analisis.json", mime="application/json",
                        width="stretch")
-    st.caption("La medición es 2D: funciona mejor con la cámara fija, de lado o en diagonal. "
-               "Los ganchos se cuentan como golpes rectos.")
+    st.html('<div class="tc"><div class="tc-note">La medición es 2D: funciona mejor con la cámara fija, '
+            "de lado o en diagonal. Los ganchos se cuentan como golpes rectos.</div></div>")
 
 
 def _video_block(r):
@@ -209,23 +217,24 @@ def _video_block(r):
         seek = st.session_state.get("seek", 0)
         st.video(video, start_time=seek, autoplay=bool(seek), muted=True)
     else:
-        with st.container(border=True):
-            st.markdown("🎬 **El vídeo de este análisis no está disponible aquí.** "
+        with st.container(key="tc-card-novideo"):
+            st.markdown("**El vídeo de este análisis no está disponible aquí.** "
                         "La ficha, la gráfica y los consejos sí son los del análisis original.")
 
 
 def _moments(r):
     worst = r.get("timeline", {}).get("worst_guard", [])
-    st.markdown("#### Momentos para revisar")
     if not worst:
         st.success("No hay momentos largos con la guardia baja. ¡Bien!")
         return
-    st.caption("Los tramos más largos con la guardia baja. Pulsa para verlos en el vídeo.")
+    st.html('<div class="tc"><div class="tc-detail" style="margin-bottom:10px">Los tramos más largos con la '
+            "guardia baja. Pulsa uno y el vídeo salta a ese segundo.</div></div>")
     for i, g in enumerate(worst):
         dur = g["end"] - g["start"]
         who = "las dos manos" if g["hand"] == "las dos" else f"la mano {g['hand']}"
         label = f"Segundo {g['start']:.1f}".replace(".", ",") + f" · bajas {who} {dur:.1f} s".replace(".", ",")
-        st.button(label, key=f"moment{i}", icon="⏯️", on_click=_seek, args=(g["start"],), width="stretch")
+        st.button(label, key=f"moment{i}", icon=":material/play_circle:", on_click=_seek, args=(g["start"],),
+                  width="stretch")
 
 
 # ---------- Enrutado ----------

@@ -1,4 +1,4 @@
-# Esquina · Análisis de boxeo con IA
+# The Corner · Análisis de boxeo con IA
 
 Subes un vídeo de 20-60 segundos haciendo sombra o en el saco y, en un minuto, recibes tu vídeo con el
 esqueleto dibujado, una ficha con tu nota de 0 a 100, tu sesión segundo a segundo y tres consejos

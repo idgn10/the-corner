@@ -67,7 +67,7 @@ Cómo grabar: móvil fijo, cuerpo entero, buena luz, 60 fps si se puede, solo t�
 - [x] Rediseño de la app: flujo en 3 pasos, errores amables, ficha jerarquizada, "¿Cómo se calcula?",
       gráfica de la sesión, momentos para revisar con salto al vídeo, versión móvil
 - [x] Modo demo: botón "Ver un ejemplo" y enlace `?demo=1` (el vídeo del ejemplo no está en git)
-- [ ] Revisar las decisiones de `docs/DECISIONES.md` (nombre "Esquina", clip de demo, usuario objetivo…)
+- [ ] Revisar las decisiones de `docs/DECISIONES.md` (clip de demo, usuario objetivo…)
 
 ## Lunes: online + caso de producto
 

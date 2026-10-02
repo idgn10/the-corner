@@ -28,20 +28,22 @@ def session_chart(result):
     ticks = alt.Chart(punches).mark_tick(thickness=4, size=26, cornerRadius=2).encode(
         x=x, y=y,
         color=alt.Color("carril:N", scale=alt.Scale(domain=["Izquierda", "Derecha"], range=[LEFT, RIGHT]), legend=None),
-        opacity=alt.Opacity("extension:N", scale=alt.Scale(domain=["Completa", "Corta"], range=[1.0, 0.4]), legend=None),
+        opacity=alt.Opacity("extension:N", scale=alt.Scale(domain=["Completa", "Corta"], range=[1.0, 0.5]), legend=None),
         tooltip=[alt.Tooltip("golpe:N", title="Golpe"), alt.Tooltip("t:Q", title="Segundo", format=".1f"),
                  alt.Tooltip("codo:Q", title="Codo (°)", format=".0f"), alt.Tooltip("extension:N", title="Extensión")],
     )
-    bars = alt.Chart(low).mark_bar(height=18, cornerRadius=3, color=BAD).encode(
+    bars = alt.Chart(low).mark_bar(height=18, cornerRadius=6, color=BAD, opacity=0.9).encode(
         x=alt.X("start:Q", scale=alt.Scale(domain=[0, end_t], nice=False)), x2="end:Q", y=y,
         tooltip=[alt.Tooltip("start:Q", title="Desde (s)", format=".1f"), alt.Tooltip("duracion:Q", title="Duración (s)"),
                  alt.Tooltip("hand:N", title="Mano abajo")],
     )
     return (
         alt.layer(bars, ticks)
-        .properties(height=170)
-        .configure(background="transparent")
+        .properties(height=180)
+        .configure(background="#FFFFFF", padding={"left": 14, "right": 18, "top": 16, "bottom": 10},
+                   font="Plus Jakarta Sans, system-ui, sans-serif")
         .configure_view(stroke=None)
-        .configure_axis(labelColor="#9AA3B5", titleColor="#9AA3B5", gridColor="#2A3242", domainColor="#2A3242",
-                        tickColor="#2A3242", labelFontSize=12, titleFontSize=12)
+        .configure_axis(labelColor="#6B6B66", titleColor="#6B6B66", gridColor="#ECEBE5", domainColor="#D9D9D9",
+                        tickColor="#D9D9D9", labelFontSize=12, titleFontSize=12, titleFontWeight=600)
+        .configure_axisY(labelFontWeight=700, labelColor="#161616")
     )

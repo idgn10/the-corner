@@ -1,13 +1,12 @@
-"""Componentes visuales de la app (HTML autocontenido): cabecera, ficha, consejos y detalle de metricas."""
+"""Componentes visuales de la app (HTML). El estilo esta en styles.css (lo carga app.py)."""
 from html import escape
 
 from boxeo.tips import ranked_keys
 
-# Paleta propia (la misma que el tema de .streamlit/config.toml)
-GOLD = "#E8B33F"
-LEFT = "#4EA8FF"     # mano izquierda (igual que en el video anotado)
-RIGHT = "#FF9F43"    # mano derecha
-GOOD, MID, BAD, NONE = "#3DDC84", "#F5B942", "#FF5C5C", "#6B7385"
+# Paleta de The Corner (la misma que styles.css y .streamlit/config.toml)
+BEIGE, BLACK, COPPER, GRAY = "#D3D1BA", "#161616", "#E2A27E", "#9A9A92"
+GOOD, MID, BAD, NONE = "#5F8A62", "#B8862F", "#B0533C", GRAY   # niveles en tonos apagados
+LEFT, RIGHT = BLACK, COPPER                                      # mano izquierda / derecha en la grafica
 
 
 def _n(x, nd=0):
@@ -32,113 +31,68 @@ def verdict(total):
     return "A trabajar"
 
 
-CSS = f"""
-<style>
-.bx{{font-family:inherit;color:#EEF1F6}}
-.bx *{{box-sizing:border-box}}
-.bx-header{{display:flex;align-items:center;gap:14px;margin:4px 0 6px}}
-.bx-logo{{width:46px;height:46px;border-radius:12px;background:{GOLD};color:#0F1218;display:flex;
-  align-items:center;justify-content:center;font-weight:900;font-size:26px;flex:none}}
-.bx-brand{{font-size:30px;font-weight:800;letter-spacing:-.01em;line-height:1.1}}
-.bx-tag{{color:#9AA3B5;font-size:15px;margin-top:2px}}
-.bx-steps{{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}}
-.bx-step{{font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid #2A3242;color:#9AA3B5}}
-.bx-step.on{{border-color:{GOLD};color:{GOLD};font-weight:700}}
-.bx-step.done{{color:#EEF1F6}}
-.bx-panel{{background:#171C25;border:1px solid #2A3242;border-radius:16px;padding:18px 20px}}
-.bx-hero{{background:linear-gradient(160deg,#1F2633 0%,#12161F 75%);border:2px solid {GOLD};border-radius:18px;
-  padding:20px 22px}}
-.bx-kicker{{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:{GOLD};font-weight:700}}
-.bx-sub{{font-size:13px;color:#9AA3B5;margin-top:3px;overflow-wrap:anywhere}}
-.bx-score{{display:flex;align-items:baseline;gap:10px;margin:8px 0 0}}
-.bx-total{{font-size:88px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums}}
-.bx-of{{font-size:20px;color:#9AA3B5;font-weight:600}}
-.bx-verdict{{font-size:16px;font-weight:700;margin-top:4px}}
-.bx-stats{{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px;padding-top:14px;
-  border-top:1px solid #2A3242;text-align:center}}
-.bx-stat b{{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}}
-.bx-stat span{{font-size:10.5px;color:#9AA3B5;text-transform:uppercase;letter-spacing:.07em}}
-.bx-h{{font-size:19px;font-weight:800;margin:0 0 12px}}
-.bx-tip{{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid #2A3242}}
-.bx-tip:first-of-type{{border-top:none;padding-top:2px}}
-.bx-num{{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:14px;color:#0F1218}}
-.bx-tip-label{{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#9AA3B5;font-weight:700}}
-.bx-tip-text{{font-size:15px;line-height:1.45;margin-top:2px}}
-.bx-metric{{padding:14px 0;border-top:1px solid #2A3242}}
-.bx-metric:first-of-type{{border-top:none;padding-top:0}}
-.bx-mhead{{display:flex;justify-content:space-between;align-items:baseline;gap:10px}}
-.bx-mname{{font-size:16px;font-weight:700}}
-.bx-mweight{{font-size:12px;color:#9AA3B5;font-weight:500;margin-left:6px}}
-.bx-mscore{{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}}
-.bx-bar{{height:8px;border-radius:4px;background:#2A3242;margin:7px 0 5px;overflow:hidden}}
-.bx-bar i{{display:block;height:100%;border-radius:4px}}
-.bx-detail{{font-size:13px;color:#C3CAD6}}
-.bx details{{margin-top:6px}}
-.bx summary{{cursor:pointer;font-size:13px;color:{GOLD};font-weight:600;list-style:none}}
-.bx summary::-webkit-details-marker{{display:none}}
-.bx summary:before{{content:"＋ "}}
-.bx details[open] summary:before{{content:"－ "}}
-.bx-how{{font-size:13.5px;line-height:1.5;color:#C3CAD6;background:#11151C;border-radius:10px;padding:10px 12px;
-  margin-top:6px}}
-.bx-legend{{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:#9AA3B5;margin:2px 0 4px}}
-.bx-dot{{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}}
-@media (max-width:640px){{
-  .bx-total{{font-size:72px}}
-  .bx-stats{{grid-template-columns:repeat(2,1fr);row-gap:12px}}
-  .bx-brand{{font-size:25px}}
-}}
-</style>
-"""
+STEPS = ["Sube tu vídeo", "Lo analizamos", "Mejora con tu ficha"]
 
 
 def header_html(name, tagline, step):
-    """Cabecera con marca, frase y pasos del flujo (step: 1 subir, 2 analizar, 3 resultados)."""
-    labels = ["1 · Sube tu vídeo", "2 · Lo analizamos", "3 · Mejora con tu ficha"]
+    """Marca, frase de valor y los 3 pasos del flujo como tarjetas numeradas (step: 1, 2 o 3)."""
     steps = "".join(
-        f'<span class="bx-step {"on" if i + 1 == step else "done" if i + 1 < step else ""}">{l}</span>'
-        for i, l in enumerate(labels)
+        f'<div class="tc-step {"on" if i + 1 == step else "done" if i + 1 < step else ""}">'
+        f"<b>{i + 1:02d}</b><span>{label}</span></div>"
+        for i, label in enumerate(STEPS)
     )
-    return (CSS + f'<div class="bx"><div class="bx-header"><div class="bx-logo">{escape(name[0])}</div>'
-            f'<div><div class="bx-brand">{escape(name)}</div><div class="bx-tag">{escape(tagline)}</div></div></div>'
-            f'<div class="bx-steps">{steps}</div></div>')
+    return (f'<div class="tc"><div class="tc-brand">{escape(name)}<span>.</span></div>'
+            f'<div class="tc-tag">{escape(tagline)}</div><div class="tc-steps">{steps}</div></div>')
+
+
+def strip_html(text, repeat=8):
+    """Franja negra con un texto repetido (se duplica para que el desplazamiento sea continuo)."""
+    item = f"<span>{escape(text)} <i>✦</i></span>"
+    return f'<div class="tc"><div class="tc-strip"><div class="tc-track">{item * repeat * 2}</div></div></div>'
+
+
+def section_html(num, kicker, title):
+    """Titulo de seccion editorial: '(01) · Tu nota' encima de un titulo grande condensado."""
+    label = f"({num:02d}) · {kicker}" if num else f"· {kicker}"
+    return (f'<div class="tc"><div class="tc-sec"><div class="tc-kicker">{escape(label)}</div>'
+            f'<div class="tc-title">{escape(title)}</div></div></div>')
 
 
 def hero_html(result):
-    """Ficha principal: nota total, veredicto y cifras de la sesion."""
+    """Ficha principal: tarjeta negra con la nota, el veredicto y las cifras de la sesion."""
     m, total = result["metrics"], result["total"]
     stance = "Diestro" if result.get("stance") == "orthodox" else "Zurdo"
     ppm = _n(m["punches_per_min"]) if m.get("punches_per_min") is not None else "–"
-    return (CSS + '<div class="bx"><div class="bx-hero">'
-            f'<div class="bx-kicker">Tu nota de la sesión</div>'
-            f'<div class="bx-sub">{escape(result["video"])} · {stance} · {_n(m.get("active_s", m["duration_s"]))} s analizados</div>'
-            f'<div class="bx-score"><span class="bx-total" style="color:{color(total)}">'
-            f'{total if total is not None else "–"}</span><span class="bx-of">/ 100</span></div>'
-            f'<div class="bx-verdict" style="color:{color(total)}">{verdict(total)}</div>'
-            '<div class="bx-stats">'
-            f'<div class="bx-stat"><b style="color:{LEFT}">{m["n_left"]}</b><span>Izquierda</span></div>'
-            f'<div class="bx-stat"><b style="color:{RIGHT}">{m["n_right"]}</b><span>Derecha</span></div>'
-            f'<div class="bx-stat"><b>{ppm}</b><span>Golpes/min</span></div>'
-            f'<div class="bx-stat"><b>{m["n_punches"]}</b><span>Golpes</span></div>'
-            '</div></div></div>')
+    return ('<div class="tc"><div class="tc-hero">'
+            '<div class="tc-label">Tu nota de la sesión</div>'
+            f'<div class="tc-hero-sub">{escape(result["video"])} · {stance} · '
+            f'{_n(m.get("active_s", m["duration_s"]))} s analizados</div>'
+            f'<div class="tc-score"><span class="tc-total">{total if total is not None else "–"}</span>'
+            '<span class="tc-of">/ 100</span></div>'
+            f'<div class="tc-verdict"><i style="background:{color(total)}"></i>{verdict(total)}</div>'
+            '<div class="tc-stats">'
+            f'<div class="tc-stat"><b>{m["n_left"]}</b><span>Izquierda</span></div>'
+            f'<div class="tc-stat"><b>{m["n_right"]}</b><span>Derecha</span></div>'
+            f'<div class="tc-stat"><b>{ppm}</b><span>Golpes/min</span></div>'
+            f'<div class="tc-stat"><b>{m["n_punches"]}</b><span>Golpes</span></div>'
+            "</div></div></div>")
 
 
 def tips_html(result):
-    """Los consejos, numerados por prioridad, con la metrica a la que se refieren."""
+    """Los consejos como tarjetas blancas numeradas 01, 02, 03 (orden: lo que mas resta a la nota)."""
     subs = result["subscores"]
-    by_rank = ranked_keys(result) if result["metrics"].get("n_punches") else []
-    items = []
+    keys = ranked_keys(result) if result["metrics"].get("n_punches") else []
+    cards = []
     for i, tip in enumerate(result["tips"]):
-        key = by_rank[i] if i < len(by_rank) else None
-        sc = subs[key]["score"] if key else None
+        key = keys[i] if i < len(keys) else None
         label = subs[key]["label"] if key else "Consejo"
-        items.append(
-            f'<div class="bx-tip"><div class="bx-num" style="background:{color(sc) if key else GOLD}">{i + 1}</div>'
-            f'<div><div class="bx-tip-label">{escape(label)}</div>'
-            f'<div class="bx-tip-text">{escape(tip)}</div></div></div>'
+        dot = f'<i style="background:{color(subs[key]["score"])}"></i>' if key else ""
+        cards.append(
+            f'<div class="tc-tip"><div class="tc-tip-num">{i + 1:02d}</div><div>'
+            f'<div class="tc-tip-label">{dot}{escape(label)}</div>'
+            f'<div class="tc-tip-text">{escape(tip)}</div></div></div>'
         )
-    return (CSS + '<div class="bx"><div class="bx-panel"><div class="bx-h">Tu plan para la próxima sesión</div>'
-            + "".join(items) + "</div></div>")
+    return '<div class="tc"><div class="tc-tips">' + "".join(cards) + "</div></div>"
 
 
 def _detail(key, m):
@@ -196,26 +150,25 @@ def metrics_html(result, cfg):
             continue  # metrica desactivada en config.yaml (p. ej. base grabando de perfil)
         sc = s["score"]
         rows.append(
-            f'<div class="bx-metric"><div class="bx-mhead"><span class="bx-mname">{escape(s["label"])}'
-            f'<span class="bx-mweight">· pesa {round(100 * s["weight"] / total_w)}% de la nota</span></span>'
-            f'<span class="bx-mscore" style="color:{color(sc)}">{sc if sc is not None else "–"}</span></div>'
-            f'<div class="bx-bar"><i style="width:{sc or 0}%;background:{color(sc)}"></i></div>'
-            f'<div class="bx-detail">{escape(_detail(key, m))}</div>'
-            f'<details><summary>¿Cómo se calcula?</summary><div class="bx-how">{escape(explain(key, cfg))}</div></details>'
+            f'<div class="tc-metric"><div class="tc-mhead"><span class="tc-mname">{escape(s["label"])}'
+            f'<span class="tc-mweight">· pesa {round(100 * s["weight"] / total_w)}% de la nota</span></span>'
+            f'<span class="tc-mscore" style="color:{color(sc)}">{sc if sc is not None else "–"}</span></div>'
+            f'<div class="tc-bar"><i style="width:{sc or 0}%;background:{color(sc)}"></i></div>'
+            f'<div class="tc-detail">{escape(_detail(key, m))}</div>'
+            f'<details><summary>¿Cómo se calcula?</summary><div class="tc-how">{escape(explain(key, cfg))}</div></details>'
             "</div>"
         )
     total_how = ("La nota total es la media de estas notas, pesando más lo que más importa para no recibir "
                  "golpes: " + ", ".join(f'{s["label"].lower()} {round(100 * s["weight"] / total_w)}%'
                                          for s in result["subscores"].values() if s["weight"]) + ".")
-    return (CSS + '<div class="bx"><div class="bx-panel"><div class="bx-h">Detalle de tu técnica</div>'
-            + "".join(rows)
-            + f'<details><summary>¿Cómo se calcula la nota total?</summary><div class="bx-how">{escape(total_how)}</div></details>'
-            + "</div></div>")
+    return ('<div class="tc"><div class="tc-panel">' + "".join(rows)
+            + f'<div class="tc-total-how"><details><summary>¿Cómo se calcula la nota total?</summary>'
+            f'<div class="tc-how">{escape(total_how)}</div></details></div></div></div>')
 
 
 def legend_html():
-    return (CSS + '<div class="bx"><div class="bx-legend">'
-            f'<span><i class="bx-dot" style="background:{LEFT}"></i>Golpe con la izquierda</span>'
-            f'<span><i class="bx-dot" style="background:{RIGHT}"></i>Golpe con la derecha</span>'
-            f'<span><i class="bx-dot" style="background:{BAD}"></i>Guardia baja</span>'
+    return ('<div class="tc"><div class="tc-legend">'
+            f'<span><i class="tc-dot" style="background:{LEFT}"></i>Golpe con la izquierda</span>'
+            f'<span><i class="tc-dot" style="background:{RIGHT}"></i>Golpe con la derecha</span>'
+            f'<span><i class="tc-dot" style="background:{BAD}"></i>Guardia baja</span>'
             '<span>Más claro = golpe corto</span></div></div>')
