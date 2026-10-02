@@ -25,6 +25,8 @@ punches:
   max_rise_seconds: 0.4      # tiempo maximo para pasar de doblado a estirado
   min_reach_increase: 0.3    # aumento minimo de la distancia muneca-hombro durante el golpe
   min_peak_speed: 3.0        # velocidad pico minima de la muneca (anchuras de hombro por segundo)
+  max_wrist_below_shoulder: 0.5  # en el pico, la muneca no puede estar mas abajo que esto respecto a los hombros
+                                 # (evita contar como golpe bajar el brazo)
   debounce_seconds: 0.25     # no contar dos golpes de la misma mano tan seguidos
 
 # 3. Extension: angulo del codo en el pico del golpe
