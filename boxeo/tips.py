@@ -81,6 +81,22 @@ def ranked_keys(scores):
     return [k for _, _, k in ranked]
 
 
+# Con fiabilidad baja no se dan consejos de tecnica (saldrian de datos poco fiables): se dan estas 3 claves
+# para volver a grabar. (titulo, explicacion)
+RECORDING_KEYS = [
+    ("Casi de perfil o en diagonal",
+     "No de frente: así se ve bien cómo estiras el brazo y cuándo vuelves a la guardia."),
+    ("Cuerpo entero en el plano",
+     "De la cabeza a los pies, también cuando estiras el brazo: que el puño no se salga de la imagen."),
+    ("A 2-3 metros de la cámara",
+     "Con el móvil fijo, apoyado o en trípode."),
+]
+
+
+def recording_tips():
+    return [f"{title}. {text}" for title, text in RECORDING_KEYS]
+
+
 def make_tips(metrics, scores, cfg, n=3):
     """Lista de hasta `n` consejos en espanol, empezando por la metrica que mas resta a la nota."""
     if not metrics.get("n_punches"):

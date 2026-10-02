@@ -154,7 +154,8 @@ pierde donde debe: guardia (100 → 63), mano contraria (87 → 70) y extensión
 - **Calibrado con una sola persona** (5 clips). Falta validar con otros cuerpos, niveles y móviles.
 - **La fiabilidad del análisis es una estimación.** Avisa si no se te ve bien, si se te sale la mano del
   encuadre o si estás de frente, pero sus umbrales salen de 5 clips de una persona y el caso "de frente" aún
-  no se ha probado con un vídeo real. No corrige la nota: solo avisa de cuándo fiarse menos de ella.
+  no se ha probado con un vídeo real. Con fiabilidad baja no se da nota (solo datos orientativos), así que
+  unos umbrales demasiado estrictos dejarían sin nota vídeos que sí eran válidos.
 - Vídeos de 60 s como máximo, procesados a 720p como máximo.
 
 ## 9. Siguientes pasos

@@ -130,6 +130,24 @@ Casos especiales:
 - Si una métrica no tiene datos (por ejemplo, no hay golpes con los que medir la extensión), no cuenta
   y se divide solo entre los pesos de las que sí tienen.
 - **Si no se detecta ningún golpe, no hay nota total.** La app avisa y da consejos para grabar mejor.
+- **Si la fiabilidad del análisis es baja, tampoco hay nota total** (mejor ningún dato que uno falso). La ficha
+  dice "Sin nota: el vídeo no permite un análisis fiable", con el motivo medido (p. ej. "La mano sale del
+  encuadre el 11% del tiempo") y cómo grabar mejor. En vez de los consejos de técnica salen 3 claves para
+  grabar: casi de perfil o en diagonal, cuerpo entero en el plano y a 2-3 m de la cámara. El vídeo y el detalle
+  por métrica se ven igual, marcados como **"Orientativo"**; la gráfica de la sesión y los momentos para
+  revisar no se muestran. Con fiabilidad alta o media todo funciona como siempre.
+
+### Cuándo la fiabilidad es baja
+
+Se miran tres cosas en el tramo activo; basta con que una esté en "baja":
+
+| Qué se mide | Baja si… |
+|---|---|
+| Nariz, hombros, codos y muñecas visibles a la vez | menos del **50%** del tiempo |
+| Mano fuera del encuadre (muñeca a menos de 0,3 anchuras de hombro del borde) | más del **10%** del tiempo |
+| Orientación: anchura de hombros ÷ altura del tronco | más de **0,70** (de frente) |
+
+(Media: entre 50% y 75% visible, entre 3% y 10% de mano fuera, o entre 0,60 y 0,70 de orientación.)
 
 ### Los 3 consejos
 
@@ -243,10 +261,12 @@ En **vuelta a la guardia** es al revés (menos es mejor): bajar `good` (0,4 s) l
 | `pose.smooth_seconds` | 0,1 s | más alto = esqueleto más estable pero picos de golpe más "aplastados" |
 | `pose.max_gap_seconds` | 0,2 s | huecos más largos que esto no se rellenan |
 
-### Fiabilidad del análisis (no cambia la nota)
+### Fiabilidad del análisis (no cambia cómo se puntúa, pero con fiabilidad baja no hay nota total)
 
 Sección `quality`: decide cuándo la fiabilidad es alta, media o baja. Subir los mínimos de visibilidad o bajar
-los máximos de "mano fuera" y de orientación hace el aviso más estricto (salta antes); al revés, más permisivo.
+los máximos de "mano fuera" y de orientación hace el control más estricto (más vídeos se quedan **sin nota**);
+al revés, más permisivo. Ojo: `min_visible_medium`, `max_wrist_out_medium` y `max_front_medium` son ahora la
+frontera entre tener nota y no tenerla.
 `edge_margin` (0,3 anchuras de hombro) es lo cerca del borde que tiene que estar la muñeca para contar como
 "mano fuera del encuadre". Detalle y motivos en `docs/DECISIONES.md`, punto 7.
 

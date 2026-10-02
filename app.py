@@ -9,8 +9,8 @@ from pathlib import Path
 import cv2
 import streamlit as st
 
-from boxeo.card import (header_html, hero_html, legend_html, metrics_html, quality_alert_html, section_html,
-                        strip_html, tips_html)
+from boxeo.card import (header_html, hero_html, legend_html, metrics_html, no_score_html, orientative_note_html,
+                        recording_keys_html, section_html, strip_html, tips_html)
 from boxeo.charts import session_chart
 from boxeo.pipeline import ROOT, analyze, load_config
 from scripts.download_model import ensure_model
@@ -164,11 +164,11 @@ def results_view():
     m = r["metrics"]
     _top(step=3)
 
-    quality = r.get("quality")
-    if quality and quality["level"] == "baja":
-        st.html(quality_alert_html(quality))
     if st.session_state.get("source") == "demo":
         st.info("Estás viendo un **análisis de ejemplo** ya hecho. Sube tu vídeo para ver el tuyo.")
+    if (r.get("quality") or {}).get("level") == "baja":
+        low_quality_view(r)
+        return
     if m["pose_detected_pct"] < 50:
         st.warning(f"Solo te hemos visto en el {m['pose_detected_pct']:.0f}% del vídeo. Para un análisis fiable, "
                    "que se vea tu cuerpo entero y haya buena luz.")
@@ -213,6 +213,34 @@ def results_view():
                        width="stretch")
     st.html('<div class="tc"><div class="tc-note">La medición es 2D: funciona mejor con la cámara fija, '
             "de lado o en diagonal. Los ganchos se cuentan como golpes rectos.</div></div>")
+
+
+def low_quality_view(r):
+    """Fiabilidad baja: sin nota ni consejos de tecnica; video y detalle solo como referencia."""
+    c1, c2 = st.columns([5, 6], gap="large")
+    with c1:
+        st.html(section_html(1, "Tu nota", "Sin nota"))
+        st.html(no_score_html(r))
+        st.button("Subir otro vídeo", type="primary", on_click=_reset, width="stretch")
+    with c2:
+        st.html(section_html(2, "Cómo grabar", "Graba de nuevo así"))
+        st.html(recording_keys_html())
+
+    st.html(section_html(3, "Tu vídeo", "Lo que hemos visto", badge="Orientativo"))
+    vertical = r.get("size", [9, 16])[1] > r.get("size", [9, 16])[0]
+    cv, cn = st.columns([2, 3] if vertical else [1, 1], gap="large")
+    with cv:
+        _video_block(r)
+    with cn:
+        st.html(orientative_note_html())
+
+    st.html(section_html(4, "Detalle", "Detalle de tu técnica", badge="Orientativo"))
+    st.html(orientative_note_html())
+    st.html(metrics_html(r, cfg, orientative=True))
+
+    st.write("")
+    st.download_button("Descargar datos (JSON)", json.dumps(r, ensure_ascii=False, indent=2),
+                       file_name=f"{Path(r['video']).stem}_analisis.json", mime="application/json", width="stretch")
 
 
 def _video_block(r):

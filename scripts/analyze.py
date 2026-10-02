@@ -34,8 +34,11 @@ def main():
     m = r["metrics"]
     out = Path(args.out) if args.out else Path("outputs") / Path(args.video).stem
 
-    print(f"\nPuntuación total: {r['total'] if r['total'] is not None else '-'} / 100")
     q = r["quality"]
+    if q["level"] == "baja":
+        print("\nSin nota: el vídeo no permite un análisis fiable (las notas por métrica son solo orientativas).")
+    else:
+        print(f"\nPuntuación total: {r['total'] if r['total'] is not None else '-'} / 100")
     print(f"Fiabilidad del análisis: {q['level']} ({q['message']})")
     print(f"Golpes: {m['n_punches']} (izq. {m['n_left']}, der. {m['n_right']}) en {m['duration_s']} s"
           f" (activo {m['active_s']} s) | persona detectada en el {m['pose_detected_pct']}% de los frames")
@@ -44,7 +47,7 @@ def main():
         if s["weight"] == 0:
             score = "off"
         print(f"  {s['label']:<24} {str(score):>4}   ({s['metric']} = {s['value']})")
-    print("\nConsejos:")
+    print("\nCómo grabar mejor:" if q["level"] == "baja" else "\nConsejos:")
     for t in r["tips"]:
         print(f"  - {t}")
     print(f"\nResultados en {out}/ (annotated.mp4, metrics.json, landmarks.csv)")

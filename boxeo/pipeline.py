@@ -13,7 +13,7 @@ from boxeo.punches import detect_punches
 from boxeo.quality import assess
 from boxeo.render import render_video
 from boxeo.scoring import score
-from boxeo.tips import make_tips
+from boxeo.tips import make_tips, recording_tips
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -45,7 +45,11 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     punches = annotate_punches(df, detect_punches(df, fps, cfg), fps, cfg)
     metrics = compute_metrics(df, punches, fps, cfg)
     scores = score(metrics, cfg)
-    tips = make_tips(metrics, scores, cfg)
+    quality = assess(df, punches, fps, info["size"], cfg)
+    # Fiabilidad baja: sin nota total y sin consejos de tecnica (mejor ningun dato que uno falso).
+    # Las notas por metrica se guardan igual: la app las ensena como "orientativas".
+    reliable = quality["level"] != "baja"
+    tips = make_tips(metrics, scores, cfg) if reliable else recording_tips()
 
     report(0.85, "Dibujando el vídeo")
     render_video(video_path, out_dir / "annotated.mp4", df, punches, info)
@@ -56,13 +60,13 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
         "stance": cfg["stance"],
         "fps": round(fps, 2),
         "size": list(info["size"]),
-        "total": scores["total"],
+        "total": scores["total"] if reliable else None,
         "subscores": scores["subscores"],
         "metrics": metrics,
         "tips": tips,
         "punches": punches,
         "timeline": guard_timeline(df, punches, fps, cfg),
-        "quality": assess(df, punches, fps, info["size"], cfg),
+        "quality": quality,
     }
     with open(out_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)

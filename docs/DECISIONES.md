@@ -100,6 +100,7 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
 - **Qué es:** en cada análisis se calcula la **fiabilidad: alta / media / baja**, con una frase que explica el
   motivo y cómo grabar mejor. **No cambia ninguna nota** (módulo aparte, `boxeo/quality.py`); la nota se
   muestra siempre, y si la fiabilidad es baja aparece además un aviso destacado arriba del todo.
+  **Cambiado en el punto 8:** con fiabilidad baja ya no se muestra la nota.
 - **Tres factores, medidos en el tramo activo.** La fiabilidad final es la del peor:
 
   | Factor | Alta | Media | Baja | Por qué estos valores |
@@ -119,3 +120,23 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
 - **Sin validar con un vídeo real de frente:** los umbrales de orientación salen de proporciones corporales
   típicas, no de un clip tuyo. Graba el clip de prueba de frente (ver informe) para confirmarlos.
 - Todos los umbrales están en la sección `quality` de `config.yaml`.
+
+## 8. Con fiabilidad baja, no hay nota (decidido por Ignacio)
+
+- **Regla:** si la fiabilidad es baja, el resultado sale **sin nota total**, igual que cuando no hay golpes:
+  mejor ningún dato que uno falso. Se aplica en `boxeo/pipeline.py`, así que la app, la terminal y el
+  `metrics.json` dicen lo mismo (`total: null`). `scoring.py` no cambia: las notas por métrica se siguen
+  calculando y guardando, y las notas de los 5 clips de prueba (todos con fiabilidad alta) son idénticas.
+- **Qué ve el usuario:** "(01) Sin nota" con "El vídeo no permite un análisis fiable", el motivo con el dato
+  medido y cómo grabar mejor, y un botón principal "Subir otro vídeo". En "(02) Graba de nuevo así", 3 claves:
+  casi de perfil o en diagonal, cuerpo entero en el plano y a 2-3 m de la cámara. El vídeo con el esqueleto y
+  el detalle por métrica siguen visibles con la etiqueta **"Orientativo"** y una nota de que no cuentan para
+  ninguna nota.
+- **Decisión mía:** con fiabilidad baja tampoco se muestran la gráfica de la sesión ni los "Momentos para
+  revisar". Son datos de guardia igual de poco fiables y no estaban en la lista de lo que sigue visible.
+  Si los quieres como orientativos, es mover dos bloques en `app.py`.
+- **Decisión mía:** la ficha sin nota no muestra los golpes por mano ni por minuto (en el clip recortado salían
+  13 golpes donde había unos 7). El ritmo sigue en el detalle, marcado como orientativo.
+- **Sustituye** al aviso rojo de "toma esta nota con cautela" del punto 7, que ya no tiene sentido porque no hay nota.
+- **Terminal:** `scripts/analyze.py` imprime "Sin nota: el vídeo no permite un análisis fiable" y, en lugar
+  de los consejos, las 3 claves para grabar.

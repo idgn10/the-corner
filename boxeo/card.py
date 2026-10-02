@@ -1,7 +1,7 @@
 """Componentes visuales de la app (HTML). El estilo esta en styles.css (lo carga app.py)."""
 from html import escape
 
-from boxeo.tips import ranked_keys
+from boxeo.tips import RECORDING_KEYS, ranked_keys
 
 # Paleta de The Corner (la misma que styles.css y .streamlit/config.toml)
 BEIGE, BLACK, COPPER, GRAY = "#D3D1BA", "#161616", "#E2A27E", "#9A9A92"
@@ -51,11 +51,15 @@ def strip_html(text, repeat=8):
     return f'<div class="tc"><div class="tc-strip"><div class="tc-track">{item * repeat * 2}</div></div></div>'
 
 
-def section_html(num, kicker, title):
-    """Titulo de seccion editorial: '(01) · Tu nota' encima de un titulo grande condensado."""
+def section_html(num, kicker, title, badge=None):
+    """Titulo de seccion editorial: '(01) · Tu nota' encima de un titulo grande condensado.
+
+    `badge` (p. ej. "Orientativo") anade una etiqueta bien visible junto al titulo.
+    """
     label = f"({num:02d}) · {kicker}" if num else f"· {kicker}"
+    tag = f'<span class="tc-badge">{escape(badge)}</span>' if badge else ""
     return (f'<div class="tc"><div class="tc-sec"><div class="tc-kicker">{escape(label)}</div>'
-            f'<div class="tc-title">{escape(title)}</div></div></div>')
+            f'<div class="tc-title">{escape(title)}{tag}</div></div></div>')
 
 
 def hero_html(result):
@@ -81,19 +85,56 @@ def hero_html(result):
 QUALITY_COLORS = {"alta": GOOD, "media": MID, "baja": BAD}
 
 
-def _quality_html(q):
+def _quality_html(q, message=True):
     """Linea de fiabilidad dentro de la ficha (los analisis antiguos no la tienen)."""
     if not q:
         return ""
+    msg = f'<div class="tc-quality-msg">{escape(q["message"])}</div>' if message else ""
     return ('<div class="tc-quality"><div class="tc-quality-head"><span>Fiabilidad del análisis</span>'
             f'<b><i style="background:{QUALITY_COLORS[q["level"]]}"></i>{q["level"].capitalize()}</b></div>'
-            f'<div class="tc-quality-msg">{escape(q["message"])}</div></div>')
+            + msg + "</div>")
 
 
-def quality_alert_html(q):
-    """Aviso destacado para fiabilidad baja: la nota se muestra igual, pero hay que tomarla con cautela."""
-    return ('<div class="tc"><div class="tc-alert"><div class="tc-alert-title">Fiabilidad baja: toma esta nota con cautela</div>'
-            f'<div class="tc-alert-msg">{escape(q["message"])}</div></div></div>')
+def _quality_reason(q):
+    """El motivo concreto, con el dato medido."""
+    if q["reason"] == "visible":
+        return f"Solo se te ven bien la cara y los brazos el {_n(q['visible_pct'])}% del tiempo."
+    if q["reason"] == "wrist_out":
+        return f"La mano sale del encuadre el {_n(q['wrist_out_pct'])}% del tiempo."
+    if q["reason"] == "front":
+        return f"Estás {q['orientation']} a la cámara."
+    return ""
+
+
+def no_score_html(result):
+    """Ficha cuando la fiabilidad es baja: sin nota, con el motivo y como grabar mejor."""
+    q, m = result["quality"], result["metrics"]
+    stance = "Diestro" if result.get("stance") == "orthodox" else "Zurdo"
+    return ('<div class="tc"><div class="tc-hero">'
+            '<div class="tc-label">Tu nota de la sesión</div>'
+            f'<div class="tc-hero-sub">{escape(result["video"])} · {stance} · '
+            f'{_n(m.get("active_s", m["duration_s"]))} s analizados</div>'
+            '<div class="tc-noscore">Sin nota</div>'
+            '<div class="tc-noscore-sub">El vídeo no permite un análisis fiable.</div>'
+            '<div class="tc-reason"><div class="tc-label">Motivo</div>'
+            f'<div class="tc-reason-text">{escape(_quality_reason(q))}</div>'
+            f'<div class="tc-quality-msg">{escape(q["message"])}</div></div>'
+            + _quality_html(q, message=False) + "</div></div>")
+
+
+def recording_keys_html():
+    """Las 3 claves para volver a grabar, con el mismo formato que los consejos."""
+    cards = "".join(
+        f'<div class="tc-tip"><div class="tc-tip-num">{i + 1:02d}</div><div>'
+        f'<div class="tc-key-title">{escape(title)}</div><div class="tc-tip-text">{escape(text)}</div></div></div>'
+        for i, (title, text) in enumerate(RECORDING_KEYS)
+    )
+    return '<div class="tc"><div class="tc-tips">' + cards + "</div></div>"
+
+
+def orientative_note_html():
+    return ('<div class="tc"><div class="tc-orient">Por cómo está grabado el vídeo, estos datos pueden no ser '
+            "correctos. Úsalos solo como referencia: no cuentan para ninguna nota.</div></div>")
 
 
 def tips_html(result):
@@ -158,9 +199,13 @@ def explain(key, cfg):
     return texts.get(key, "") + " Entre esos dos valores, la nota sube en proporción."
 
 
-def metrics_html(result, cfg):
-    """Detalle de cada metrica: nota, barra, dato concreto y '¿Como se calcula?' desplegable."""
+def metrics_html(result, cfg, orientative=False):
+    """Detalle de cada metrica: nota, barra, dato concreto y '¿Como se calcula?' desplegable.
+
+    Con `orientative` (fiabilidad baja) las notas van en gris: son solo referencia.
+    """
     m = result["metrics"]
+    tone = (lambda sc: NONE) if orientative else color
     total_w = sum(s["weight"] for s in result["subscores"].values()) or 1
     rows = []
     for key, s in sorted(result["subscores"].items(), key=lambda kv: -kv[1]["weight"]):
@@ -170,8 +215,8 @@ def metrics_html(result, cfg):
         rows.append(
             f'<div class="tc-metric"><div class="tc-mhead"><span class="tc-mname">{escape(s["label"])}'
             f'<span class="tc-mweight">· pesa {round(100 * s["weight"] / total_w)}% de la nota</span></span>'
-            f'<span class="tc-mscore" style="color:{color(sc)}">{sc if sc is not None else "–"}</span></div>'
-            f'<div class="tc-bar"><i style="width:{sc or 0}%;background:{color(sc)}"></i></div>'
+            f'<span class="tc-mscore" style="color:{tone(sc)}">{sc if sc is not None else "–"}</span></div>'
+            f'<div class="tc-bar"><i style="width:{sc or 0}%;background:{tone(sc)}"></i></div>'
             f'<div class="tc-detail">{escape(_detail(key, m))}</div>'
             f'<details><summary>¿Cómo se calcula?</summary><div class="tc-how">{escape(explain(key, cfg))}</div></details>'
             "</div>"
