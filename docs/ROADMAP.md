@@ -32,14 +32,14 @@ Cómo grabar: móvil fijo en diagonal a ~45 grados, cuerpo entero, buena luz, 60
 - [x] `boxeo/tips.py`
 - [x] `boxeo/render.py`
 - [x] `scripts/analyze.py` (genera `annotated.mp4`, `metrics.json`, `landmarks.csv`)
-- [ ] Probar con los 4 vídeos de `data/` y tabla de métricas y puntuación
-- [ ] Commit y push
+- [x] Probar con los vídeos reales de `data/` y tabla de métricas y puntuación
+- [x] Commit y push
 
 ### Prompt 2. App local
 - [x] `app.py` con Streamlit: subir vídeo, barra de progreso, vídeo anotado, ficha y 3 consejos
 - [x] Instrucciones para arrancarla en local
 - [x] Commit y push
-- [ ] Probarla con un vídeo real
+- [ ] Probarla con un vídeo real en el navegador
 
 **Hito:** subes un vídeo a la app en local y devuelve esqueleto, puntuación y consejos.
 
