@@ -7,7 +7,7 @@ El repo ya está preparado. Tú solo tienes que hacer los pasos de la web (unos 
 | Archivo | Para qué |
 |---|---|
 | `requirements.txt` | Librerías de Python con versiones fijadas (las probadas en local y resueltas para Linux con Python 3.11) |
-| `packages.txt` | Librerías del sistema que necesita el servidor Linux: `libgl1` y `libglib2.0-0` (OpenCV) y `libportaudio2` (MediaPipe) |
+| `packages.txt` | Librerías del sistema que necesita el servidor Linux, sacadas de las dependencias reales de los paquetes: `libgl1`, `libglib2.0-0`, `libsm6`, `libxext6` (OpenCV), `libegl1`, `libgles2` (MediaPipe) y `libportaudio2` (`sounddevice`, que carga MediaPipe) |
 | `.streamlit/config.toml` | Tema visual y límite de subida de 300 MB |
 | `app.py` | Descarga el modelo de pose (9 MB) al arrancar, porque `models/` no está en git |
 | `demo/metrics.json` | Datos del ejemplo para el botón "Ver un ejemplo" (sin vídeo, ver abajo) |
@@ -53,7 +53,7 @@ Otras opciones y sus pegas: ver `docs/DECISIONES.md`, punto 3.
 
 | Síntoma en los logs o en la app | Causa probable | Qué hacer |
 |---|---|---|
-| `ImportError: libGL.so.1` o `PortAudio library not found` | No se instalaron las librerías del sistema | Comprueba que `packages.txt` está en la raíz del repo y pulsa **Reboot app** |
+| `ImportError: libGL.so.1`, `libEGL.so.1`, `libGLESv2.so.2` o `PortAudio library not found` | No se instalaron las librerías del sistema | Comprueba que `packages.txt` está en la raíz del repo y pulsa **Reboot app** |
 | Error instalando `mediapipe` | Versión de Python distinta de 3.11 | **Settings → General → Python version → 3.11** (si no deja cambiarlo, borra la app y créala otra vez eligiendo 3.11) |
 | La app se reinicia sola al subir un vídeo ("Oh no.") | Se queda sin memoria | Prueba con un vídeo más corto o en 1080p en vez de 4K |
 | "Falta el modelo de IA en el servidor" | Falló la descarga del modelo al arrancar | **Reboot app**; si se repite, mira los logs |
