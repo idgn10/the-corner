@@ -23,6 +23,8 @@ python scripts/download_model.py   # descarga el modelo de pose en models/
 python scripts/analyze.py data/mi_video.mp4
 ```
 
+Acepta .mp4 y .MOV del iPhone (HEVC/HDR, vertical u horizontal). Opción `--stance southpaw` para zurdos.
+
 Genera en `outputs/mi_video/`:
 - `annotated.mp4`: vídeo con esqueleto, contador de golpes e indicador de guardia (H.264).
 - `metrics.json`: métricas, puntuaciones y consejos.
@@ -34,6 +36,7 @@ Los umbrales y pesos de la puntuación se ajustan en `config.yaml`.
 
 - Cámara fija, cuerpo entero en plano, de frente o en diagonal a unos 45 grados.
 - Una sola persona, buena luz, 20-60 segundos.
+- Mejor con la cámara trasera: si el vídeo sale en espejo, se confunden la mano izquierda y la derecha.
 
 ## Limitaciones
 
