@@ -191,3 +191,53 @@ ser bastante menos). Opciones a valorar, no aplicadas:
    la mitad de fotogramas que analizar. Pero equivale a (d): los umbrales están calibrados con vídeos a 60 fps,
    así que habría que validarlo con clips grabados a 30 fps.
 2. Limitar la duración recomendada a 20-30 s.
+
+## 10. Vuelta a la guardia: la mano tiene que volver con el brazo recogido (decidido por Ignacio)
+
+- **Problema:** en sombra salían vueltas a la guardia de 0,0-0,05 s (de 0 a 3 fotogramas), media 0,16 s y
+  nota 100, con la guardia en el 47%. Físicamente imposible.
+- **Causa:** la vuelta se medía desde el pico del golpe hasta que esa mano cumplía la regla de guardia (muñeca
+  a menos de 0,8 anchuras de hombro de la nariz y por encima del codo). Grabando de perfil, **el puño del jab
+  estirado queda en la imagen justo delante de la cara**, a la altura de la nariz, así que la regla lo daba
+  por "arriba" con el brazo todavía extendido. Ejemplo: el jab del segundo 11,6 de sombra contaba como
+  "arriba" ya en el pico (codo a 152°), y el brazo siguió estirado (170-178°) 10 fotogramas más. En sombra,
+  22 de los 40 golpes se daban por recuperados con el codo todavía por encima de 100°.
+- **Primera propuesta, descartada:** medir hasta que la mano esté "arriba" según la regla del codo, como mucho
+  hasta el siguiente golpe. No cambiaba nada en los 5 clips: la mano contaba como "arriba" casi en el acto,
+  mucho antes del siguiente golpe.
+- **Regla nueva:** la mano ha vuelto cuando está arriba **y con el brazo recogido: codo a menos de 90°**
+  (`recovery.max_elbow_angle`). 90° queda en medio: en guardia el codo suele estar a 30-60° y en el pico de los
+  golpes detectados siempre pasa de 125°. Tiene que volver **antes del pico del siguiente golpe** (de cualquier
+  mano); si no, el golpe queda como no recuperado (`recovered: false` en `metrics.json`) y cuenta **1,5 s**,
+  igual que ya pasaba si no volvía en 1,5 s. La escala (0,8 s / 0,4 s) y los pesos no cambian.
+
+| Clip | Golpes | Vuelta antes (nota) | Vuelta ahora (nota) | Golpes con vuelta < 0,1 s | Nota total |
+|---|---|---|---|---|---|
+| Jabs | 10 | 0,19 s (100) | 0,23 s (100) | 0 → 0 | 92 → 92 |
+| Directos | 10 | 0,46 s (85) | 0,46 s (85) | 0 → 0 | 90 → 90 |
+| 1-2 bueno | 12 | 0,29 s (100) | 0,29 s (100) | 2 → 1 | 94 → 94 |
+| 1-2 vago | 28 | 0,35 s (100) | 0,37 s (100) | 4 → 1 | 71 → 71 |
+| Sombra | 40 | 0,16 s (100) | 0,21 s (100) | **17 → 3** | 56 → 56 |
+
+- **Sombra:** los golpes con vuelta en menos de 0,1 s bajan **de 17 a 3**, y la vuelta más rápida pasa de
+  0,0 a 0,05 s. En los 3 que quedan el codo baja de 145-175° a menos de 90° en 3-5 fotogramas: muy rápidos,
+  pero ya con el brazo recogido. En los 5 clips solo hay un golpe no recuperado, y ya lo era antes: un jab
+  del 1-2 vago (segundo 11,6) tras el que la mano no vuelve a la guardia en 1,5 s.
+- **Efecto secundario:** la guardia baja un poco (sombra 46,9% → 45,7%; 1-2 vago 71,6% → 71,1%, nota de
+  guardia 63 → 62), porque los fotogramas en que la mano está volviendo ya no cuentan como tiempo entre golpes
+  con la mano arriba. Ninguna nota total cambia.
+- **Sombra sigue con 100 en esta métrica:** 0,21 s está por debajo del umbral "bueno" (0,4 s) y es un tiempo
+  creíble para recoger un jab rápido. Ya no contradice el 46% de guardia: recoge rápido después de golpear,
+  pero entre golpes lleva las manos bajas. Si se quiere que la métrica distinga más, habría que endurecer la
+  escala (pendiente de decidir, no tocada).
+
+## 11. App publicada frente a análisis en local
+
+- **En un mismo equipo el análisis es determinista:** sombra analizado tres veces en local (dos con
+  `scripts/analyze.py` y el análisis guardado en `outputs/`) da los mismos puntos del esqueleto bit a bit, los
+  mismos 40 golpes en los mismos fotogramas y las mismas notas.
+- **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos: el
+  servidor decodifica el vídeo de forma ligeramente distinta y algún golpe al límite de los umbrales cae al
+  otro lado. Ejemplo: **sombra da 27/13 golpes (izq./der.) en local y 27/12 online.** Es el mismo tipo de
+  efecto que se vio al probar la reducción con ffmpeg (punto 9 (a)).
+- Anotado en las limitaciones del README.

@@ -86,7 +86,7 @@ Explicación completa, con un ejemplo paso a paso: [docs/SCORING.md](docs/SCORIN
 | **Guardia** | % del tiempo entre golpes con las dos manos arriba | ≤ 40% | ≥ 90% | 25 |
 | **Mano contraria arriba** | % de golpes en los que la otra mano protege la cara | ≤ 40% | ≥ 90% | 20 |
 | **Extensión** | % de golpes con el codo a ≥ 160° en el pico | ≤ 30% | ≥ 80% | 20 |
-| **Vuelta a la guardia** | Segundos medios desde el pico hasta volver a la guardia | ≥ 0,8 s | ≤ 0,4 s | 15 |
+| **Vuelta a la guardia** | Segundos medios desde el pico hasta volver a la guardia (mano arriba y codo < 90°) | ≥ 0,8 s | ≤ 0,4 s | 15 |
 | **Volumen y ritmo** | Golpes por minuto en el tramo activo | ≤ 20 | ≥ 70 | 10 |
 | ~~Base~~ | Separación de pies y rodillas flexionadas | — | — | 0 (ver limitaciones) |
 
@@ -110,7 +110,7 @@ si el sistema no baja la nota en la métrica correcta, algo falla.
 | Sombra libre | Sombra con movimiento y curvos | 27 / 13 | 56 |
 
 Todos los conteos coinciden con los golpes reales. El 1-2 "vago" pierde 23 puntos frente al bueno, y los
-pierde donde debe: guardia (100 → 63), mano contraria (87 → 70) y extensión (100 → 69).
+pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión (100 → 69).
 
 **Decisiones tomadas con los datos:**
 
@@ -142,6 +142,10 @@ pierde donde debe: guardia (100 → 63), mano contraria (87 → 70) y extensión
 6. **Los curvos se quedan contados como rectos** (no subir el codo mínimo a 140°). Subirlo filtraba
    algunos ganchos, pero también golpes rectos cortos del clip "vago", que deben contar y penalizar.
    Distinguir ganchos queda en el *Won't*.
+7. **Vuelta a la guardia con el brazo recogido.** De perfil, el puño del jab estirado queda en la imagen
+   delante de la cara y la regla de guardia lo daba por "arriba": salían vueltas de 0,0 s, imposibles.
+   Ahora la mano tiene que estar arriba y con el codo a menos de 90°, y antes del siguiente golpe.
+   En sombra, los golpes con vuelta en menos de 0,1 s bajan de 17 a 3; las notas totales no cambian.
 
 ## 8. Limitaciones conocidas
 
@@ -156,6 +160,9 @@ pierde donde debe: guardia (100 → 63), mano contraria (87 → 70) y extensión
   encuadre o si estás de frente, pero sus umbrales salen de 5 clips de una persona y el caso "de frente" aún
   no se ha probado con un vídeo real. Con fiabilidad baja no se da nota (solo datos orientativos), así que
   unos umbrales demasiado estrictos dejarían sin nota vídeos que sí eran válidos.
+- **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos:
+  el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: sombra da 27/13 golpes
+  (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.
 - Vídeos de 60 s como máximo, procesados a 720p como máximo.
 
 ## 9. Siguientes pasos

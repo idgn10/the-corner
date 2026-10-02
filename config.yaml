@@ -42,9 +42,12 @@ punches:
 extension:
   good_angle: 160
 
-# 4. Vuelta a la guardia tras el golpe
+# 4. Vuelta a la guardia tras el golpe: desde el pico hasta que esa mano esta arriba (regla de guardia)
+#    con el brazo recogido, antes del pico del siguiente golpe
 recovery:
-  max_seconds: 1.5       # si no vuelve antes, se cuenta como este tiempo
+  max_elbow_angle: 90    # brazo recogido = codo por debajo de esto, grados (de perfil, el puno estirado
+                         # queda delante de la cara y la regla de guardia sola lo daba por arriba)
+  max_seconds: 1.5       # si no vuelve antes del siguiente golpe ni en este tiempo, cuenta como este tiempo
 
 # 5. Base: separacion de pies y rodillas flexionadas
 base:

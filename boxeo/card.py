@@ -198,7 +198,9 @@ def explain(key, cfg):
                       "o más. Medimos el % de golpes bien extendidos. "
                       f"{scale.replace(' o peor', '% o menos').replace(' o mejor', '% o más')}"),
         "recovery": ("Desde que el golpe llega a su punto más lejano, contamos el tiempo hasta que esa mano "
-                     "vuelve a la guardia. Medimos la media de todos los golpes. "
+                     "vuelve a la guardia: arriba y con el brazo recogido (codo doblado a menos de "
+                     f"{_n(cfg['recovery']['max_elbow_angle'])}°). Si no vuelve antes del siguiente golpe, "
+                     f"cuenta como {_n(cfg['recovery']['max_seconds'], 1)} s. Medimos la media de todos los golpes. "
                      f"Puntuación: {_n(s['bad'], 1)} s o más = 0 puntos; {_n(s['good'], 1)} s o menos = 100."),
         "base": ("Medimos la separación de los pies respecto al ancho de los hombros y si las rodillas están "
                  "algo flexionadas. " + scale.replace(" o peor", "% o menos").replace(" o mejor", "% o más")),

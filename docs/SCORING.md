@@ -98,8 +98,11 @@ Los pesos suman 90 (la base está a 0), así que el "peso real" es cada peso div
 ### Vuelta a la guardia (peso 15)
 
 - **Qué mide:** lo rápido que recoges la mano después de golpear.
-- **Cómo:** desde el pico del golpe se cuenta el tiempo hasta que esa mano vuelve a estar arriba. Si no
-  vuelve en **1,5 s** (`recovery.max_seconds`), se apunta 1,5 s. El valor es la media de todos los golpes.
+- **Cómo:** desde el pico del golpe se cuenta el tiempo hasta que esa mano vuelve a estar arriba **y con el
+  brazo recogido** (codo a menos de **90°**, `recovery.max_elbow_angle`). Hace falta lo segundo porque, grabando
+  de perfil, el puño estirado queda delante de la cara y por sí solo ya contaría como "arriba". Si la mano no
+  vuelve antes del siguiente golpe, o en **1,5 s** (`recovery.max_seconds`), se apunta 1,5 s. El valor es la
+  media de todos los golpes.
 - **Escala:** aquí **menos es mejor**: 0,8 s o más = 0 · 0,4 s o menos = 100.
 
 ### Volumen y ritmo (peso 10)
@@ -152,7 +155,7 @@ Se miran tres cosas en el tramo activo; basta con que una esté en "baja":
 ### Los 3 consejos
 
 Se eligen las 3 métricas que **más puntos restan a la nota**: `(100 − nota de la métrica) × peso`.
-Así, un 55 en volumen (peso 10, resta 450) pesa menos que un 63 en guardia (peso 25, resta 925).
+Así, un 55 en volumen (peso 10, resta 450) pesa menos que un 62 en guardia (peso 25, resta 950).
 Si una métrica tiene **85 o más**, su consejo es de refuerzo ("Muy buena guardia…"); por debajo, de
 corrección y siempre con tu dato. Si hay empate, va primero la de más peso.
 
@@ -163,41 +166,41 @@ corrección y siempre con tu dato. Si hay empate, va primero la de más peso.
 Combinaciones jab-directo hechas "vagas" a propósito. Vídeo de 37,1 s, guardia diestra.
 
 **Golpes:** se detectan **28**: 15 con la izquierda (jabs) y 13 con la derecha (directos).
-El tramo activo dura **35,4 s** (se quitan 1,7 s del principio y del final, en los que no boxeas).
+El tramo activo dura **35,5 s** (se quitan 1,6 s del principio y del final, en los que no boxeas).
 
 | Métrica | Dato del vídeo | Cuenta | Nota |
 |---|---|---|---|
-| Guardia | dos manos arriba el **71,6%** del tiempo entre golpes | (71,6 − 40) ÷ (90 − 40) × 100 = 63,2 | **63** |
+| Guardia | dos manos arriba el **71,1%** del tiempo entre golpes | (71,1 − 40) ÷ (90 − 40) × 100 = 62,2 | **62** |
 | Mano contraria | 21 de 28 golpes con la otra mano arriba = **75%** (bajas la otra mano en 2 jabs y en 5 directos) | (75 − 40) ÷ (90 − 40) × 100 = 70 | **70** |
 | Extensión | 18 de 28 golpes llegan a 160° = **64,3%** (10 se quedan cortos; codo medio 163°) | (64,3 − 30) ÷ (80 − 30) × 100 = 68,6 | **69** |
-| Vuelta a la guardia | **0,35 s** de media | (0,35 − 0,8) ÷ (0,4 − 0,8) × 100 = 112,5 → máximo 100 | **100** |
-| Volumen | 28 golpes ÷ 35,4 s × 60 = **47,4** golpes/min | (47,4 − 20) ÷ (70 − 20) × 100 = 54,8 | **55** |
+| Vuelta a la guardia | **0,37 s** de media | (0,37 − 0,8) ÷ (0,4 − 0,8) × 100 = 107,5 → máximo 100 | **100** |
+| Volumen | 28 golpes ÷ 35,5 s × 60 = **47,3** golpes/min | (47,3 − 20) ÷ (70 − 20) × 100 = 54,6 | **55** |
 | Base | — | peso 0, no cuenta | — |
 
 **Nota total:**
 
 | Métrica | Nota × peso |
 |---|---|
-| Guardia | 63 × 25 = 1.575 |
+| Guardia | 62 × 25 = 1.550 |
 | Mano contraria | 70 × 20 = 1.400 |
 | Extensión | 69 × 20 = 1.380 |
 | Vuelta a la guardia | 100 × 15 = 1.500 |
 | Volumen | 55 × 10 = 550 |
-| **Suma** | **6.405** |
+| **Suma** | **6.380** |
 
-6.405 ÷ 90 = 71,2 → **71 / 100** ("Buen nivel").
+6.380 ÷ 90 = 70,9 → **71 / 100** ("Buen nivel").
 
 **Consejos** (lo que resta cada métrica = (100 − nota) × peso):
 
 | Métrica | Resta | ¿Consejo? |
 |---|---|---|
-| Guardia | 37 × 25 = **925** | 1.º |
+| Guardia | 38 × 25 = **950** | 1.º |
 | Extensión | 31 × 20 = **620** | 2.º |
 | Mano contraria | 30 × 20 = **600** | 3.º |
 | Volumen | 45 × 10 = 450 | no |
 | Vuelta a la guardia | 0 × 15 = 0 | no |
 
-1. *"Entre golpes tienes las dos manos arriba solo el 72% del tiempo. Después de cada golpe, vuelve a
+1. *"Entre golpes tienes las dos manos arriba solo el 71% del tiempo. Después de cada golpe, vuelve a
    llevar los puños a la barbilla antes de moverte."*
 2. *"El 36% de tus golpes se quedan cortos (codo por debajo de 160°): termina cada golpe con el brazo
    estirado, como si quisieras atravesar el objetivo."*

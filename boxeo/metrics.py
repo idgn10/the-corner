@@ -78,18 +78,29 @@ def add_features(df, fps, cfg):
 
 
 def annotate_punches(df, punches, fps, cfg):
-    """Anade a cada golpe: si la otra mano sigue arriba, si esta extendido y el tiempo de vuelta."""
-    max_rec = cfg["recovery"]["max_seconds"]
+    """Anade a cada golpe: si la otra mano sigue arriba, si esta extendido y el tiempo de vuelta.
+
+    Vuelta a la guardia: desde el pico hasta que esa mano esta arriba (regla guard.rule) con el brazo
+    recogido (codo < recovery.max_elbow_angle; de perfil, el puno estirado queda delante de la cara y
+    la regla de guardia sola lo da por arriba). Tiene que volver antes del pico del siguiente golpe y
+    como mucho en recovery.max_seconds; si no, el golpe queda como no recuperado y cuenta max_seconds.
+    """
+    rc = cfg["recovery"]
+    max_rec = rc["max_seconds"]
+    peaks = [p["frame_peak"] for p in punches]
     for p in punches:
         s = SIDES[p["hand"]]
         o = "r" if s == "l" else "l"
         seg = df[f"up_{o}"].iloc[p["frame_start"]:p["frame_peak"] + 1]
         p["other_hand_up"] = bool(seg.mean() >= 0.5) if seg.notna().any() else None
         p["extended"] = bool(p["angle_peak"] >= cfg["extension"]["good_angle"])
-        after = df[f"up_{s}"].iloc[p["frame_peak"]:p["frame_peak"] + int(max_rec * fps) + 1].to_numpy()
-        hits = np.flatnonzero(after == 1)
+        next_peaks = [f for f in peaks if f > p["frame_peak"]]
+        end = min([len(df), p["frame_peak"] + int(max_rec * fps) + 1] + next_peaks)
+        back = (df[f"up_{s}"] == 1) & (df[f"elbow_{s}"] < rc["max_elbow_angle"])
+        hits = np.flatnonzero(back.iloc[p["frame_peak"]:end].to_numpy())
+        p["recovered"] = bool(len(hits))
         p["recovery_s"] = round(float(hits[0] / fps), 3) if len(hits) else max_rec
-        p["frame_end"] = p["frame_peak"] + round(p["recovery_s"] * fps)
+        p["frame_end"] = p["frame_peak"] + (int(hits[0]) if len(hits) else end - p["frame_peak"])
     return punches
 
 

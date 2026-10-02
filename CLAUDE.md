@@ -81,8 +81,9 @@ Metricas:
    Metrica: % de golpes con la mano contraria arriba.
 3. Extension: angulo del codo (hombro-codo-muneca) en el pico del golpe. Bueno >= 160 grados.
    Metrica: % de golpes bien extendidos y angulo medio.
-4. Vuelta a la guardia: tiempo desde el pico del golpe hasta que esa mano vuelve a la guardia.
-   Bueno < 0.4 s. Metrica: tiempo medio.
+4. Vuelta a la guardia: tiempo desde el pico del golpe hasta que esa mano vuelve a la guardia
+   (mano arriba y brazo recogido: codo < 90 grados, recovery.max_elbow_angle). Si no vuelve antes
+   del pico del siguiente golpe (ni en 1.5 s), cuenta como 1.5 s. Bueno < 0.4 s. Metrica: tiempo medio.
 5. Base: distancia entre tobillos / anchura de hombros entre 1.0 y 1.6, y rodillas flexionadas
    (angulo cadera-rodilla-tobillo < 170 grados). Metrica: % de frames con base correcta.
 6. Volumen y ritmo: golpes por minuto y velocidad pico media de la muneca.
@@ -106,6 +107,10 @@ Videos grabados casi de perfil. Cambios aprobados por Ignacio:
 - Guardia, base y ritmo se miden solo en el tramo activo (1 s antes del primer golpe a 1 s despues del ultimo).
 - Base con peso 0: de perfil un pie tapa al otro y no se puede medir.
 - Curvos: se siguen contando como rectos (fuera del alcance del MVP).
+- Vuelta a la guardia con brazo recogido (codo < 90 grados): de perfil el puno estirado queda delante
+  de la cara y la regla de guardia sola daba vueltas de 0.0 s. Golpe no recuperado antes del siguiente = 1.5 s.
+- La app publicada puede variar +-1-2 golpes frente a local en golpes dudosos (decodificacion distinta en
+  el servidor). En un mismo equipo el analisis es determinista.
 
 ## Scoring
 - Cada metrica se convierte en un subscore 0-100 con un mapeo lineal entre un umbral "malo"

@@ -11,8 +11,8 @@
     "guard": {
       "label": "Guardia",
       "metric": "guard_pct",
-      "value": 46.9,
-      "score": 14,
+      "value": 45.7,
+      "score": 11,
       "weight": 25
     },
     "other_hand": {
@@ -32,7 +32,7 @@
     "recovery": {
       "label": "Vuelta a la guardia",
       "metric": "recovery_mean_s",
-      "value": 0.16,
+      "value": 0.21,
       "score": 100,
       "weight": 15
     },
@@ -46,25 +46,25 @@
     "volume": {
       "label": "Volumen y ritmo",
       "metric": "punches_per_min",
-      "value": 63.2,
+      "value": 63.1,
       "score": 86,
       "weight": 10
     }
   },
   "metrics": {
     "duration_s": 38.8,
-    "active_s": 38.0,
+    "active_s": 38.1,
     "pose_detected_pct": 100.0,
     "n_punches": 40,
     "n_left": 27,
     "n_right": 13,
-    "guard_pct": 46.9,
+    "guard_pct": 45.7,
     "other_hand_up_pct": 61.5,
     "extended_pct": 67.5,
     "extension_mean_angle": 165.7,
-    "recovery_mean_s": 0.16,
+    "recovery_mean_s": 0.21,
     "base_pct": 7.6,
-    "punches_per_min": 63.2,
+    "punches_per_min": 63.1,
     "peak_speed_mean": 23.3,
     "by_type": {
       "jab": {
@@ -78,7 +78,7 @@
     }
   },
   "tips": [
-    "Entre golpes tienes las dos manos arriba solo el 47% del tiempo. Después de cada golpe, vuelve a llevar los puños a la barbilla antes de moverte.",
+    "Entre golpes tienes las dos manos arriba solo el 46% del tiempo. Después de cada golpe, vuelve a llevar los puños a la barbilla antes de moverte.",
     "Bajas la mano izquierda en el 54% de tus directos: mantenla pegada a la barbilla mientras golpeas con la otra.",
     "El 32% de tus golpes se quedan cortos (codo por debajo de 160°): termina cada golpe con el brazo estirado, como si quisieras atravesar el objetivo."
   ],
@@ -95,8 +95,9 @@
       "reach_gain": 1.82,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.15,
-      "frame_end": 83
+      "recovered": true,
+      "recovery_s": 0.167,
+      "frame_end": 84
     },
     {
       "hand": "right",
@@ -110,6 +111,7 @@
       "reach_gain": 0.86,
       "other_hand_up": false,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.417,
       "frame_end": 124
     },
@@ -125,8 +127,9 @@
       "reach_gain": 0.97,
       "other_hand_up": false,
       "extended": true,
-      "recovery_s": 0.083,
-      "frame_end": 154
+      "recovered": true,
+      "recovery_s": 0.133,
+      "frame_end": 157
     },
     {
       "hand": "left",
@@ -140,8 +143,9 @@
       "reach_gain": 2.35,
       "other_hand_up": false,
       "extended": true,
-      "recovery_s": 0.133,
-      "frame_end": 331
+      "recovered": true,
+      "recovery_s": 0.15,
+      "frame_end": 332
     },
     {
       "hand": "right",
@@ -155,6 +159,7 @@
       "reach_gain": 0.88,
       "other_hand_up": false,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.4,
       "frame_end": 370
     },
@@ -170,8 +175,9 @@
       "reach_gain": 1.09,
       "other_hand_up": false,
       "extended": true,
-      "recovery_s": 0.067,
-      "frame_end": 392
+      "recovered": true,
+      "recovery_s": 0.133,
+      "frame_end": 396
     },
     {
       "hand": "right",
@@ -185,6 +191,7 @@
       "reach_gain": 0.44,
       "other_hand_up": true,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.05,
       "frame_end": 411
     },
@@ -200,8 +207,9 @@
       "reach_gain": 1.81,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.117,
-      "frame_end": 521
+      "recovered": true,
+      "recovery_s": 0.133,
+      "frame_end": 522
     },
     {
       "hand": "left",
@@ -215,8 +223,9 @@
       "reach_gain": 0.89,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.017,
-      "frame_end": 638
+      "recovered": true,
+      "recovery_s": 0.1,
+      "frame_end": 643
     },
     {
       "hand": "left",
@@ -230,8 +239,9 @@
       "reach_gain": 1.39,
       "other_hand_up": true,
       "extended": false,
-      "recovery_s": 0.0,
-      "frame_end": 693
+      "recovered": true,
+      "recovery_s": 0.35,
+      "frame_end": 714
     },
     {
       "hand": "right",
@@ -245,6 +255,7 @@
       "reach_gain": 1.3,
       "other_hand_up": true,
       "extended": true,
+      "recovered": true,
       "recovery_s": 0.517,
       "frame_end": 766
     },
@@ -260,8 +271,9 @@
       "reach_gain": 2.24,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.1,
-      "frame_end": 853
+      "recovered": true,
+      "recovery_s": 0.117,
+      "frame_end": 854
     },
     {
       "hand": "right",
@@ -275,6 +287,7 @@
       "reach_gain": 0.9,
       "other_hand_up": false,
       "extended": true,
+      "recovered": true,
       "recovery_s": 0.25,
       "frame_end": 883
     },
@@ -290,6 +303,7 @@
       "reach_gain": 2.66,
       "other_hand_up": false,
       "extended": true,
+      "recovered": true,
       "recovery_s": 0.234,
       "frame_end": 909
     },
@@ -305,8 +319,9 @@
       "reach_gain": 1.24,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.05,
-      "frame_end": 958
+      "recovered": true,
+      "recovery_s": 0.2,
+      "frame_end": 967
     },
     {
       "hand": "right",
@@ -320,6 +335,7 @@
       "reach_gain": 0.48,
       "other_hand_up": true,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.584,
       "frame_end": 1012
     },
@@ -335,8 +351,9 @@
       "reach_gain": 1.57,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.067,
-      "frame_end": 1100
+      "recovered": true,
+      "recovery_s": 0.1,
+      "frame_end": 1102
     },
     {
       "hand": "right",
@@ -350,6 +367,7 @@
       "reach_gain": 0.55,
       "other_hand_up": true,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.15,
       "frame_end": 1120
     },
@@ -365,8 +383,9 @@
       "reach_gain": 0.85,
       "other_hand_up": true,
       "extended": false,
-      "recovery_s": 0.05,
-      "frame_end": 1140
+      "recovered": true,
+      "recovery_s": 0.184,
+      "frame_end": 1148
     },
     {
       "hand": "left",
@@ -380,8 +399,9 @@
       "reach_gain": 1.29,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.083,
-      "frame_end": 1215
+      "recovered": true,
+      "recovery_s": 0.117,
+      "frame_end": 1217
     },
     {
       "hand": "left",
@@ -395,8 +415,9 @@
       "reach_gain": 1.33,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.067,
-      "frame_end": 1289
+      "recovered": true,
+      "recovery_s": 0.1,
+      "frame_end": 1291
     },
     {
       "hand": "right",
@@ -410,6 +431,7 @@
       "reach_gain": 0.65,
       "other_hand_up": true,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.15,
       "frame_end": 1314
     },
@@ -425,8 +447,9 @@
       "reach_gain": 1.33,
       "other_hand_up": true,
       "extended": false,
-      "recovery_s": 0.05,
-      "frame_end": 1328
+      "recovered": true,
+      "recovery_s": 0.2,
+      "frame_end": 1337
     },
     {
       "hand": "left",
@@ -440,8 +463,9 @@
       "reach_gain": 1.6,
       "other_hand_up": false,
       "extended": true,
-      "recovery_s": 0.083,
-      "frame_end": 1391
+      "recovered": true,
+      "recovery_s": 0.15,
+      "frame_end": 1395
     },
     {
       "hand": "right",
@@ -455,6 +479,7 @@
       "reach_gain": 0.46,
       "other_hand_up": true,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.133,
       "frame_end": 1410
     },
@@ -470,8 +495,9 @@
       "reach_gain": 1.11,
       "other_hand_up": null,
       "extended": true,
-      "recovery_s": 0.067,
-      "frame_end": 1499
+      "recovered": true,
+      "recovery_s": 0.083,
+      "frame_end": 1500
     },
     {
       "hand": "left",
@@ -485,8 +511,9 @@
       "reach_gain": 0.98,
       "other_hand_up": false,
       "extended": true,
-      "recovery_s": 0.067,
-      "frame_end": 1658
+      "recovered": true,
+      "recovery_s": 0.133,
+      "frame_end": 1662
     },
     {
       "hand": "left",
@@ -500,8 +527,9 @@
       "reach_gain": 1.88,
       "other_hand_up": false,
       "extended": true,
-      "recovery_s": 0.083,
-      "frame_end": 1757
+      "recovered": true,
+      "recovery_s": 0.1,
+      "frame_end": 1758
     },
     {
       "hand": "right",
@@ -515,6 +543,7 @@
       "reach_gain": 1.17,
       "other_hand_up": false,
       "extended": true,
+      "recovered": true,
       "recovery_s": 0.267,
       "frame_end": 1788
     },
@@ -530,8 +559,9 @@
       "reach_gain": 1.52,
       "other_hand_up": true,
       "extended": false,
-      "recovery_s": 0.05,
-      "frame_end": 1806
+      "recovered": true,
+      "recovery_s": 0.267,
+      "frame_end": 1819
     },
     {
       "hand": "left",
@@ -545,8 +575,9 @@
       "reach_gain": 2.12,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.15,
-      "frame_end": 1899
+      "recovered": true,
+      "recovery_s": 0.167,
+      "frame_end": 1900
     },
     {
       "hand": "right",
@@ -560,6 +591,7 @@
       "reach_gain": 1.42,
       "other_hand_up": false,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.434,
       "frame_end": 1960
     },
@@ -575,8 +607,9 @@
       "reach_gain": 1.35,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.133,
-      "frame_end": 1993
+      "recovered": true,
+      "recovery_s": 0.167,
+      "frame_end": 1995
     },
     {
       "hand": "left",
@@ -590,8 +623,9 @@
       "reach_gain": 1.16,
       "other_hand_up": false,
       "extended": true,
-      "recovery_s": 0.067,
-      "frame_end": 2011
+      "recovered": true,
+      "recovery_s": 0.083,
+      "frame_end": 2012
     },
     {
       "hand": "right",
@@ -605,6 +639,7 @@
       "reach_gain": 1.75,
       "other_hand_up": false,
       "extended": true,
+      "recovered": true,
       "recovery_s": 0.384,
       "frame_end": 2053
     },
@@ -620,8 +655,9 @@
       "reach_gain": 1.51,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.15,
-      "frame_end": 2084
+      "recovered": true,
+      "recovery_s": 0.167,
+      "frame_end": 2085
     },
     {
       "hand": "left",
@@ -635,8 +671,9 @@
       "reach_gain": 1.82,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.117,
-      "frame_end": 2119
+      "recovered": true,
+      "recovery_s": 0.133,
+      "frame_end": 2120
     },
     {
       "hand": "right",
@@ -650,6 +687,7 @@
       "reach_gain": 1.26,
       "other_hand_up": false,
       "extended": false,
+      "recovered": true,
       "recovery_s": 0.217,
       "frame_end": 2143
     },
@@ -665,8 +703,9 @@
       "reach_gain": 1.98,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.133,
-      "frame_end": 2163
+      "recovered": true,
+      "recovery_s": 0.2,
+      "frame_end": 2167
     },
     {
       "hand": "left",
@@ -680,8 +719,9 @@
       "reach_gain": 1.01,
       "other_hand_up": true,
       "extended": true,
-      "recovery_s": 0.117,
-      "frame_end": 2217
+      "recovered": true,
+      "recovery_s": 0.184,
+      "frame_end": 2221
     }
   ],
   "timeline": {
@@ -707,17 +747,17 @@
         "hand": "izquierda"
       },
       {
-        "start": 10.66,
+        "start": 10.84,
         "end": 11.48,
         "hand": "las dos"
       },
       {
-        "start": 20.29,
+        "start": 20.4,
         "end": 20.94,
-        "hand": "izquierda"
+        "hand": "las dos"
       },
       {
-        "start": 22.24,
+        "start": 22.32,
         "end": 22.72,
         "hand": "derecha"
       },
@@ -737,8 +777,8 @@
         "hand": "las dos"
       },
       {
-        "start": 37.0,
-        "end": 37.99,
+        "start": 37.12,
+        "end": 38.05,
         "hand": "las dos"
       }
     ],
@@ -766,7 +806,7 @@
     "message": "Buena grabación: se te ve bien, de lado y con las manos dentro del encuadre.",
     "visible_pct": 81.1,
     "wrist_out_pct": 0.7,
-    "orientation_ratio": 0.44,
+    "orientation_ratio": 0.45,
     "orientation": "de lado o en diagonal"
   }
 }
