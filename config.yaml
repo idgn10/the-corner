@@ -15,12 +15,12 @@ pose:
   max_gap_seconds: 0.2   # huecos sin deteccion mas cortos que esto se rellenan interpolando
 
 # 1. Guardia: una mano esta "arriba" si la muneca esta cerca de la nariz y, ademas, segun "rule":
+#    elbow:     por encima del codo (no depende de la inclinacion del cuerpo) <- elegida tras calibrar
 #    shoulders: no mas abajo de la linea de hombros que max_below_shoulder
-#    elbow:     por encima del codo (no depende de la inclinacion del cuerpo)
 guard:
-  rule: shoulders
-  max_dist_nose: 1.0       # distancia maxima muneca-nariz
-  max_below_shoulder: 0.15 # (regla shoulders) margen por debajo de la linea de hombros
+  rule: elbow
+  max_dist_nose: 0.8       # distancia maxima muneca-nariz
+  max_below_shoulder: 0.15 # (solo regla shoulders) margen por debajo de la linea de hombros
 
 # Las metricas se calculan solo en el tramo activo: desde este tiempo antes del primer golpe
 # hasta este tiempo despues del ultimo (no cuenta entrar en plano ni prepararse)
