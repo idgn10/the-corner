@@ -42,10 +42,12 @@ boxeo-mvp/
   README.md
   requirements.txt
   config.yaml            # umbrales y pesos del scoring (editable por Ignacio)
-  app.py                 # interfaz Streamlit
+  app.py                 # interfaz Streamlit (nombre provisional del producto: "Esquina")
+  packages.txt           # librerias del sistema para Streamlit Cloud
   scripts/
     download_model.py
     analyze.py           # CLI: python scripts/analyze.py data/video.mp4
+    make_demo.py         # prepara demo/ desde un analisis de outputs/
   boxeo/
     pose.py              # landmarks por frame -> DataFrame, suavizado
     metrics.py           # angulos, distancias, guardia, base
@@ -53,6 +55,9 @@ boxeo-mvp/
     scoring.py           # subscores 0-100 y total ponderado
     tips.py              # consejos por reglas
     render.py            # dibujo del esqueleto y overlays, escritura H.264
+    card.py, charts.py   # ficha visual y grafica de la sesion de la app
+    pipeline.py          # todo el analisis junto (lo usan app.py y el CLI)
+  demo/                  # analisis de ejemplo: metrics.json en git, annotated.mp4 no
   data/                  # videos de entrada (gitignored)
   outputs/               # resultados (gitignored)
   models/                # modelo descargado (gitignored)

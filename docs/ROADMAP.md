@@ -61,12 +61,22 @@ Cómo grabar: móvil fijo, cuerpo entero, buena luz, 60 fps si se puede, solo t�
 - [x] Consejos más naturales con el dato concreto de la sesión
 - [x] Probar con todos los clips, commit y push
 
+## Extra (sesión autónoma, ver docs/DECISIONES.md)
+
+- [x] Consejos ordenados por lo que más resta a la nota: (100 − nota) × peso
+- [x] Rediseño de la app: flujo en 3 pasos, errores amables, ficha jerarquizada, "¿Cómo se calcula?",
+      gráfica de la sesión, momentos para revisar con salto al vídeo, versión móvil
+- [x] Modo demo: botón "Ver un ejemplo" y enlace `?demo=1` (el vídeo del ejemplo no está en git)
+- [ ] Revisar las decisiones de `docs/DECISIONES.md` (nombre "Esquina", clip de demo, usuario objetivo…)
+
 ## Lunes: online + caso de producto
 
-- [ ] Preparar despliegue en Streamlit Community Cloud (requirements, packages.txt, descarga del modelo al arrancar)
-- [ ] Desplegar la app desde la web de Streamlit (lo haces tú)
-- [ ] README como caso de producto: problema, usuario, MoSCoW, cómo funciona, métricas, limitaciones, siguientes pasos, capturas
-- [ ] Commit y push
+- [x] Preparar despliegue en Streamlit Community Cloud (requirements, packages.txt, descarga del modelo al arrancar)
+- [ ] Desplegar la app desde la web de Streamlit (lo haces tú, pasos en `docs/DESPLIEGUE.md`)
+- [ ] (Opcional) Vídeo del ejemplo online: YouTube no listado + secret `DEMO_VIDEO_URL`
+- [x] README como caso de producto: problema, usuario, MoSCoW, cómo funciona, métricas, calibración, limitaciones, siguientes pasos
+- [ ] Capturas para el README (3 huecos marcados: resultados, subida y móvil)
+- [x] Commit y push
 - [ ] (Opcional) Consejos redactados con la API de Claude
 
 ## Martes: demo y envío
