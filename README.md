@@ -50,8 +50,14 @@ Los umbrales y pesos de la puntuación se ajustan en `config.yaml`.
 - Una sola persona, buena luz, 20-60 segundos.
 - Mejor con la cámara trasera: si el vídeo sale en espejo, se confunden la mano izquierda y la derecha.
 
-## Limitaciones
+## Limitaciones conocidas
 
-- La medición es 2D: los ángulos dependen del ángulo de cámara.
-- No distingue ganchos ni uppercuts (solo golpes rectos con mano izquierda/derecha).
+- **Base no medible de perfil.** Grabando de lado, un pie tapa al otro en la imagen y la separación
+  de pies sale falsa. Por eso la base tiene peso 0 en `config.yaml`: se calcula, pero no puntúa ni da consejos.
+- **Los curvos cuentan como golpes rectos.** El sistema solo distingue mano izquierda/derecha
+  (jab/directo). Un gancho con el brazo bastante abierto (codo por encima de 125°) se cuenta como recto
+  y suele bajar la nota de extensión. Distinguir ganchos y uppercuts queda fuera del MVP.
+- **Una sola persona en plano.** Si aparece otra persona, el esqueleto puede saltar de una a otra.
+- **Medición 2D.** Los ángulos dependen de dónde esté la cámara; los umbrales están calibrados con
+  vídeos grabados casi de perfil, con cámara fija y cuerpo entero.
 - Vídeos de 60 s como máximo; se procesan a 720p como máximo.
