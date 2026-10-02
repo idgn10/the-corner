@@ -8,6 +8,7 @@ from pathlib import Path
 import cv2
 import streamlit as st
 
+from boxeo.card import card_html
 from boxeo.pipeline import ROOT, analyze, load_config
 from scripts.download_model import ensure_model
 
@@ -25,23 +26,6 @@ def _duration(path):
     n = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     cap.release()
     return n / fps if n > 0 else 0
-
-
-def show_card(r):
-    m = r["metrics"]
-    st.metric("Puntuación total", f"{r['total']} / 100" if r["total"] is not None else "–")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Golpes izquierda", m["n_left"])
-    c2.metric("Golpes derecha", m["n_right"])
-    c3.metric("Golpes por minuto", m["punches_per_min"] if m["punches_per_min"] is not None else "–")
-    st.markdown("**Subscores**")
-    for s in r["subscores"].values():
-        if s["weight"] == 0:
-            continue  # metrica desactivada en config.yaml (p. ej. base grabando de perfil)
-        if s["score"] is None:
-            st.progress(0, text=f"{s['label']}: sin datos")
-        else:
-            st.progress(s["score"] / 100, text=f"{s['label']}: {s['score']}")
 
 
 cfg = load_config()
@@ -106,7 +90,7 @@ col_video, col_card = st.columns([3, 2])
 with col_video:
     st.video(str(out_dir / "annotated.mp4"))
 with col_card:
-    show_card(r)
+    st.html(card_html(r))
 
 st.subheader("Consejos")
 for i, tip in enumerate(r["tips"], 1):
