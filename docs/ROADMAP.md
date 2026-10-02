@@ -23,15 +23,15 @@ Cómo grabar: móvil fijo en diagonal a ~45 grados, cuerpo entero, buena luz, 60
 ## Viernes: versión funcional de punta a punta
 
 ### Prompt 1. Pipeline
-- [ ] `scripts/download_model.py` y descarga del modelo
-- [ ] `config.yaml` con los valores iniciales
-- [ ] `boxeo/pose.py`
-- [ ] `boxeo/metrics.py`
-- [ ] `boxeo/punches.py`
-- [ ] `boxeo/scoring.py`
-- [ ] `boxeo/tips.py`
-- [ ] `boxeo/render.py`
-- [ ] `scripts/analyze.py` (genera `annotated.mp4`, `metrics.json`, `landmarks.csv`)
+- [x] `scripts/download_model.py` y descarga del modelo
+- [x] `config.yaml` con los valores iniciales
+- [x] `boxeo/pose.py`
+- [x] `boxeo/metrics.py`
+- [x] `boxeo/punches.py`
+- [x] `boxeo/scoring.py`
+- [x] `boxeo/tips.py`
+- [x] `boxeo/render.py`
+- [x] `scripts/analyze.py` (genera `annotated.mp4`, `metrics.json`, `landmarks.csv`)
 - [ ] Probar con los 4 vídeos de `data/` y tabla de métricas y puntuación
 - [ ] Commit y push
 
