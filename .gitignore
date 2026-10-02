@@ -1,0 +1,25 @@
+# Entorno
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Datos, resultados y modelos (nunca a git)
+data/
+outputs/
+models/
+*.task
+
+# Videos
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.m4v
+*.MP4
+*.MOV
+
+# Secretos
+.streamlit/secrets.toml
+.env
