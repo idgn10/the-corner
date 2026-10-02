@@ -1,4 +1,8 @@
-"""Consejos por reglas: los 3 subscores mas bajos, cada uno con el dato concreto de la sesion."""
+"""Consejos por reglas: las 3 metricas que mas restan a la nota total, cada una con el dato concreto.
+
+Lo que resta cada metrica = (100 - subscore) x peso. Asi un 55 en volumen (peso 10) pesa menos
+que un 63 en guardia (peso 25).
+"""
 
 
 def _n(x, nd=0):
@@ -69,12 +73,13 @@ def _tip(key, m, cfg, sub_score):
 
 
 def make_tips(metrics, scores, cfg, n=3):
-    """Lista de hasta `n` consejos en espanol, empezando por la peor metrica."""
+    """Lista de hasta `n` consejos en espanol, empezando por la metrica que mas resta a la nota."""
     if not metrics.get("n_punches"):
         return ["No he detectado golpes. Comprueba que se te ve el cuerpo entero, con la cámara fija "
                 "de lado o en diagonal, y que lanzas golpes rectos estirando el brazo."]
     ranked = sorted(
-        (v["score"], k) for k, v in scores["subscores"].items() if v["score"] is not None and v["weight"] > 0
-    )
-    tips = [_tip(k, metrics, cfg, sc) for sc, k in ranked[:n]]
+        ((100 - v["score"]) * v["weight"], v["weight"], k, v["score"])  # empate: primero la de mas peso
+        for k, v in scores["subscores"].items() if v["score"] is not None and v["weight"] > 0
+    )[::-1]
+    tips = [_tip(k, metrics, cfg, sc) for _, _, k, sc in ranked[:n]]
     return [t for t in tips if t]

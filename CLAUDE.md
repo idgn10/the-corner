@@ -110,8 +110,8 @@ Videos grabados casi de perfil. Cambios aprobados por Ignacio:
 - Total = media ponderada. Todo en config.yaml para que Ignacio pueda ajustarlo sin tocar codigo.
 
 ## Consejos
-- Por reglas, sin IA: elegir los 3 subscores mas bajos y generar un consejo en espanol con el
-  dato concreto (ej.: "Bajas la mano derecha en el 40% de tus jabs: mantenla pegada a la barbilla").
+- Por reglas, sin IA: elegir las 3 metricas que mas restan a la nota total, (100 - subscore) x peso,
+  y generar un consejo en espanol con el dato concreto (ej.: "Bajas la mano derecha en el 40% de tus jabs: mantenla pegada a la barbilla").
 - La API de Claude es opcional y solo si Ignacio lo pide (coste y narrativa: no usar IA donde
   una regla basta).
 
