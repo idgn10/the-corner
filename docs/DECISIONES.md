@@ -140,3 +140,54 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
 - **Sustituye** al aviso rojo de "toma esta nota con cautela" del punto 7, que ya no tiene sentido porque no hay nota.
 - **Terminal:** `scripts/analyze.py` imprime "Sin nota: el vídeo no permite un análisis fiable" y, en lugar
   de los consejos, las 3 claves para grabar.
+
+## 9. Velocidad del análisis (objetivo: clip de 20 s en menos de 1 minuto en el servidor gratuito)
+
+**Medido** con el clip de directos (18,6 s, 1.116 fotogramas a 60 fps, vertical). Modelo de pose:
+**pose_landmarker_full** (el intermedio de lite / full / heavy).
+
+| Fase (local, M1 Pro en modo bajo consumo) | Antes | Después |
+|---|---|---|
+| Lectura, decodificación y reducción a 404×720 | 8,1 s | 7,9 s (sin cambios: ver (a)) |
+| Detección de pose | 21,3 s | 21,2 s |
+| Métricas, nota y fiabilidad | 0,0 s | 0,0 s |
+| Vídeo de salida | 9,4 s | **2,8 s** |
+| **Total** | **39,3 s** | **32,4 s** |
+
+| En el servidor (thecorner-boxeo.streamlit.app) | Antes | Después |
+|---|---|---|
+| Análisis, desde pulsar "Analizar" hasta ver la ficha | 48,2 s | **41,7 s** |
+| de ello, vídeo de salida | ~12 s | ~4 s |
+| Subida del archivo (27,7 MB, desde la conexión de Ignacio) | 89 s | 83 s |
+
+Un clip de 20 s a 60 fps queda en unos 44 s de análisis en el servidor: **cumple el objetivo para el análisis**.
+
+**Optimizaciones, una a una, con la regla "mismos golpes en los 5 clips y la nota como mucho ±2":**
+
+- **(a) Reducir los fotogramas antes de la pose: descartada.** Los vídeos verticales ya se analizaban a 720 px
+  en el lado largo, y bajar a 640 no acelera nada (18,6 ms por fotograma en ambos casos: MediaPipe reduce la
+  imagen por su cuenta). Lo caro no era el tamaño sino *cómo* se reducía: OpenCV tarda 5 s en reducir los
+  fotogramas de 1080p; ffmpeg lo hace durante la decodificación en 1,7 s en total. Pero con esa reducción la
+  imagen cambia mínimamente (1,7 sobre 255 de diferencia media) y en **sombra pasan de 27/13 a 29/12 golpes**
+  (y el 1-2 vago sube 2 puntos): dos golpes dudosos, probablemente curvos, cruzan el umbral. Rompe la regla.
+  Limitar el lado largo en vídeos horizontales tampoco compensa: haría más pequeña a la persona sin ganar velocidad.
+- **(b) Vídeo de salida a 720p como máximo: aplicada.** Ya salía al tamaño de análisis (404×720); su coste era
+  volver a decodificar y reducir el original de 1080p. Ahora el vídeo de salida (y solo él) se lee con
+  ffmpeg y se codifica con el ajuste `veryfast` de x264. Como no interviene en el análisis, los 5 `metrics.json`
+  salen **idénticos bit a bit**.
+- **(c) Modelo de pose lite: no aplicada, no hace falta.** Sería un 39% más rápido en la pose (11,4 frente a
+  18,6 ms por fotograma), pero cambia los puntos detectados; viendo lo sensible que fue (a), es probable que
+  cambiara algún conteo. Queda como palanca si algún día hace falta, previa validación con los 5 clips.
+- **(d) Analizar uno de cada dos fotogramas: no aplicada, no hace falta.** Mismo riesgo que (c).
+
+**Barra de progreso:** 4 pasos visibles (Leyendo el vídeo · Detectando tu postura · Calculando tu nota ·
+Preparando el vídeo) con "Paso X de 4" y el porcentaje. El reparto de la barra sigue lo que tarda cada fase
+(la detección de postura es el ~86% del tiempo).
+
+**Lo que queda fuera de estas optimizaciones: la subida.** Con 27,7 MB y la conexión de Ignacio (~2,7 Mbit/s
+de subida) son ~85 s, más que todo el análisis. Depende de la red de cada usuario (con buena wifi o 5G suele
+ser bastante menos). Opciones a valorar, no aplicadas:
+1. Pedir en la app grabar en **1080p a 30 fps** (Ajustes → Cámara → Grabar vídeo): archivo de aprox. la mitad y
+   la mitad de fotogramas que analizar. Pero equivale a (d): los umbrales están calibrados con vídeos a 60 fps,
+   así que habría que validarlo con clips grabados a 30 fps.
+2. Limitar la duración recomendada a 20-30 s.
