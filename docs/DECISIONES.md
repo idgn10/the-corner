@@ -51,3 +51,17 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
      código, pero el enlace es público.
   3. **Subirlo al repo** (13 MB) añadiendo `!demo/annotated.mp4` al `.gitignore`. Es lo más simple pero
      rompe la regla de no subir vídeos y tu cara queda en un repo público.
+
+## 4. README como caso de producto
+
+- **Estructura:** problema, usuario, qué hace, MoSCoW con estado, cómo funciona, métricas y scoring,
+  validación y decisiones de calibración (con la tabla codo frente a hombros), limitaciones y siguientes pasos.
+  La instalación y el uso van al final: el README lo leerá antes alguien de producto que un desarrollador.
+
+  Si quieres nombrarla, es una línea al principio.
+- **Usuario objetivo que he escrito:** boxeador amateur o de fitness boxing que entrena solo. Revísalo:
+  es la hipótesis principal del producto.
+- **Capturas:** 3 huecos marcados con "📸 CAPTURA PENDIENTE" (resultados, subida y móvil). Las rutas
+  esperadas son `docs/img/resultados.png`, `docs/img/subida.png` y `docs/img/movil.png`. No las he puesto
+  yo porque salen tu cara y tu casa: decide tú qué enseñar. Para hacerlas, abre la app con `?demo=1`.
+- **Siguientes pasos:** los he ordenado poniendo primero validar con usuarios y la evolución entre sesiones.
