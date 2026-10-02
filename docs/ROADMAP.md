@@ -12,13 +12,14 @@ Plan de trabajo por días (de [PLAN_Y_PROMPTS.md](PLAN_Y_PROMPTS.md)). Marca cad
 - [x] Login en GitHub
 - [x] Crear repo público `boxeo-mvp` y subir el commit
 
-### Paso 1. Grabar vídeos de prueba (20-40 s, en `data/`)
-- [ ] `bueno.mp4`: sombra con tu mejor técnica
-- [ ] `guardia_baja.mp4`: bajando a propósito la mano que no golpea
-- [ ] `sin_extender.mp4`: golpes cortos, sin estirar el brazo
-- [ ] `libre.mp4`: sombra normal o saco, como entrenas siempre
+### Paso 1. Grabar vídeos de prueba (en `data/`, .MOV del iPhone, casi de perfil)
+- [x] Jabs: solo mano izquierda
+- [x] Directos: solo mano derecha
+- [x] Combinaciones 1-2 con buena técnica
+- [x] Combinaciones 1-2 "vagas" (peor técnica a propósito)
+- [x] Sombra libre con movimiento y curvos
 
-Cómo grabar: móvil fijo en diagonal a ~45 grados, cuerpo entero, buena luz, 60 fps si se puede, solo tú en el plano.
+Cómo grabar: móvil fijo, cuerpo entero, buena luz, 60 fps si se puede, solo tú en el plano.
 
 ## Viernes: versión funcional de punta a punta
 
@@ -45,20 +46,20 @@ Cómo grabar: móvil fijo en diagonal a ~45 grados, cuerpo entero, buena luz, 60
 
 ## Sábado: calibración
 
-- [ ] Contar a mano los golpes de `bueno.mp4` (izquierda y derecha)
-- [ ] Gráficas de ángulo del codo y velocidad de muñeca con los golpes detectados
-- [ ] Comparar golpes detectados con el conteo manual y ajustar la detección
-- [ ] Comprobar que `guardia_baja` puntúa peor en "mano contraria arriba" y "guardia"
-- [ ] Comprobar que `sin_extender` puntúa peor en "extensión"
-- [ ] Proponer y aplicar ajustes de umbrales en `config.yaml` (explicados antes)
-- [ ] Commit y push
+- [x] Contar a mano los golpes de cada clip y compararlos con los detectados (coinciden)
+- [x] Detección basada en la muñeca, codo mínimo 125° (golpe corto = golpe que baja la extensión)
+- [x] Comprobar que el 1-2 "vago" puntúa peor que el bueno (guardia, mano contraria, extensión)
+- [x] Comprobar golpes cortos con el boxeador sintético (extensión baja, golpes contados)
+- [x] Ajustes aprobados: filtro de golpes simultáneos, tramo activo, base con peso 0, regla de guardia del codo
+- [x] Commit y push
+- [ ] (Opcional) Gráficas de ángulo del codo y velocidad de muñeca: no hicieron falta, se calibró con hojas de frames
 
 ## Domingo: experiencia
 
-- [ ] Ficha visual tipo tarjeta deportiva: total grande, subscores con barras, golpes por mano y por minuto
-- [ ] Vídeo anotado: contador de golpes, indicador de guardia verde/rojo, destello al detectar golpe
-- [ ] Consejos más naturales con el dato concreto de la sesión
-- [ ] Probar con todos los clips, commit y push
+- [x] Ficha visual tipo tarjeta deportiva: total grande, subscores con barras, golpes por mano y por minuto
+- [x] Vídeo anotado: contador de golpes, indicador de guardia verde/rojo, destello al detectar golpe
+- [x] Consejos más naturales con el dato concreto de la sesión
+- [x] Probar con todos los clips, commit y push
 
 ## Lunes: online + caso de producto
 
