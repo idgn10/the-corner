@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-from boxeo.metrics import add_features, annotate_punches, compute_metrics
+from boxeo.metrics import add_features, annotate_punches, compute_metrics, guard_timeline
 from boxeo.pose import extract_landmarks, smooth
 from boxeo.punches import detect_punches
 from boxeo.render import render_video
@@ -60,6 +60,7 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
         "metrics": metrics,
         "tips": tips,
         "punches": punches,
+        "timeline": guard_timeline(df, punches, fps, cfg),
     }
     with open(out_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)

@@ -72,14 +72,20 @@ def _tip(key, m, cfg, sub_score):
     return None
 
 
+def ranked_keys(scores):
+    """Metricas puntuadas, de la que mas resta a la nota a la que menos. Empate: primero la de mas peso."""
+    ranked = sorted(
+        ((100 - v["score"]) * v["weight"], v["weight"], k)
+        for k, v in scores["subscores"].items() if v["score"] is not None and v["weight"] > 0
+    )[::-1]
+    return [k for _, _, k in ranked]
+
+
 def make_tips(metrics, scores, cfg, n=3):
     """Lista de hasta `n` consejos en espanol, empezando por la metrica que mas resta a la nota."""
     if not metrics.get("n_punches"):
         return ["No he detectado golpes. Comprueba que se te ve el cuerpo entero, con la cámara fija "
                 "de lado o en diagonal, y que lanzas golpes rectos estirando el brazo."]
-    ranked = sorted(
-        ((100 - v["score"]) * v["weight"], v["weight"], k, v["score"])  # empate: primero la de mas peso
-        for k, v in scores["subscores"].items() if v["score"] is not None and v["weight"] > 0
-    )[::-1]
-    tips = [_tip(k, metrics, cfg, sc) for _, _, k, sc in ranked[:n]]
+    subs = scores["subscores"]
+    tips = [_tip(k, metrics, cfg, subs[k]["score"]) for k in ranked_keys(scores)[:n]]
     return [t for t in tips if t]

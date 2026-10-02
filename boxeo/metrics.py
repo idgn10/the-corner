@@ -103,21 +103,65 @@ def _mean(values, nd=1):
     return round(float(np.mean(values)), nd) if values else None
 
 
+def _masks(n, punches, fps, cfg):
+    """(tramo activo, frames dentro de un golpe) como arrays booleanos."""
+    active = np.ones(n, bool)
+    if punches:
+        margin = int(cfg["active_margin_seconds"] * fps)
+        active[:] = False
+        active[max(0, punches[0]["frame_start"] - margin):punches[-1]["frame_end"] + margin + 1] = True
+    in_punch = np.zeros(n, bool)
+    for p in punches:
+        in_punch[p["frame_start"]:p["frame_end"] + 1] = True
+    return active, in_punch
+
+
+def guard_timeline(df, punches, fps, cfg, min_seconds=0.4, merge_seconds=0.25, worst=3):
+    """Tramos con la guardia baja (fuera de los golpes, en el tramo activo) y los peores momentos.
+
+    Devuelve {"guard_low": [{"start", "end", "hand"}], "worst_guard": [los `worst` tramos mas largos]}.
+    hand: "izquierda", "derecha" o "las dos" (la mano que estuvo abajo la mayor parte del tramo).
+    """
+    n = len(df)
+    active, in_punch = _masks(n, punches, fps, cfg)
+    up_l, up_r = df["up_l"].to_numpy(float), df["up_r"].to_numpy(float)
+    low = active & ~in_punch & ((up_l == 0) | (up_r == 0))
+
+    # Tramos seguidos, uniendo huecos cortos
+    segs, i = [], 0
+    while i < n:
+        if not low[i]:
+            i += 1
+            continue
+        j = i
+        while j + 1 < n and low[j + 1]:
+            j += 1
+        if segs and i - segs[-1][1] <= merge_seconds * fps:
+            segs[-1][1] = j
+        else:
+            segs.append([i, j])
+        i = j + 1
+
+    out = []
+    for a, b in segs:
+        if (b - a + 1) / fps < min_seconds:
+            continue
+        down_l = np.nanmean(up_l[a:b + 1] == 0)
+        down_r = np.nanmean(up_r[a:b + 1] == 0)
+        hand = "las dos" if min(down_l, down_r) > 0.6 else ("izquierda" if down_l >= down_r else "derecha")
+        out.append({"start": round(a / fps, 2), "end": round((b + 1) / fps, 2), "hand": hand})
+    worst_list = sorted(out, key=lambda g: g["end"] - g["start"], reverse=True)[:worst]
+    return {"guard_low": out, "worst_guard": sorted(worst_list, key=lambda g: g["start"])}
+
+
 def compute_metrics(df, punches, fps, cfg):
     """Resumen de la sesion. Los golpes deben venir anotados con annotate_punches.
 
     Guardia, base y ritmo se miden solo en el tramo activo (alrededor de los golpes).
     """
     n = len(df)
-    active = np.ones(n, bool)
-    if punches:
-        margin = int(cfg["active_margin_seconds"] * fps)
-        active[:] = False
-        active[max(0, punches[0]["frame_start"] - margin):punches[-1]["frame_end"] + margin + 1] = True
+    active, in_punch = _masks(n, punches, fps, cfg)
     duration = active.sum() / fps if fps else 0
-    in_punch = np.zeros(n, bool)
-    for p in punches:
-        in_punch[p["frame_start"]:p["frame_end"] + 1] = True
 
     both_up = df["up_l"] * df["up_r"]
     valid = both_up.notna().to_numpy() & ~in_punch & active

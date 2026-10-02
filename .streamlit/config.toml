@@ -1,3 +1,14 @@
 [server]
-# Un vídeo de 60 s del iPhone en 4K puede pasar de 400 MB
+# Un vídeo de 60 s del iPhone en 1080p ocupa unos 90 MB; en 4K puede pasar de 400 MB
 maxUploadSize = 1024
+
+[client]
+toolbarMode = "minimal"
+
+[theme]
+base = "dark"
+primaryColor = "#E8B33F"
+backgroundColor = "#0F1218"
+secondaryBackgroundColor = "#171C25"
+textColor = "#EEF1F6"
+font = "sans serif"
