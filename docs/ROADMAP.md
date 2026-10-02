@@ -36,9 +36,10 @@ Cómo grabar: móvil fijo en diagonal a ~45 grados, cuerpo entero, buena luz, 60
 - [ ] Commit y push
 
 ### Prompt 2. App local
-- [ ] `app.py` con Streamlit: subir vídeo, barra de progreso, vídeo anotado, ficha y 3 consejos
-- [ ] Instrucciones para arrancarla en local
-- [ ] Commit y push
+- [x] `app.py` con Streamlit: subir vídeo, barra de progreso, vídeo anotado, ficha y 3 consejos
+- [x] Instrucciones para arrancarla en local
+- [x] Commit y push
+- [ ] Probarla con un vídeo real
 
 **Hito:** subes un vídeo a la app en local y devuelve esqueleto, puntuación y consejos.
 

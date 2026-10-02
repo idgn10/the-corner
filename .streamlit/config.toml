@@ -1,0 +1,3 @@
+[server]
+# Un vídeo de 60 s del iPhone en 4K puede pasar de 400 MB
+maxUploadSize = 1024

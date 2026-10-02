@@ -19,6 +19,18 @@ python scripts/download_model.py   # descarga el modelo de pose en models/
 
 ## Uso
 
+### App (recomendado)
+
+```bash
+source .venv/bin/activate
+streamlit run app.py
+```
+
+Se abre en el navegador (http://localhost:8501). Subes el vídeo, eliges la guardia en la barra lateral
+y ves el vídeo anotado, la ficha con la puntuación y tres consejos. Los vídeos de más de 60 s se recortan.
+
+### Terminal
+
 ```bash
 python scripts/analyze.py data/mi_video.mp4
 ```
