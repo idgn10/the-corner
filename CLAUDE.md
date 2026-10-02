@@ -83,8 +83,11 @@ Metricas:
 6. Volumen y ritmo: golpes por minuto y velocidad pico media de la muneca.
 
 Deteccion de golpes (punches.py):
-- Un golpe es una subida rapida del angulo del codo (de < 110 a > 150 grados) acompanada de
-  un aumento de la distancia muneca-hombro y un pico de velocidad de la muneca.
+- Un golpe se detecta sobre todo por la muneca: maximo local de la distancia muneca-hombro,
+  alcanzado alejandola rapido (aumento de alcance + pico de velocidad). El codo solo filtra:
+  en el pico debe superar 125 grados (configurable). Asi un golpe corto cuenta como golpe y
+  baja la nota de extension (que sigue valorandose con 160 grados).
+- En el pico la muneca no puede estar muy por debajo de los hombros (bajar el brazo no es golpe).
 - Debounce de 0.25 s por mano para no contar dos veces el mismo golpe.
 - Etiquetar mano izquierda/derecha y, segun la guardia, jab (mano adelantada) o directo.
 

@@ -18,13 +18,13 @@ pose:
 guard:
   max_dist_nose: 1.0     # distancia maxima muneca-nariz
 
-# Deteccion de golpes
+# Deteccion de golpes: se basa sobre todo en la muneca (se aleja del hombro rapido).
+# El codo solo filtra; la extension buena (160) se valora aparte, en "extension".
 punches:
-  angle_bent: 110            # angulo del codo de partida (brazo doblado), grados
-  angle_extended: 150        # angulo del codo al que tiene que llegar (brazo estirado), grados
-  max_rise_seconds: 0.4      # tiempo maximo para pasar de doblado a estirado
   min_reach_increase: 0.3    # aumento minimo de la distancia muneca-hombro durante el golpe
   min_peak_speed: 3.0        # velocidad pico minima de la muneca (anchuras de hombro por segundo)
+  max_rise_seconds: 0.4      # tiempo maximo desde la mano recogida hasta el pico del golpe
+  angle_min: 125             # angulo minimo del codo en el pico para contar como golpe, grados
   max_wrist_below_shoulder: 0.5  # en el pico, la muneca no puede estar mas abajo que esto respecto a los hombros
                                  # (evita contar como golpe bajar el brazo)
   debounce_seconds: 0.25     # no contar dos golpes de la misma mano tan seguidos
