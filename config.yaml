@@ -1,0 +1,53 @@
+# Configuracion del analisis. Puedes cambiar estos valores sin tocar codigo.
+# Las distancias van en "anchuras de hombro" para no depender de lo cerca que este la camara.
+
+# Guardia del boxeador: orthodox (mano adelantada = izquierda) o southpaw (mano adelantada = derecha)
+stance: orthodox
+
+video:
+  max_height: 720        # se reduce el video a esta altura (px) para ir rapido
+  max_seconds: 60        # se analiza como maximo este tiempo
+
+pose:
+  model: models/pose_landmarker_full.task
+  min_visibility: 0.5    # se ignoran puntos con visibilidad menor
+  smooth_seconds: 0.1    # ventana de suavizado (mediana movil)
+  max_gap_seconds: 0.2   # huecos sin deteccion mas cortos que esto se rellenan interpolando
+
+# 1. Guardia: una mano esta "arriba" si la muneca esta cerca de la nariz y por encima de los hombros
+guard:
+  max_dist_nose: 1.0     # distancia maxima muneca-nariz
+
+# Deteccion de golpes
+punches:
+  angle_bent: 110            # angulo del codo de partida (brazo doblado), grados
+  angle_extended: 150        # angulo del codo al que tiene que llegar (brazo estirado), grados
+  max_rise_seconds: 0.4      # tiempo maximo para pasar de doblado a estirado
+  min_reach_increase: 0.3    # aumento minimo de la distancia muneca-hombro durante el golpe
+  min_peak_speed: 3.0        # velocidad pico minima de la muneca (anchuras de hombro por segundo)
+  debounce_seconds: 0.25     # no contar dos golpes de la misma mano tan seguidos
+
+# 3. Extension: angulo del codo en el pico del golpe
+extension:
+  good_angle: 160
+
+# 4. Vuelta a la guardia tras el golpe
+recovery:
+  max_seconds: 1.5       # si no vuelve antes, se cuenta como este tiempo
+
+# 5. Base: separacion de pies y rodillas flexionadas
+base:
+  min_ratio: 1.0         # distancia entre tobillos / anchura de hombros, minimo
+  max_ratio: 1.6         # idem, maximo
+  max_knee_angle: 170    # angulo medio cadera-rodilla-tobillo por debajo de esto = rodillas flexionadas
+
+# Puntuacion: cada metrica se convierte en 0-100 con una recta entre "bad" (0 puntos) y "good" (100 puntos).
+# Si "good" es menor que "bad", menos es mejor (p. ej. tiempo de vuelta a la guardia).
+# El total es la media ponderada por "weight".
+scoring:
+  guard:        {metric: guard_pct,          bad: 40,  good: 90,  weight: 25}   # % frames con las dos manos arriba
+  other_hand:   {metric: other_hand_up_pct,  bad: 40,  good: 90,  weight: 20}   # % golpes con la otra mano arriba
+  extension:    {metric: extended_pct,       bad: 30,  good: 80,  weight: 20}   # % golpes con el codo >= good_angle
+  recovery:     {metric: recovery_mean_s,    bad: 0.8, good: 0.4, weight: 15}   # segundos medios de vuelta a la guardia
+  base:         {metric: base_pct,           bad: 30,  good: 80,  weight: 10}   # % frames con base correcta
+  volume:       {metric: punches_per_min,    bad: 20,  good: 70,  weight: 10}   # golpes por minuto
