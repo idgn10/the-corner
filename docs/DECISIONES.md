@@ -65,3 +65,18 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   esperadas son `docs/img/resultados.png`, `docs/img/subida.png` y `docs/img/movil.png`. No las he puesto
   yo porque salen tu cara y tu casa: decide tú qué enseñar. Para hacerlas, abre la app con `?demo=1`.
 - **Siguientes pasos:** los he ordenado poniendo primero validar con usuarios y la evolución entre sesiones.
+
+## 5. Despliegue (preparado, no publicado)
+
+- **Versiones fijadas en `requirements.txt`** (las que funcionan en local). Así un cambio de versión de
+  una librería no rompe la app online sin avisar. He comprobado que todas tienen versión para Linux y
+  Python 3.11, pero **no he podido probar la instalación en un Linux real**.
+- **`packages.txt`:** `libgl1` y `libglib2.0-0` (OpenCV) y `libportaudio2` (MediaPipe carga `sounddevice`
+  al importarse; en Linux sin PortAudio podría fallar).
+- **Límite de subida: de 1 GB a 300 MB**, porque el servidor gratuito tiene poca memoria. Afecta también
+  a local. Un minuto de iPhone en 1080p son ~90 MB; en 4K no cabría (mejor grabar en 1080p).
+- **El modelo se descarga al arrancar la app.** Si falla, se reintenta al analizar.
+- **Riesgo de velocidad:** el servidor gratuito es más lento que tu Mac y el análisis puede tardar varios
+  minutos. Si hiciera falta, una opción sin tocar umbrales es analizar uno de cada dos fotogramas en los
+  vídeos de 60 fps (habría que revisar que la detección sigue igual). No lo he hecho.
+- Los pasos de la web están en `docs/DESPLIEGUE.md`.

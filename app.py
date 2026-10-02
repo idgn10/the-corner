@@ -34,6 +34,12 @@ def _model():
     return ensure_model()
 
 
+try:
+    _model()  # en Streamlit Cloud descarga el modelo al arrancar (models/ no esta en git)
+except Exception:
+    pass      # si falla, se reintenta al analizar y el usuario ve un mensaje amable
+
+
 def _duration(path):
     cap = cv2.VideoCapture(str(path))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30

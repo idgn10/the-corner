@@ -1,6 +1,7 @@
 [server]
-# Un vídeo de 60 s del iPhone en 1080p ocupa unos 90 MB; en 4K puede pasar de 400 MB
-maxUploadSize = 1024
+# Un vídeo de 60 s del iPhone en 1080p ocupa unos 90 MB (4K puede pasar de 400 MB: mejor grabar en 1080p).
+# 300 MB deja margen sin agotar la memoria de Streamlit Community Cloud.
+maxUploadSize = 300
 
 [client]
 toolbarMode = "minimal"
