@@ -134,6 +134,8 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
    | 1-2 vago | 59 | **71** |
    | Sombra (nota de guardia) | 0 | **14** |
 
+   Cifras del momento de la decisión; con las reglas actuales la guardia de sombra sale en 11.
+
    Elegí la del codo aunque separa algo menos el bueno del vago (23 puntos frente a 31). Revisando
    fotogramas de sombra entre golpes, la de hombros marcaba "guardia baja" cuando estaba agachado con
    las manos en la cara, y daba 0 en guardia a una sombra en la que las manos están arriba casi la
