@@ -79,6 +79,7 @@ Stack: Python 3.11 · MediaPipe · OpenCV · NumPy/pandas · Streamlit + Altair 
 
 Cada métrica se convierte en una nota de 0 a 100 con una recta entre un umbral "malo" (0) y uno
 "bueno" (100). La nota total es la media ponderada. Todo se ajusta en [`config.yaml`](config.yaml) sin tocar código.
+Explicación completa, con un ejemplo paso a paso: [docs/SCORING.md](docs/SCORING.md).
 
 | Métrica | Qué mide | 0 puntos | 100 puntos | Peso |
 |---|---|---|---|---|
