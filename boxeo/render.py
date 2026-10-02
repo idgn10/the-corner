@@ -3,7 +3,7 @@ import cv2
 import imageio_ffmpeg
 import numpy as np
 
-from boxeo.pose import iter_frames
+from boxeo.pose import iter_frames_fast
 
 # Colores en BGR
 LEFT_COLOR = (255, 170, 0)     # azul: lado izquierdo
@@ -63,8 +63,11 @@ def draw_frame(img, row, counts, guard_up, flash_side=None):
     return img
 
 
-def render_video(video_path, out_path, df, punches, info, flash_seconds=0.15):
-    """Escribe el video anotado en H.264 (reproducible en navegador)."""
+def render_video(video_path, out_path, df, punches, info, flash_seconds=0.15, progress=None):
+    """Escribe el video anotado en H.264 (reproducible en navegador), al tamano de analisis (720p como maximo).
+
+    Lee el original con el lector rapido (ffmpeg): el video de salida no interviene en el analisis.
+    """
     fps, size = info["fps"], info["size"]
     flash = int(flash_seconds * fps)
     peaks = {}
@@ -78,11 +81,14 @@ def render_video(video_path, out_path, df, punches, info, flash_seconds=0.15):
 
     writer = imageio_ffmpeg.write_frames(
         str(out_path), size, fps=fps, codec="libx264", pix_fmt_out="yuv420p",
-        macro_block_size=2, quality=7, output_params=["-movflags", "+faststart"],
+        macro_block_size=2, quality=7, output_params=["-preset", "veryfast", "-movflags", "+faststart"],
     )
+    n = len(df)
     writer.send(None)
     try:
-        for i, frame in enumerate(iter_frames(video_path, size, len(df))):
+        for i, frame in enumerate(iter_frames_fast(video_path, size, n)):
+            if progress and i % 30 == 0:
+                progress(i / max(n, 1))
             row = df.iloc[i]
             for hand in by_peak.get(i, []):
                 counts[hand] += 1

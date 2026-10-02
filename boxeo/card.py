@@ -51,6 +51,16 @@ def strip_html(text, repeat=8):
     return f'<div class="tc"><div class="tc-strip"><div class="tc-track">{item * repeat * 2}</div></div></div>'
 
 
+def progress_steps_html(steps, current):
+    """Los pasos del analisis: hechos (con ✓), el actual resaltado y los pendientes en gris."""
+    items = "".join(
+        f'<div class="tc-pstep {"done" if i < current else "on" if i == current else ""}">'
+        f'<b>{"✓" if i < current else f"{i + 1:02d}"}</b><span>{escape(s)}</span></div>'
+        for i, s in enumerate(steps)
+    )
+    return f'<div class="tc"><div class="tc-psteps">{items}</div></div>'
+
+
 def section_html(num, kicker, title, badge=None):
     """Titulo de seccion editorial: '(01) · Tu nota' encima de un titulo grande condensado.
 

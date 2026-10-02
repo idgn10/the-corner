@@ -10,9 +10,9 @@ import cv2
 import streamlit as st
 
 from boxeo.card import (header_html, hero_html, legend_html, metrics_html, no_score_html, orientative_note_html,
-                        recording_keys_html, section_html, strip_html, tips_html)
+                        progress_steps_html, recording_keys_html, section_html, strip_html, tips_html)
 from boxeo.charts import session_chart
-from boxeo.pipeline import ROOT, analyze, load_config
+from boxeo.pipeline import ROOT, STEPS, analyze, load_config
 from scripts.download_model import ensure_model
 
 APP_NAME = "The Corner"
@@ -125,6 +125,23 @@ def upload_view():
 # ---------- Paso 2: procesar ----------
 
 def process(upload, stance):
+    steps_box = st.empty()
+    bar = st.progress(0.0)
+    shown = {"step": None}
+
+    def show(p, step):
+        """Pasos (solo se redibujan al cambiar de paso) y barra con el avance total."""
+        if step in STEPS:
+            k = STEPS.index(step)
+            if shown["step"] != step:
+                steps_box.html(progress_steps_html(STEPS, k))
+                shown["step"] = step
+            bar.progress(min(p, 1.0), text=f"Paso {k + 1} de {len(STEPS)} · {step}… {int(100 * min(p, 1.0))} %")
+        else:
+            steps_box.html(progress_steps_html(STEPS, len(STEPS)))
+            bar.progress(1.0, text="¡Listo! Preparando tu ficha…")
+
+    show(0.0, STEPS[0])
     out_dir = ROOT / "outputs" / "app" / Path(upload.name).stem
     out_dir.mkdir(parents=True, exist_ok=True)
     video_path = out_dir / f"input{Path(upload.name).suffix.lower()}"
@@ -134,17 +151,12 @@ def process(upload, stance):
     if _duration(video_path) > max_s:
         st.info(f"Tu vídeo dura más de {max_s} s: analizaremos el primer minuto.")
 
-    steps = {"Detectando el esqueleto": "Detectando tu esqueleto fotograma a fotograma…",
-             "Calculando métricas": "Contando golpes y midiendo tu guardia…",
-             "Dibujando el vídeo": "Preparando tu vídeo con el esqueleto…",
-             "Listo": "¡Listo!"}
-    bar = st.progress(0.0, text="Preparando el análisis…")
     try:
         _model()
-        result = analyze(video_path, out_dir, load_config(stance=stance),
-                         progress=lambda p, msg: bar.progress(min(p, 1.0), text=steps.get(msg, msg)))
+        result = analyze(video_path, out_dir, load_config(stance=stance), progress=show)
     except Exception as e:  # mensaje amable + detalle tecnico plegado
         bar.empty()
+        steps_box.empty()
         st.error(_friendly_error(e))
         with st.expander("Detalle técnico"):
             st.code(f"{type(e).__name__}: {e}")

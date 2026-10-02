@@ -17,6 +17,11 @@ from boxeo.tips import make_tips, recording_tips
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# Pasos que ve el usuario y en que tramo de la barra de progreso va cada uno (segun lo que tarda cada fase:
+# la deteccion de pose es casi todo el tiempo; ver docs/DECISIONES.md, punto 9)
+STEPS = ["Leyendo el vídeo", "Detectando tu postura", "Calculando tu nota", "Preparando el vídeo"]
+_SPAN = {STEPS[0]: (0.00, 0.02), STEPS[1]: (0.02, 0.88), STEPS[2]: (0.88, 0.90), STEPS[3]: (0.90, 1.00)}
+
 
 def load_config(path=ROOT / "config.yaml", stance=None):
     with open(path, encoding="utf-8") as f:
@@ -36,11 +41,16 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     cfg = cfg or load_config()
     out_dir = Path(out_dir or ROOT / "outputs" / video_path.stem)
     out_dir.mkdir(parents=True, exist_ok=True)
-    report = progress or (lambda p, msg: None)
+    def report(step, frac=0.0):
+        """Avisa del paso actual y del avance total (0-1). Mensaje = nombre del paso."""
+        if progress:
+            a, b = _SPAN[step]
+            progress(a + (b - a) * min(max(frac, 0.0), 1.0), step)
 
-    raw, info = extract_landmarks(video_path, cfg, progress=lambda p, msg: report(0.8 * p, msg))
+    report(STEPS[0])
+    raw, info = extract_landmarks(video_path, cfg, progress=lambda p, msg: report(STEPS[1], p))
     fps = info["fps"]
-    report(0.8, "Calculando métricas")
+    report(STEPS[2])
     df = add_features(smooth(raw, fps, cfg), fps, cfg)
     punches = annotate_punches(df, detect_punches(df, fps, cfg), fps, cfg)
     metrics = compute_metrics(df, punches, fps, cfg)
@@ -51,8 +61,8 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     reliable = quality["level"] != "baja"
     tips = make_tips(metrics, scores, cfg) if reliable else recording_tips()
 
-    report(0.85, "Dibujando el vídeo")
-    render_video(video_path, out_dir / "annotated.mp4", df, punches, info)
+    report(STEPS[3])
+    render_video(video_path, out_dir / "annotated.mp4", df, punches, info, progress=lambda p: report(STEPS[3], p))
     df.to_csv(out_dir / "landmarks.csv", index=False, float_format="%.3f")
 
     result = {
@@ -70,5 +80,6 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     }
     with open(out_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
-    report(1.0, "Listo")
+    if progress:
+        progress(1.0, "Listo")
     return result

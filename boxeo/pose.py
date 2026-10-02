@@ -1,11 +1,17 @@
 """Extraccion de pose: video -> DataFrame de landmarks por frame (en pixeles), suavizado."""
 from pathlib import Path
 
+import logging
+
 import cv2
+import imageio_ffmpeg
 import mediapipe as mp
 import numpy as np
 import pandas as pd
 from mediapipe.tasks.python import BaseOptions, vision
+
+# imageio-ffmpeg avisa de que el tamano de lectura es distinto del original: es justo lo que pedimos
+logging.getLogger("imageio_ffmpeg").setLevel(logging.ERROR)
 
 # Landmarks que usamos (indices de MediaPipe Pose). l/r = izquierda/derecha del boxeador.
 LANDMARKS = {
@@ -56,6 +62,31 @@ def iter_frames(path, size, max_frames):
     cap.release()
 
 
+def iter_frames_fast(path, size, max_frames):
+    """Como iter_frames, pero decodifica y reduce con ffmpeg en un solo paso (unas 4 veces mas rapido).
+
+    SOLO para el video de salida: la imagen es casi identica pero no igual bit a bit, y en el analisis
+    eso basta para cambiar algun golpe dudoso (ver docs/DECISIONES.md). Si ffmpeg falla, usa OpenCV.
+    """
+    w, h = size
+    try:
+        gen = imageio_ffmpeg.read_frames(
+            str(path), pix_fmt="bgr24",
+            output_params=["-vf", f"scale={w}:{h}:flags=area", "-fps_mode", "passthrough"],
+        )
+        next(gen)  # metadatos
+    except Exception:
+        yield from iter_frames(path, size, max_frames)
+        return
+    try:
+        for i, buf in enumerate(gen):
+            if i >= max_frames:
+                break
+            yield np.frombuffer(buf, np.uint8).reshape(h, w, 3).copy()
+    finally:
+        gen.close()
+
+
 def extract_landmarks(path, cfg, progress=None):
     """Ejecuta MediaPipe sobre el video. Devuelve (DataFrame crudo, info del video).
 
@@ -92,7 +123,7 @@ def extract_landmarks(path, cfg, progress=None):
                     row[f"{name}_x"] = row[f"{name}_y"] = row[f"{name}_v"] = np.nan
             rows.append(row)
             if progress and i % 10 == 0:
-                progress(min(i / max(info["n_frames"], 1), 1.0), "Detectando el esqueleto")
+                progress(min(i / max(info["n_frames"], 1), 1.0), "Detectando tu postura")
     info["n_frames"] = len(rows)
     return pd.DataFrame(rows), info
 
