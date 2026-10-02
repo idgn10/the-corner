@@ -30,3 +30,24 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
 - **En el móvil** las columnas se apilan y el vídeo vertical tiene un alto máximo del 72% de la pantalla.
 - **Pendiente menor:** el botón "Upload" y el texto "1GB per file" del selector de archivos salen en
   inglés; los pone Streamlit y no se pueden traducir con una opción.
+
+## 3. Modo demo
+
+- **Cómo se usa:** botón "Ver un ejemplo" en la pantalla de subida, o el enlace directo `?demo=1`
+  (p. ej. `http://localhost:8501/?demo=1`), útil para enseñarlo sin pasos. No sube ni procesa nada.
+- **Clip elegido: sombra libre (56/100).** Es el uso real del producto y el que más enseña: los 3 momentos
+  de guardia baja, una gráfica con mucha actividad y consejos de corrección. Alternativa si prefieres una
+  nota alta para la demo: `python scripts/make_demo.py outputs/uno_dos` (94/100, pero con un solo momento
+  y consejos casi todos de refuerzo). Ojo: en sombra hay curvos contados como rectos (limitación conocida).
+- **Qué hay en git:** solo `demo/metrics.json` (datos, sin imagen). `demo/annotated.mp4` existe en tu
+  ordenador pero no se sube (los vídeos están en `.gitignore`).
+- **Sin el vídeo** (lo que pasará online tal cual) el ejemplo muestra ficha, consejos, gráfica y
+  momentos, y en lugar del vídeo un aviso de que no está disponible.
+- **Para tener el vídeo en la versión online**, tres opciones (decides tú):
+  1. **YouTube no listado (recomendada):** sube `demo/annotated.mp4` a YouTube como "No listado" y pon la
+     URL en los *secrets* de Streamlit Cloud como `DEMO_VIDEO_URL = "https://youtu.be/..."`. La app ya lo
+     lee y los botones de "Momentos para revisar" también saltan al segundo exacto. El vídeo no queda en el repo.
+  2. **Adjunto de una Release de GitHub** con la URL directa al .mp4 en `DEMO_VIDEO_URL`. Tampoco va al
+     código, pero el enlace es público.
+  3. **Subirlo al repo** (13 MB) añadiendo `!demo/annotated.mp4` al `.gitignore`. Es lo más simple pero
+     rompe la regla de no subir vídeos y tu cara queda en un repo público.

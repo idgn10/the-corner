@@ -155,7 +155,7 @@ def results_view():
     st.html(header_html(APP_NAME, TAGLINE, step=3))
 
     if st.session_state.get("source") == "demo":
-        st.info("Estás viendo un **análisis de ejemplo** (sombra libre, guardia diestra). Sube tu vídeo para ver el tuyo.")
+        st.info("Estás viendo un **análisis de ejemplo** ya hecho. Sube tu vídeo para ver el tuyo.")
     if m["pose_detected_pct"] < 50:
         st.warning(f"Solo te hemos visto en el {m['pose_detected_pct']:.0f}% del vídeo. Para un análisis fiable, "
                    "que se vea tu cuerpo entero y haya buena luz.")
