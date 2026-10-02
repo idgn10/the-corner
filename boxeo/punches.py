@@ -39,7 +39,7 @@ def detect_punches(df, fps, cfg):
                 continue
             start = j0 + int(np.nanargmin(reach[j0:i]))
             reach_gain = reach[i] - reach[start]
-            peak_speed = np.nanmax(speed[start:i + 1])
+            peak_speed = np.nanmax(speed[start:i + 1]) if not np.all(np.isnan(speed[start:i + 1])) else 0.0
             angle_peak = np.nanmax(a[start:i + 2]) if not np.all(np.isnan(a[start:i + 2])) else np.nan
             if (reach_gain >= pc["min_reach_increase"]
                     and peak_speed >= pc["min_peak_speed"]
@@ -58,4 +58,11 @@ def detect_punches(df, fps, cfg):
                 })
                 last_peak_t = t_peak
 
+    # Dos manos "golpeando" a la vez suele ser el giro del tronco: queda la que mas se aleja
+    gap = pc["min_gap_between_hands"]
+    punches = [
+        p for p in punches
+        if all(p["reach_gain"] >= q["reach_gain"] for q in punches
+               if q["hand"] != p["hand"] and abs(q["t_peak"] - p["t_peak"]) < gap)
+    ]
     return sorted(punches, key=lambda p: p["t_peak"])

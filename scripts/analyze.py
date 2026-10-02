@@ -36,9 +36,11 @@ def main():
 
     print(f"\nPuntuación total: {r['total'] if r['total'] is not None else '-'} / 100")
     print(f"Golpes: {m['n_punches']} (izq. {m['n_left']}, der. {m['n_right']}) en {m['duration_s']} s"
-          f" | persona detectada en el {m['pose_detected_pct']}% de los frames")
+          f" (activo {m['active_s']} s) | persona detectada en el {m['pose_detected_pct']}% de los frames")
     for s in r["subscores"].values():
         score = s["score"] if s["score"] is not None else "-"
+        if s["weight"] == 0:
+            score = "off"
         print(f"  {s['label']:<24} {str(score):>4}   ({s['metric']} = {s['value']})")
     print("\nConsejos:")
     for t in r["tips"]:

@@ -14,9 +14,17 @@ pose:
   smooth_seconds: 0.1    # ventana de suavizado (mediana movil)
   max_gap_seconds: 0.2   # huecos sin deteccion mas cortos que esto se rellenan interpolando
 
-# 1. Guardia: una mano esta "arriba" si la muneca esta cerca de la nariz y por encima de los hombros
+# 1. Guardia: una mano esta "arriba" si la muneca esta cerca de la nariz y, ademas, segun "rule":
+#    shoulders: no mas abajo de la linea de hombros que max_below_shoulder
+#    elbow:     por encima del codo (no depende de la inclinacion del cuerpo)
 guard:
-  max_dist_nose: 1.0     # distancia maxima muneca-nariz
+  rule: shoulders
+  max_dist_nose: 1.0       # distancia maxima muneca-nariz
+  max_below_shoulder: 0.15 # (regla shoulders) margen por debajo de la linea de hombros
+
+# Las metricas se calculan solo en el tramo activo: desde este tiempo antes del primer golpe
+# hasta este tiempo despues del ultimo (no cuenta entrar en plano ni prepararse)
+active_margin_seconds: 1.0
 
 # Deteccion de golpes: se basa sobre todo en la muneca (se aleja del hombro rapido).
 # El codo solo filtra; la extension buena (160) se valora aparte, en "extension".
@@ -25,6 +33,7 @@ punches:
   min_peak_speed: 3.0        # velocidad pico minima de la muneca (anchuras de hombro por segundo)
   max_rise_seconds: 0.4      # tiempo maximo desde la mano recogida hasta el pico del golpe
   angle_min: 125             # angulo minimo del codo en el pico para contar como golpe, grados
+  min_gap_between_hands: 0.15  # si las dos manos "golpean" mas juntas que esto, solo cuenta la que mas se aleja
   max_wrist_below_shoulder: 0.5  # en el pico, la muneca no puede estar mas abajo que esto respecto a los hombros
                                  # (evita contar como golpe bajar el brazo)
   debounce_seconds: 0.25     # no contar dos golpes de la misma mano tan seguidos
@@ -45,11 +54,12 @@ base:
 
 # Puntuacion: cada metrica se convierte en 0-100 con una recta entre "bad" (0 puntos) y "good" (100 puntos).
 # Si "good" es menor que "bad", menos es mejor (p. ej. tiempo de vuelta a la guardia).
-# El total es la media ponderada por "weight".
+# El total es la media ponderada por "weight". Con weight 0 la metrica se muestra pero no puntua ni da consejos.
 scoring:
   guard:        {metric: guard_pct,          bad: 40,  good: 90,  weight: 25}   # % frames con las dos manos arriba
   other_hand:   {metric: other_hand_up_pct,  bad: 40,  good: 90,  weight: 20}   # % golpes con la otra mano arriba
   extension:    {metric: extended_pct,       bad: 30,  good: 80,  weight: 20}   # % golpes con el codo >= good_angle
   recovery:     {metric: recovery_mean_s,    bad: 0.8, good: 0.4, weight: 15}   # segundos medios de vuelta a la guardia
-  base:         {metric: base_pct,           bad: 30,  good: 80,  weight: 10}   # % frames con base correcta
+  base:         {metric: base_pct,           bad: 30,  good: 80,  weight: 0}    # % frames con base correcta
+                                                                                  # (peso 0: de perfil no se puede medir)
   volume:       {metric: punches_per_min,    bad: 20,  good: 70,  weight: 10}   # golpes por minuto

@@ -37,6 +37,17 @@ def _flag(cond, *inputs):
     return out
 
 
+def _hand_up(df, s, scale, shoulders_y, g):
+    """1 si la mano esta en guardia, 0 si no, NaN si faltan datos (regla en config: guard.rule)."""
+    to_nose = dist(df, f"{s}_wrist", "nose") / scale
+    _, wy = _pt(df, f"{s}_wrist")
+    if g.get("rule", "shoulders") == "elbow":
+        _, ey = _pt(df, f"{s}_elbow")
+        return _flag((to_nose < g["max_dist_nose"]) & (wy < ey), to_nose, wy, ey)
+    limit = shoulders_y + g["max_below_shoulder"] * scale
+    return _flag((to_nose < g["max_dist_nose"]) & (wy < limit), to_nose, wy, limit)
+
+
 def add_features(df, fps, cfg):
     """Anade columnas por frame: escala, angulo de codo, alcance, velocidad, manos arriba y base."""
     out = df.copy()
@@ -54,9 +65,7 @@ def add_features(df, fps, cfg):
             out[f"speed_{s}"] = np.hypot(np.gradient(wx), np.gradient(wy)) * fps / scale
         else:
             out[f"speed_{s}"] = np.nan
-        to_nose = dist(df, f"{s}_wrist", "nose") / scale
-        up = (to_nose < cfg["guard"]["max_dist_nose"]) & (wy < shoulders_y)
-        out[f"up_{s}"] = _flag(up, to_nose, wy, shoulders_y)
+        out[f"up_{s}"] = _hand_up(df, s, scale, shoulders_y, cfg["guard"])
 
     b = cfg["base"]
     ratio = dist(df, "l_ankle", "r_ankle") / scale
@@ -94,17 +103,25 @@ def _mean(values, nd=1):
     return round(float(np.mean(values)), nd) if values else None
 
 
-def compute_metrics(df, punches, fps):
-    """Resumen de la sesion. Los golpes deben venir anotados con annotate_punches."""
+def compute_metrics(df, punches, fps, cfg):
+    """Resumen de la sesion. Los golpes deben venir anotados con annotate_punches.
+
+    Guardia, base y ritmo se miden solo en el tramo activo (alrededor de los golpes).
+    """
     n = len(df)
-    duration = n / fps if fps else 0
+    active = np.ones(n, bool)
+    if punches:
+        margin = int(cfg["active_margin_seconds"] * fps)
+        active[:] = False
+        active[max(0, punches[0]["frame_start"] - margin):punches[-1]["frame_end"] + margin + 1] = True
+    duration = active.sum() / fps if fps else 0
     in_punch = np.zeros(n, bool)
     for p in punches:
         in_punch[p["frame_start"]:p["frame_end"] + 1] = True
 
     both_up = df["up_l"] * df["up_r"]
-    valid = both_up.notna().to_numpy() & ~in_punch
-    base_valid = df["base_ok"].notna()
+    valid = both_up.notna().to_numpy() & ~in_punch & active
+    base_valid = df["base_ok"].notna().to_numpy() & active
 
     by_type = {}
     for t in ("jab", "directo"):
@@ -113,7 +130,8 @@ def compute_metrics(df, punches, fps):
         by_type[t] = {"count": len(ps), "other_hand_down_pct": down}
 
     return {
-        "duration_s": round(duration, 1),
+        "duration_s": round(n / fps, 1) if fps else 0.0,
+        "active_s": round(duration, 1),
         "pose_detected_pct": round(100 * float(df["l_shoulder_x"].notna().mean()), 1) if n else 0.0,
         "n_punches": len(punches),
         "n_left": sum(p["hand"] == "left" for p in punches),

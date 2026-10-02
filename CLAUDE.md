@@ -91,6 +91,16 @@ Deteccion de golpes (punches.py):
 - Debounce de 0.25 s por mano para no contar dos veces el mismo golpe.
 - Etiquetar mano izquierda/derecha y, segun la guardia, jab (mano adelantada) o directo.
 
+## Calibracion con videos reales (2 oct 2026)
+Videos grabados casi de perfil. Cambios aprobados por Ignacio:
+- Guardia: la muneca puede quedar hasta 0.15 anchuras de hombro por debajo de la linea de hombros
+  (al meter la barbilla la mano queda algo baja). Alternativa en prueba: guard.rule = elbow
+  (cerca de la nariz y por encima del codo). La regla definitiva la decide Ignacio.
+- Si las dos manos "golpean" a menos de 0.15 s, solo cuenta la que mas se aleja (giro del tronco).
+- Guardia, base y ritmo se miden solo en el tramo activo (1 s antes del primer golpe a 1 s despues del ultimo).
+- Base con peso 0: de perfil un pie tapa al otro y no se puede medir.
+- Curvos: se siguen contando como rectos (fuera del alcance del MVP).
+
 ## Scoring
 - Cada metrica se convierte en un subscore 0-100 con un mapeo lineal entre un umbral "malo"
   y uno "bueno" (definidos en config.yaml).

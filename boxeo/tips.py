@@ -62,7 +62,7 @@ def make_tips(metrics, scores, cfg, n=3):
         return ["No he detectado golpes. Comprueba que se te ve el cuerpo entero, con la cámara fija "
                 "y en diagonal a unos 45 grados, y que lanzas golpes rectos estirando el brazo."]
     ranked = sorted(
-        (v["score"], k) for k, v in scores["subscores"].items() if v["score"] is not None
+        (v["score"], k) for k, v in scores["subscores"].items() if v["score"] is not None and v["weight"] > 0
     )
     tips = [_tip(k, metrics, cfg, sc) for sc, k in ranked[:n]]
     return [t for t in tips if t]

@@ -42,7 +42,7 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     report(0.8, "Calculando métricas")
     df = add_features(smooth(raw, fps, cfg), fps, cfg)
     punches = annotate_punches(df, detect_punches(df, fps, cfg), fps, cfg)
-    metrics = compute_metrics(df, punches, fps)
+    metrics = compute_metrics(df, punches, fps, cfg)
     scores = score(metrics, cfg)
     tips = make_tips(metrics, scores, cfg)
 

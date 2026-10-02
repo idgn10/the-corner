@@ -36,6 +36,8 @@ def show_card(r):
     c3.metric("Golpes por minuto", m["punches_per_min"] if m["punches_per_min"] is not None else "–")
     st.markdown("**Subscores**")
     for s in r["subscores"].values():
+        if s["weight"] == 0:
+            continue  # metrica desactivada en config.yaml (p. ej. base grabando de perfil)
         if s["score"] is None:
             st.progress(0, text=f"{s['label']}: sin datos")
         else:
