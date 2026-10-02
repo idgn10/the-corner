@@ -9,7 +9,8 @@ from pathlib import Path
 import cv2
 import streamlit as st
 
-from boxeo.card import header_html, hero_html, legend_html, metrics_html, section_html, strip_html, tips_html
+from boxeo.card import (header_html, hero_html, legend_html, metrics_html, quality_alert_html, section_html,
+                        strip_html, tips_html)
 from boxeo.charts import session_chart
 from boxeo.pipeline import ROOT, analyze, load_config
 from scripts.download_model import ensure_model
@@ -163,6 +164,9 @@ def results_view():
     m = r["metrics"]
     _top(step=3)
 
+    quality = r.get("quality")
+    if quality and quality["level"] == "baja":
+        st.html(quality_alert_html(quality))
     if st.session_state.get("source") == "demo":
         st.info("Estás viendo un **análisis de ejemplo** ya hecho. Sube tu vídeo para ver el tuyo.")
     if m["pose_detected_pct"] < 50:

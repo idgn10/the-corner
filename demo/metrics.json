@@ -759,5 +759,14 @@
         "hand": "izquierda"
       }
     ]
+  },
+  "quality": {
+    "level": "alta",
+    "reason": "ok",
+    "message": "Buena grabación: se te ve bien, de lado y con las manos dentro del encuadre.",
+    "visible_pct": 81.1,
+    "wrist_out_pct": 0.7,
+    "orientation_ratio": 0.44,
+    "orientation": "de lado o en diagonal"
   }
 }

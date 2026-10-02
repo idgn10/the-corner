@@ -94,3 +94,28 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
 - **Franja:** "Tu entrenador entre asaltos" en movimiento suave; se queda quieta si el sistema pide reducir animaciones.
 - **No se puede desde la app:** traducir "Upload" y "300MB per file" del selector de archivos (los pone
   Streamlit), ni ocultar el botón "Manage app" y la insignia que añade Streamlit Community Cloud fuera de la app.
+
+## 7. Control de calidad de la grabación (fiabilidad del análisis)
+
+- **Qué es:** en cada análisis se calcula la **fiabilidad: alta / media / baja**, con una frase que explica el
+  motivo y cómo grabar mejor. **No cambia ninguna nota** (módulo aparte, `boxeo/quality.py`); la nota se
+  muestra siempre, y si la fiabilidad es baja aparece además un aviso destacado arriba del todo.
+- **Tres factores, medidos en el tramo activo.** La fiabilidad final es la del peor:
+
+  | Factor | Alta | Media | Baja | Por qué estos valores |
+  |---|---|---|---|---|
+  | Puntos clave visibles (nariz, hombros, codos, muñecas) | ≥ 75% | 50-75% | < 50% | Tus clips buenos dan 81-99%: de perfil, el brazo de atrás se tapa a ratos y el análisis lo aguanta (los conteos de golpes eran correctos). Por debajo del 50%, la mitad del tiempo no vemos los brazos. |
+  | Mano fuera del encuadre | ≤ 3% | 3-10% | > 10% | Tus clips: 0-0,7%. A 60 golpes/min, perder el puño en cada golpe son ~15% del tiempo: > 10% es perder la mayoría de los picos de golpe. |
+  | Orientación (anchura de hombros ÷ altura del tronco) | ≤ 0,60 | 0,60-0,70 | > 0,70 | Tus clips: 0,43-0,49 (de lado o en diagonal, con lo que está calibrado). De frente ronda 0,75-0,8 y los golpes van hacia la cámara: el brazo parece más corto. |
+
+- **Mano fuera:** cuenta si la muñeca está a menos de **0,3 anchuras de hombro del borde**, porque el puño
+  sobresale más o menos eso por delante de la muñeca. Hallazgo al probarlo: cuando el puño sale de la imagen,
+  MediaPipe no da la muñeca por perdida, sino que la **pega al borde** con visibilidad alta, y eso genera
+  golpes dobles falsos. Si la muñeca deja de verse en el centro de la imagen se considera tapada por el
+  cuerpo, no fuera.
+- **Prueba hecha:** recorté 10 s del clip de jabs quitando el 35% izquierdo de la imagen. Resultado: fiabilidad
+  **baja** (mano fuera el 11,3% del tiempo) y 13 golpes detectados donde había unos 7, justo el tipo de
+  error que el aviso tiene que anticipar.
+- **Sin validar con un vídeo real de frente:** los umbrales de orientación salen de proporciones corporales
+  típicas, no de un clip tuyo. Graba el clip de prueba de frente (ver informe) para confirmarlos.
+- Todos los umbrales están en la sección `quality` de `config.yaml`.

@@ -52,6 +52,18 @@ base:
   max_ratio: 1.6         # idem, maximo
   max_knee_angle: 170    # angulo medio cadera-rodilla-tobillo por debajo de esto = rodillas flexionadas
 
+# Control de calidad de la grabacion: NO cambia la nota, solo indica su fiabilidad (alta / media / baja).
+# La fiabilidad final es la del peor de los tres factores. Valores elegidos con los 5 clips de prueba
+# (ver docs/DECISIONES.md, punto 7).
+quality:
+  min_visible_high: 75     # % del tramo activo con nariz, hombros, codos y munecas visibles: desde aqui, alta
+  min_visible_medium: 50   # por debajo de esto, baja
+  max_wrist_out_high: 3    # % del tiempo con una muneca fuera del encuadre: hasta aqui, alta
+  max_wrist_out_medium: 10 # por encima de esto, baja
+  edge_margin: 0.3         # muneca a menos de estas anchuras de hombro del borde = mano fuera del encuadre
+  max_front_high: 0.60     # anchura de hombros / altura del tronco: hasta aqui, de lado o en diagonal (alta)
+  max_front_medium: 0.70   # por encima de esto, de frente (baja)
+
 # Puntuacion: cada metrica se convierte en 0-100 con una recta entre "bad" (0 puntos) y "good" (100 puntos).
 # Si "good" es menor que "bad", menos es mejor (p. ej. tiempo de vuelta a la guardia).
 # El total es la media ponderada por "weight". Con weight 0 la metrica se muestra pero no puntua ni da consejos.

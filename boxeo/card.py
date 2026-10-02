@@ -75,7 +75,25 @@ def hero_html(result):
             f'<div class="tc-stat"><b>{m["n_right"]}</b><span>Derecha</span></div>'
             f'<div class="tc-stat"><b>{ppm}</b><span>Golpes/min</span></div>'
             f'<div class="tc-stat"><b>{m["n_punches"]}</b><span>Golpes</span></div>'
-            "</div></div></div>")
+            "</div>" + _quality_html(result.get("quality")) + "</div></div>")
+
+
+QUALITY_COLORS = {"alta": GOOD, "media": MID, "baja": BAD}
+
+
+def _quality_html(q):
+    """Linea de fiabilidad dentro de la ficha (los analisis antiguos no la tienen)."""
+    if not q:
+        return ""
+    return ('<div class="tc-quality"><div class="tc-quality-head"><span>Fiabilidad del análisis</span>'
+            f'<b><i style="background:{QUALITY_COLORS[q["level"]]}"></i>{q["level"].capitalize()}</b></div>'
+            f'<div class="tc-quality-msg">{escape(q["message"])}</div></div>')
+
+
+def quality_alert_html(q):
+    """Aviso destacado para fiabilidad baja: la nota se muestra igual, pero hay que tomarla con cautela."""
+    return ('<div class="tc"><div class="tc-alert"><div class="tc-alert-title">Fiabilidad baja: toma esta nota con cautela</div>'
+            f'<div class="tc-alert-msg">{escape(q["message"])}</div></div></div>')
 
 
 def tips_html(result):

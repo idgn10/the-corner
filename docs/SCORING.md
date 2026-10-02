@@ -243,6 +243,13 @@ En **vuelta a la guardia** es al revés (menos es mejor): bajar `good` (0,4 s) l
 | `pose.smooth_seconds` | 0,1 s | más alto = esqueleto más estable pero picos de golpe más "aplastados" |
 | `pose.max_gap_seconds` | 0,2 s | huecos más largos que esto no se rellenan |
 
+### Fiabilidad del análisis (no cambia la nota)
+
+Sección `quality`: decide cuándo la fiabilidad es alta, media o baja. Subir los mínimos de visibilidad o bajar
+los máximos de "mano fuera" y de orientación hace el aviso más estricto (salta antes); al revés, más permisivo.
+`edge_margin` (0,3 anchuras de hombro) es lo cerca del borde que tiene que estar la muñeca para contar como
+"mano fuera del encuadre". Detalle y motivos en `docs/DECISIONES.md`, punto 7.
+
 ### Lo que no está en `config.yaml` (está en el código)
 
 - A partir de qué nota el consejo es de refuerzo: **85** (`GOOD_SCORE` en `boxeo/tips.py`).
