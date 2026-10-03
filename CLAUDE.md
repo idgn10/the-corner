@@ -118,7 +118,7 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
 
 ## Problemas conocidos
 - OpenCV con códec mp4v genera vídeos que el navegador no reproduce: codificar en H.264 con imageio-ffmpeg.
-- Se procesa a 720 px de alto como máximo y como máximo el primer minuto. Subida máx. 300 MB.
+- Se procesa a 720 px de alto como máximo y solo el primer minuto. Subida máx. 300 MB.
 - Calibrado con vídeos a 60 fps: a 30 fps la nota puede variar unos puntos (validado, no pasa). La app
   recomienda 1080p a 60 fps y avisa con menos de 50 fps. Soportar 30 fps requeriría interpolar la pose.
 - En golpes dudosos, recodificar o analizar en otra máquina puede cambiar ±1 golpe (la app publicada da
