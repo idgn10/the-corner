@@ -484,7 +484,8 @@ ser bastante menos). Opciones a valorar, no aplicadas:
 - **Dónde:** abajo y centrados. Si coinciden varios (en sombra, hasta 3), se apilan hacia arriba y cada uno se
   queda en su fila hasta que se quita. Arriba no caben: el marcador acaba hacia los 105 px y la cabeza empieza a
   los 145-175 px (5 clips a 720 px de alto), así que solo cabría una fila. Abajo tapan como mucho las piernas
-  (la base no puntúa), nunca la cara, tampoco en las esquivas.
+  (la base no puntúa), nunca la cara, tampoco en las esquivas. Dejan libre la franja de abajo (unos 70 px de 720):
+  al pausar, la barra de controles del reproductor tapaba la fila más baja (visto en la app publicada).
 - **Un golpe que sale como crochet y como uppercut a la vez** (2 en sombra) lleva un solo rótulo, con el nombre del
   primero que se detecta, y cuenta una vez, igual que en el volumen de la nota.
 - **Marcador:** "RECTOS · CURVOS · ESQUIVAS" en columnas, con el número debajo, en lugar de "Izq/Der" (la mano ya se

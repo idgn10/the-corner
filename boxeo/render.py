@@ -125,10 +125,11 @@ def draw_frame(img, row, counts, guard_up, flash_side=None, tags=()):
         color = GREEN if guard_up else RED
         cv2.circle(img, (pad + int(12 * scale), int(92 * scale)), int(12 * scale), color, -1, cv2.LINE_AA)
         _label(img, "Guardia" if guard_up else "Guardia baja", (pad + int(34 * scale), int(104 * scale)), color, 0.9 * scale)
-    # Rotulos abajo y centrados, apilados hacia arriba: arriba no caben bajo el marcador sin tapar la cara
+    # Rotulos abajo y centrados, apilados hacia arriba: arriba no caben bajo el marcador sin tapar la cara.
+    # Dejan libre la franja de abajo, donde el reproductor pone sus controles al pausar
     for t in tags:
         s = 1.15 * scale
-        y = h - int(28 * scale) - t["slot"] * int(46 * scale)
+        y = h - int(72 * scale) - t["slot"] * int(46 * scale)
         _label(img, t["text"], ((w - _text_width(t["text"], s)) // 2, y), t["color"], s)
     return img
 
