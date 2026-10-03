@@ -12,6 +12,8 @@ LEVELS = ["baja", "media", "alta"]
 
 MESSAGES = {
     ("ok", "alta"): "Buena grabación: se te ve bien, de lado y con las manos dentro del encuadre.",
+    ("punches", "baja"): ("Hemos detectado muy pocos golpes para darte una nota fiable. Graba al menos 20 segundos "
+                          "con jabs y directos, de lado o en diagonal: de frente casi no vemos los golpes."),
     ("visible", "media"): ("A ratos no se te ven bien los brazos. Con más luz y el cuerpo entero dentro del "
                            "encuadre, el análisis será más preciso."),
     ("visible", "baja"): ("Se te ve poco: los brazos o la cara salen tapados o fuera de plano buena parte del vídeo. "
@@ -45,12 +47,30 @@ def _wrist_out(df, size, edge_margin):
     return out
 
 
+def _min_window(active, min_frames):
+    """Amplia el tramo activo (centrado) hasta `min_frames`, o a todo el video si dura menos.
+
+    Con pocos golpes el tramo activo son 2-3 s alrededor de ellos y la fiabilidad no ve el resto del video.
+    """
+    n = len(active)
+    need = min(n, min_frames)
+    idx = np.flatnonzero(active)
+    if len(idx) >= need:
+        return active
+    start = max(0, min((idx[0] + idx[-1]) // 2 - need // 2, n - need))
+    window = np.zeros(n, bool)
+    window[start:start + need] = True
+    return window
+
+
 def assess(df, punches, fps, size, cfg):
-    """Fiabilidad del analisis a partir de lo bien que se ve a la persona en el tramo activo."""
+    """Fiabilidad del analisis a partir de lo bien que se ve a la persona en el tramo activo
+    (ampliado a un minimo de segundos) y de cuantos golpes se han detectado."""
     q = cfg["quality"]
     active, _ = _masks(len(df), punches, fps, cfg)
     if not active.any():
         active[:] = True
+    active = _min_window(active, int(round(q["min_seconds"] * fps)))
 
     visible = df[[f"{k}_v" for k in KEY_POINTS]].notna().all(axis=1).to_numpy()
     visible_pct = 100 * float(visible[active].mean())
@@ -71,6 +91,7 @@ def assess(df, punches, fps, size, cfg):
         return 2 if high_ok(value) else 1 if medium_ok(value) else 0
 
     factors = {  # orden = prioridad del mensaje cuando hay empate
+        "punches": 0 if len(punches) < q["min_punches"] else 2,  # con muy pocos golpes los % no dicen nada
         "visible": level(visible_pct, lambda v: v >= q["min_visible_high"], lambda v: v >= q["min_visible_medium"]),
         "wrist_out": level(wrist_out_pct, lambda v: v <= q["max_wrist_out_high"], lambda v: v <= q["max_wrist_out_medium"]),
         "front": 2 if ratio is None else level(ratio, lambda v: v <= q["max_front_high"], lambda v: v <= q["max_front_medium"]),
@@ -84,6 +105,8 @@ def assess(df, punches, fps, size, cfg):
         "level": lvl,
         "reason": reason,
         "message": MESSAGES[(reason, lvl)],
+        "n_punches": len(punches),
+        "measured_s": round(float(active.sum()) / fps, 1),
         "visible_pct": round(visible_pct, 1),
         "wrist_out_pct": round(wrist_out_pct, 1),
         "orientation_ratio": None if ratio is None else round(ratio, 2),

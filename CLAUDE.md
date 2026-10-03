@@ -90,13 +90,15 @@ Landmarks con visibility < 0.5 se ignoran. Suavizado con mediana de 0,1 s. Guard
 | Base | Pies y rodillas | 0 (de perfil un pie tapa al otro) |
 
 Cada subnota es lineal entre un umbral "malo" y uno "bueno" (config.yaml). Total = media ponderada.
-**Sin golpes no hay nota.**
+**Con menos de 5 golpes no hay nota** (ver Fiabilidad).
 
-**Fiabilidad (quality.py, sección `quality` de config.yaml):** la peor de tres medidas en el tramo activo:
-puntos clave visibles (≥ 75 % alta, < 50 % baja), mano fuera del encuadre (≤ 3 % alta, > 10 % baja; una
-muñeca a menos de 0,3 anchuras de hombro del borde cuenta como fuera, porque el detector la "pega" al borde)
-y orientación hombros ÷ tronco (≤ 0,60 alta, > 0,70 baja). **Con fiabilidad baja no hay nota** (total: null):
-pantalla "Sin nota", claves para grabar de nuevo y detalle en gris como "orientativo".
+**Fiabilidad (quality.py, sección `quality` de config.yaml):** la peor de cuatro medidas. Golpes detectados
+(< 5 = baja, `min_punches`). Y, en el tramo activo ampliado a un mínimo de 10 s o al vídeo entero si dura menos
+(`min_seconds`): puntos clave visibles (≥ 75 % alta, < 50 % baja), mano fuera del encuadre (≤ 3 % alta, > 10 %
+baja; una muñeca a menos de 0,3 anchuras de hombro del borde cuenta como fuera, porque el detector la "pega" al
+borde) y orientación hombros ÷ tronco (≤ 0,60 alta, > 0,70 baja; de frente real midió 0,62, umbral pendiente de
+un segundo clip de frente). **Con fiabilidad baja no hay nota** (total: null): pantalla "Sin nota", claves para
+grabar de nuevo y detalle en gris como "orientativo". Clip de control: `1,5m.MOV` (de frente) = Sin nota.
 
 **Consejos:** por reglas, sin IA. Las 3 métricas que más restan, (100 − subnota) × peso, con el dato
 concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio lo pide.

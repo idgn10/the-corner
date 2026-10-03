@@ -159,9 +159,11 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
   perfil, con cámara fija y cuerpo entero. Con otros ángulos de cámara habría que recalibrar.
 - **Calibrado con una sola persona** (5 clips). Falta validar con otros cuerpos, niveles y móviles.
 - **La fiabilidad del análisis es una estimación.** Avisa si no se te ve bien, si se te sale la mano del
-  encuadre o si estás de frente, pero sus umbrales salen de 5 clips de una persona y el caso "de frente" aún
-  no se ha probado con un vídeo real. Con fiabilidad baja no se da nota (solo datos orientativos), así que
-  unos umbrales demasiado estrictos dejarían sin nota vídeos que sí eran válidos.
+  encuadre, si estás de frente o si hay menos de 5 golpes, pero sus umbrales salen de pocos clips de una
+  persona. El único clip real de frente dio una orientación de 0,62 (se suponía 0,75-0,8), por debajo del
+  umbral de "de frente" (0,70): queda sin nota porque de frente casi no se detectan golpes, no por la
+  orientación. Falta un segundo clip de frente para recalibrar. Con fiabilidad baja no se da nota (solo datos
+  orientativos), así que unos umbrales demasiado estrictos dejarían sin nota vídeos que sí eran válidos.
 - **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos:
   el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: sombra da 27/13 golpes
   (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.

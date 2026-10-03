@@ -132,7 +132,8 @@ Los pesos suman 90 (la base está a 0), así que el "peso real" es cada peso div
 Casos especiales:
 - Si una métrica no tiene datos (por ejemplo, no hay golpes con los que medir la extensión), no cuenta
   y se divide solo entre los pesos de las que sí tienen.
-- **Si no se detecta ningún golpe, no hay nota total.** La app avisa y da consejos para grabar mejor.
+- **Si se detectan menos de 5 golpes (o ninguno), no hay nota total.** Con tan pocos golpes los porcentajes no
+  dicen nada ("el 100% de tus jabs" con un solo jab). Cuenta como fiabilidad baja (ver abajo).
 - **Si la fiabilidad del análisis es baja, tampoco hay nota total** (mejor ningún dato que uno falso). La ficha
   dice "Sin nota: el vídeo no permite un análisis fiable", con el motivo medido (p. ej. "La mano sale del
   encuadre el 11% del tiempo") y cómo grabar mejor. En vez de los consejos de técnica salen 3 claves para
@@ -142,15 +143,22 @@ Casos especiales:
 
 ### Cuándo la fiabilidad es baja
 
-Se miran tres cosas en el tramo activo; basta con que una esté en "baja":
+Basta con que una de estas cosas esté en "baja". Las tres últimas se miden en el tramo activo, ampliado a un
+mínimo de **10 s** (o al vídeo entero si dura menos): con uno o dos golpes, el tramo activo son 2-3 s y no
+dice cómo es el resto del vídeo.
 
 | Qué se mide | Baja si… |
 |---|---|
+| Golpes detectados | menos de **5** |
 | Nariz, hombros, codos y muñecas visibles a la vez | menos del **50%** del tiempo |
 | Mano fuera del encuadre (muñeca a menos de 0,3 anchuras de hombro del borde) | más del **10%** del tiempo |
 | Orientación: anchura de hombros ÷ altura del tronco | más de **0,70** (de frente) |
 
 (Media: entre 50% y 75% visible, entre 3% y 10% de mano fuera, o entre 0,60 y 0,70 de orientación.)
+
+Ojo con la orientación: el primer clip real de frente dio **0,62** (se suponía 0,75-0,8), así que de frente
+suele salir "media" por orientación. Lo que deja ese vídeo sin nota es que casi no se detectan golpes.
+Detalle en `docs/DECISIONES.md`, punto 13.
 
 ### Los 3 consejos
 
@@ -271,7 +279,8 @@ los máximos de "mano fuera" y de orientación hace el control más estricto (m�
 al revés, más permisivo. Ojo: `min_visible_medium`, `max_wrist_out_medium` y `max_front_medium` son ahora la
 frontera entre tener nota y no tenerla.
 `edge_margin` (0,3 anchuras de hombro) es lo cerca del borde que tiene que estar la muñeca para contar como
-"mano fuera del encuadre". Detalle y motivos en `docs/DECISIONES.md`, punto 7.
+"mano fuera del encuadre". `min_punches` (5) es el mínimo de golpes para dar nota y `min_seconds` (10 s) el
+mínimo de vídeo en el que se mide la fiabilidad. Detalle y motivos en `docs/DECISIONES.md`, puntos 7 y 13.
 
 ### Lo que no está en `config.yaml` (está en el código)
 

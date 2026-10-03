@@ -107,6 +107,10 @@ def _quality_html(q, message=True):
 
 def _quality_reason(q):
     """El motivo concreto, con el dato medido."""
+    if q["reason"] == "punches":
+        n = q.get("n_punches", 0)
+        return "No hemos detectado ningún golpe." if n == 0 else \
+            f"Solo hemos detectado {n} golpe{'s' if n > 1 else ''}."
     if q["reason"] == "visible":
         return f"Solo se te ven bien la cara y los brazos el {_n(q['visible_pct'])}% del tiempo."
     if q["reason"] == "wrist_out":
@@ -123,7 +127,7 @@ def no_score_html(result):
     return ('<div class="tc"><div class="tc-hero">'
             '<div class="tc-label">Tu nota de la sesión</div>'
             f'<div class="tc-hero-sub">{escape(result["video"])} · {stance} · '
-            f'{_n(m.get("active_s", m["duration_s"]))} s analizados</div>'
+            f'{_n(q.get("measured_s", m.get("active_s", m["duration_s"])))} s analizados</div>'
             '<div class="tc-noscore">Sin nota</div>'
             '<div class="tc-noscore-sub">El vídeo no permite un análisis fiable.</div>'
             '<div class="tc-reason"><div class="tc-label">Motivo</div>'

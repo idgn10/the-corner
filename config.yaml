@@ -66,6 +66,9 @@ quality:
   edge_margin: 0.3         # muneca a menos de estas anchuras de hombro del borde = mano fuera del encuadre
   max_front_high: 0.60     # anchura de hombros / altura del tronco: hasta aqui, de lado o en diagonal (alta)
   max_front_medium: 0.70   # por encima de esto, de frente (baja)
+  min_punches: 5           # con menos golpes, fiabilidad baja (sin nota): con 1-4 golpes los % no dicen nada
+  min_seconds: 10          # la fiabilidad se mide en el tramo activo ampliado hasta estos segundos
+                           # (o en todo el video si dura menos). Ver docs/DECISIONES.md, punto 13
 
 # Puntuacion: cada metrica se convierte en 0-100 con una recta entre "bad" (0 puntos) y "good" (100 puntos).
 # Si "good" es menor que "bad", menos es mejor (p. ej. tiempo de vuelta a la guardia).

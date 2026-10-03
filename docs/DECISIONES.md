@@ -119,6 +119,7 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   error que el aviso tiene que anticipar.
 - **Sin validar con un vídeo real de frente:** los umbrales de orientación salen de proporciones corporales
   típicas, no de un clip tuyo. Graba el clip de prueba de frente (ver informe) para confirmarlos.
+  **Actualizado en el punto 13:** el primer clip real de frente da 0,62, no 0,75-0,8; umbral sin cambiar.
 - Todos los umbrales están en la sección `quality` de `config.yaml`.
 
 ## 8. Con fiabilidad baja, no hay nota (decidido por Ignacio)
@@ -288,3 +289,47 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   calibración. Probado aparte: con la pose de 60 fps sin uno de cada dos fotogramas cumplen 4 de 5 clips; con los
   vídeos convertidos siguen fallando el 1-2 bueno (90) y sombra (48, 27/11). Hay que validarlo con 2-3 clips
   **grabados a 30 fps directamente con el iPhone** (no convertidos).
+
+## 13. Clip real de frente: con menos de 5 golpes no hay nota y la fiabilidad se mide en al menos 10 s (decidido por Ignacio)
+
+- **Prueba:** `1,5m.MOV`, 9 s grabados de frente a 1,5 m haciendo jabs y directos. Se esperaba "Sin nota" y salió
+  **nota 21 con fiabilidad media**: 1 solo golpe detectado, "2 s analizados", vuelta a la guardia de 0,03 s y
+  consejos tipo "el 100% de tus jabs".
+- **Causa:** la fiabilidad se medía solo en el tramo activo, que con un único golpe son **2,3 s** alrededor de él.
+  En esos 2,3 s todo parecía aceptable; en el vídeo entero, no:
+
+  | Medida | Alta / baja | Tramo activo (2,3 s) | Vídeo entero (9,2 s) |
+  |---|---|---|---|
+  | Puntos visibles | ≥ 75% / < 50% | 100% (alta) | 88% (alta) |
+  | Mano fuera del encuadre | ≤ 3% / > 10% | 8,1% (media) | 12,9% (baja) |
+  | Orientación hombros ÷ tronco | ≤ 0,60 / > 0,70 | 0,58 (alta) | 0,62 (media) |
+  | **Resultado** | | **media → nota 21** | **baja** |
+
+  De frente los golpes van hacia la cámara y en 2D casi no se ven: por eso solo se detectó 1 golpe.
+- **La orientación de frente real da 0,62, no 0,75-0,8** como se suponía en el punto 7 (proporciones típicas,
+  sin validar). Por segundos va de 0,55 a 0,71 y solo el 10% de los fotogramas pasa de 0,70; los clips de
+  perfil dan 0,43-0,49. **Umbral sin cambiar** (baja > 0,70): un solo clip no basta para recalibrar, falta un
+  segundo clip de frente.
+- **Cambios:**
+  - **Con menos de 5 golpes, fiabilidad baja y sin nota** (`quality.min_punches: 5`), en la línea de "sin golpes
+    no hay nota". Con 1-4 golpes cada golpe pesa más del 20% en los porcentajes ("el 100% de tus jabs"); el clip
+    de prueba con menos golpes tiene 10. Motivo en la ficha: "Solo hemos detectado N golpes", con el mensaje
+    "Hemos detectado muy pocos golpes para darte una nota fiable. Graba al menos 20 segundos con jabs y
+    directos, de lado o en diagonal: de frente casi no vemos los golpes." Si hay varios motivos en baja, se
+    muestra este primero. Un vídeo sin ningún golpe también sale ahora en la pantalla "Sin nota" ("No hemos
+    detectado ningún golpe").
+  - **La fiabilidad se mide en al menos 10 s** (`quality.min_seconds: 10`): el tramo activo se amplía, centrado,
+    hasta 10 s, o al vídeo entero si dura menos. En los 5 clips de prueba no cambia nada (su tramo activo dura
+    de 12,8 a 38 s). La ficha "Sin nota" dice los segundos en los que se ha medido (9 s en este clip, no 2).
+- **Descartado:** medir la fiabilidad en todo el vídeo. El clip de jabs se quedaba con 76,2% de puntos visibles,
+  a 1,2 del umbral de alta, porque cuentan los segundos de entrar y salir del plano.
+- **Validación** (pipeline completo, en local):
+
+  | Clip | Golpes (izq./der.) | Antes: fiabilidad · nota | Después: fiabilidad · nota | Segundos medidos |
+  |---|---|---|---|---|
+  | Jabs | 10/0 | alta · 92 | alta · 92 | 16,7 |
+  | Directos | 0/10 | alta · 90 | alta · 90 | 17,8 |
+  | 1-2 bueno | 6/6 | alta · 94 | alta · 94 | 12,8 |
+  | 1-2 vago | 15/13 | alta · 71 | alta · 71 | 35,5 |
+  | Sombra | 27/13 | alta · 56 | alta · 56 | 38,1 |
+  | De frente a 1,5 m | 1/0 | media · 21 | **baja · Sin nota** (pocos golpes) | 2,3 → 9,2 |
