@@ -93,7 +93,10 @@ video { max-height: 70vh; }
 @media (prefers-reduced-motion: reduce) { .tc-track { animation: none; } }
 
 /* Pasos del análisis mientras se procesa */
-.tc-psteps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0 10px; }
+/* 4 en fila si caben en la tarjeta; si no, 2x2 (depende del ancho de la tarjeta, no de la pantalla) */
+.tc-pwrap { container-type: inline-size; }
+.tc-psteps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 10px; }
+@container (max-width: 600px) { .tc-psteps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .tc-pstep { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 16px;
   border: 1px solid var(--tc-line); background: var(--tc-card); color: #8A887C; font-size: 13.5px; font-weight: 600; }
 .tc-pstep b { font-family: var(--tc-cond); font-weight: 700; font-size: 20px; line-height: 1; min-width: 20px; }
@@ -199,7 +202,6 @@ video { max-height: 70vh; }
   .tc-step span { font-size: 12.5px; }
   .tc-title { font-size: 32px; }
   .tc-noscore { font-size: 54px; }
-  .tc-psteps { grid-template-columns: repeat(2, 1fr); }
   .tc-badge { font-size: 11.5px; margin-left: 8px; padding: 4px 10px; }
   .tc-sec { margin: 24px 0 12px; }
   .tc-hero { padding: 20px 18px 18px; }

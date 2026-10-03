@@ -58,7 +58,7 @@ def progress_steps_html(steps, current):
         f'<b>{"✓" if i < current else f"{i + 1:02d}"}</b><span>{escape(s)}</span></div>'
         for i, s in enumerate(steps)
     )
-    return f'<div class="tc"><div class="tc-psteps">{items}</div></div>'
+    return f'<div class="tc tc-pwrap"><div class="tc-psteps">{items}</div></div>'
 
 
 def section_html(num, kicker, title, badge=None):
