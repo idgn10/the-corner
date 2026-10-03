@@ -40,6 +40,10 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   y consejos casi todos de refuerzo). Ojo: en sombra hay curvos contados como rectos (limitación conocida).
 - **Qué hay en git:** solo `demo/metrics.json` (datos, sin imagen). `demo/annotated.mp4` existe en tu
   ordenador pero no se sube (los vídeos están en `.gitignore`).
+  **Actualizado (decidido por Ignacio): opción 3.** `demo/annotated.mp4` se sube al repo como única excepción
+  (`!demo/annotated.mp4` en `.gitignore`), así el ejemplo online tiene vídeo sin configurar nada. Recodificado
+  de 12,7 MB a **4,7 MB** (H.264, CRF 24, misma resolución 404×720 y 59,94 fps; SSIM 0,985 frente al original,
+  sin diferencias visibles en el esqueleto ni en los textos).
 - **Sin el vídeo** (lo que pasará online tal cual) el ejemplo muestra ficha, consejos, gráfica y
   momentos, y en lugar del vídeo un aviso de que no está disponible.
 - **Para tener el vídeo en la versión online**, tres opciones (decides tú):

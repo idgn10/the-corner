@@ -231,6 +231,7 @@ boxeo/
   card.py, charts.py   ficha visual y gráfica de la sesión
   pipeline.py          todo junto (lo usan la app y el CLI)
 scripts/               analyze.py, download_model.py, make_demo.py
-demo/                  análisis de ejemplo para el modo demo (el vídeo no se sube)
+demo/                  análisis de ejemplo para el modo demo (metrics.json y annotated.mp4,
+                       el único vídeo en git)
 docs/                  plan, roadmap, decisiones y despliegue
 ```

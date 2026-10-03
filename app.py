@@ -19,7 +19,7 @@ APP_NAME = "The Corner"
 TAGLINE = ("Graba tu sombra, súbela y en un minuto sabrás cómo están tu guardia, tu extensión y tu ritmo, "
            "con consejos concretos para tu próxima sesión.")
 STRIP = "Tu entrenador entre asaltos"
-DEMO_DIR = ROOT / "demo"   # metrics.json (en git) + annotated.mp4 (solo en local, ver docs/DECISIONES.md)
+DEMO_DIR = ROOT / "demo"   # metrics.json + annotated.mp4 (los dos en git, ver docs/DECISIONES.md punto 3)
 
 st.set_page_config(page_title=f"{APP_NAME} · Análisis de boxeo", page_icon="🥊", layout="wide")
 st.html(f"<style>{(ROOT / 'styles.css').read_text(encoding='utf-8')}</style>")  # todo el estilo visual

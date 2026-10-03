@@ -57,7 +57,7 @@ boxeo-mvp/
     card.py, charts.py   # ficha y gráfica de la app
     pipeline.py          # análisis completo (lo usan app.py y el CLI)
   docs/                  # SCORING, DECISIONES, DESPLIEGUE, ROADMAP, PLAN_Y_PROMPTS
-  demo/                  # análisis de ejemplo: metrics.json en git, annotated.mp4 no
+  demo/                  # análisis de ejemplo: metrics.json y annotated.mp4 (único vídeo en git)
   data/, outputs/, models/   # gitignored
 ```
 
@@ -115,7 +115,8 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
 - Antes de añadir una dependencia pesada, preguntar.
 - Commits pequeños con mensajes claros. Al terminar: resumen breve en español de qué se hizo, cómo probarlo y qué falta.
 - Documentar las decisiones en docs/DECISIONES.md y mantener README y docs/SCORING.md al día.
-- No subir nunca vídeos, outputs, modelos ni documentos privados.
+- No subir nunca vídeos, salvo demo/annotated.mp4 (vídeo del ejemplo, menos de 10 MB). Tampoco outputs,
+  modelos ni documentos privados.
 - MVP: si algo se complica, proponer la versión más simple.
 
 ## Problemas conocidos

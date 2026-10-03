@@ -40,14 +40,12 @@ El repo ya está preparado. Tú solo tienes que hacer los pasos de la web (unos 
 
 ## Vídeo del ejemplo (opcional)
 
-El vídeo del ejemplo no está en GitHub (regla: no subir vídeos). Sin él, el ejemplo funciona igual pero
-sin vídeo. Para añadirlo sin meterlo en el repo:
+`demo/annotated.mp4` está en GitHub (única excepción a "no subir vídeos", 4,7 MB), así que el ejemplo online
+ya tiene vídeo sin configurar nada. Si cambias el ejemplo con `scripts/make_demo.py`, comprueba que el vídeo
+pesa menos de 10 MB (si no, recodifícalo: el comando está en el propio script).
 
-1. Sube `demo/annotated.mp4` (está en tu ordenador) a YouTube como **No listado**.
-2. Copia el enlace y ponlo en **Settings → Secrets** de la app: `DEMO_VIDEO_URL = "https://youtu.be/..."`.
-3. Guarda. La app se reinicia sola y los botones de "Momentos para revisar" también saltan al segundo exacto.
-
-Otras opciones y sus pegas: ver `docs/DECISIONES.md`, punto 3.
+`DEMO_VIDEO_URL` (en **Settings → Secrets**) solo se usa si falta `demo/annotated.mp4`. Otras opciones y sus
+pegas: ver `docs/DECISIONES.md`, punto 3.
 
 ## Si algo falla
 

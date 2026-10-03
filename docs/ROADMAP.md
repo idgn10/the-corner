@@ -73,7 +73,7 @@ Cómo grabar: móvil fijo, cuerpo entero, buena luz, 60 fps si se puede, solo t�
 
 - [x] Preparar despliegue en Streamlit Community Cloud (requirements, packages.txt, descarga del modelo al arrancar)
 - [ ] Desplegar la app desde la web de Streamlit (lo haces tú, pasos en `docs/DESPLIEGUE.md`)
-- [ ] (Opcional) Vídeo del ejemplo online: YouTube no listado + secret `DEMO_VIDEO_URL`
+- [x] (Opcional) Vídeo del ejemplo online: `demo/annotated.mp4` subido al repo (4,7 MB)
 - [x] README como caso de producto: problema, usuario, MoSCoW, cómo funciona, métricas, calibración, limitaciones, siguientes pasos
 - [ ] Capturas para el README (3 huecos marcados: resultados, subida y móvil)
 - [x] Commit y push

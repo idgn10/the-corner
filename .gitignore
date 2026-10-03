@@ -19,6 +19,8 @@ models/
 *.m4v
 *.MP4
 *.MOV
+# Excepcion: el video del ejemplo (modo demo online). Menos de 10 MB, ver docs/DECISIONES.md punto 3
+!demo/annotated.mp4
 
 # Secretos
 .streamlit/secrets.toml
