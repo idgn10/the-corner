@@ -32,8 +32,16 @@ def _pt(row, name):
 
 
 def _label(img, text, org, color, scale):
-    cv2.putText(img, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, (0, 0, 0), max(2, int(5 * scale)), cv2.LINE_AA)
-    cv2.putText(img, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, color, max(1, int(2 * scale)), cv2.LINE_AA)
+    # Contorno negro con copias desplazadas del MISMO grosor que el texto: en OpenCV el espaciado
+    # entre letras depende del grosor, y un contorno mas grueso quedaba como un "fantasma" desplazado.
+    th = max(2, round(2 * scale))
+    d = max(1, round(1.5 * scale))
+    x, y = org
+    for dx in (-d, 0, d):
+        for dy in (-d, 0, d):
+            if dx or dy:
+                cv2.putText(img, text, (x + dx, y + dy), cv2.FONT_HERSHEY_SIMPLEX, scale, (0, 0, 0), th, cv2.LINE_AA)
+    cv2.putText(img, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, color, th, cv2.LINE_AA)
 
 
 def draw_frame(img, row, counts, guard_up, flash_side=None):
