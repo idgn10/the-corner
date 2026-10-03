@@ -5,6 +5,8 @@ Distancias normalizadas por la anchura de hombros. Coordenadas de imagen: la y c
 import numpy as np
 import pandas as pd
 
+from boxeo.moves import moves_mask, summary
+
 SIDES = {"left": "l", "right": "r"}
 
 
@@ -114,8 +116,12 @@ def _mean(values, nd=1):
     return round(float(np.mean(values)), nd) if values else None
 
 
-def _masks(n, punches, fps, cfg):
-    """(tramo activo, frames dentro de un golpe) como arrays booleanos."""
+def _masks(n, punches, fps, cfg, moves=None):
+    """(tramo activo, frames dentro de un golpe) como arrays booleanos.
+
+    Con `moves` (curvos y esquivas, beta) sus tramos cuentan tambien como "dentro de un golpe": no son guardia
+    baja. El tramo activo sigue dependiendo solo de los rectos.
+    """
     active = np.ones(n, bool)
     if punches:
         margin = int(cfg["active_margin_seconds"] * fps)
@@ -124,17 +130,19 @@ def _masks(n, punches, fps, cfg):
     in_punch = np.zeros(n, bool)
     for p in punches:
         in_punch[p["frame_start"]:p["frame_end"] + 1] = True
+    if moves:
+        in_punch |= moves_mask(n, moves, fps, cfg)
     return active, in_punch
 
 
-def _guard_mask(df, punches, fps, cfg):
+def _guard_mask(df, punches, fps, cfg, moves=None):
     """Tramo en el que se mide la guardia: el tramo activo sin la bajada final.
 
     La guardia se mide hasta la ultima vez que las dos manos estan arriba (al menos guard.final_up_seconds)
     despues de la vuelta del ultimo golpe: si bajas las manos y ya no las subes, has terminado y no cuenta.
     Solo acorta el tramo activo, nunca lo alarga. Ver docs/DECISIONES.md, punto 14.
     """
-    active, in_punch = _masks(len(df), punches, fps, cfg)
+    active, in_punch = _masks(len(df), punches, fps, cfg, moves)
     if not punches:
         return active, in_punch
     both_up = ((df["up_l"] == 1) & (df["up_r"] == 1)).to_numpy()
@@ -150,14 +158,14 @@ def _guard_mask(df, punches, fps, cfg):
     return active, in_punch
 
 
-def guard_timeline(df, punches, fps, cfg, min_seconds=0.4, merge_seconds=0.25, worst=3):
-    """Tramos con la guardia baja (fuera de los golpes, en el tramo activo) y los peores momentos.
+def guard_timeline(df, punches, fps, cfg, moves=None, min_seconds=0.4, merge_seconds=0.25, worst=3):
+    """Tramos con la guardia baja (fuera de los golpes, curvos y esquivas, en el tramo activo) y los peores momentos.
 
     Devuelve {"guard_low": [{"start", "end", "hand"}], "worst_guard": [los `worst` tramos mas largos]}.
     hand: "izquierda", "derecha" o "las dos" (la mano que estuvo abajo la mayor parte del tramo).
     """
     n = len(df)
-    active, in_punch = _guard_mask(df, punches, fps, cfg)
+    active, in_punch = _guard_mask(df, punches, fps, cfg, moves)
     up_l, up_r = df["up_l"].to_numpy(float), df["up_r"].to_numpy(float)
     low = active & ~in_punch & ((up_l == 0) | (up_r == 0))
 
@@ -188,19 +196,19 @@ def guard_timeline(df, punches, fps, cfg, min_seconds=0.4, merge_seconds=0.25, w
     return {"guard_low": out, "worst_guard": sorted(worst_list, key=lambda g: g["start"])}
 
 
-def compute_metrics(df, punches, fps, cfg):
-    """Resumen de la sesion. Los golpes deben venir anotados con annotate_punches.
+def compute_metrics(df, punches, fps, cfg, moves=None):
+    """Resumen de la sesion. Los golpes (solo rectos) deben venir anotados con annotate_punches.
 
     Guardia, base y ritmo se miden solo en el tramo activo (alrededor de los golpes); la guardia, sin la
-    bajada final de manos al terminar (_guard_mask).
+    bajada final de manos al terminar (_guard_mask) ni los curvos y esquivas (`moves`, beta).
     """
     n = len(df)
-    active, in_punch = _masks(n, punches, fps, cfg)
-    guard_active, _ = _guard_mask(df, punches, fps, cfg)
+    active, _ = _masks(n, punches, fps, cfg)
+    guard_active, in_move = _guard_mask(df, punches, fps, cfg, moves)
     duration = active.sum() / fps if fps else 0
 
     both_up = df["up_l"] * df["up_r"]
-    valid = both_up.notna().to_numpy() & ~in_punch & guard_active
+    valid = both_up.notna().to_numpy() & ~in_move & guard_active
     base_valid = df["base_ok"].notna().to_numpy() & active
 
     by_type = {}
@@ -225,4 +233,5 @@ def compute_metrics(df, punches, fps, cfg):
         "punches_per_min": round(len(punches) / duration * 60, 1) if duration else None,
         "peak_speed_mean": _mean([p["peak_speed"] for p in punches]),
         "by_type": by_type,
+        "moves_beta": summary(moves or []),
     }

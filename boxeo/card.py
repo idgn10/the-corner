@@ -1,12 +1,14 @@
 """Componentes visuales de la app (HTML). El estilo esta en styles.css (lo carga app.py)."""
 from html import escape
 
+from boxeo.moves import summary
 from boxeo.tips import RECORDING_KEYS, ranked_keys
 
 # Paleta de The Corner (la misma que styles.css y .streamlit/config.toml)
 BEIGE, BLACK, COPPER, GRAY = "#D3D1BA", "#161616", "#E2A27E", "#9A9A92"
 GOOD, MID, BAD, NONE = "#5F8A62", "#B8862F", "#B0533C", GRAY   # niveles en tonos apagados
 LEFT, RIGHT = BLACK, COPPER                                      # mano izquierda / derecha en la grafica
+BETA_NOTE = "Detección de curvos y esquivas en pruebas: calibrada con un solo boxeador."
 
 
 def _n(x, nd=0):
@@ -87,9 +89,22 @@ def hero_html(result):
             '<div class="tc-stats">'
             f'<div class="tc-stat"><b>{m["n_left"]}</b><span>Izquierda</span></div>'
             f'<div class="tc-stat"><b>{m["n_right"]}</b><span>Derecha</span></div>'
-            f'<div class="tc-stat"><b>{ppm}</b><span>Golpes/min</span></div>'
-            f'<div class="tc-stat"><b>{m["n_punches"]}</b><span>Golpes</span></div>'
-            "</div>" + _quality_html(result.get("quality")) + "</div></div>")
+            f'<div class="tc-stat"><b>{ppm}</b><span>Rectos/min</span></div>'
+            f'<div class="tc-stat"><b>{m["n_punches"]}</b><span>Rectos</span></div>'
+            "</div>" + beta_html(result) + _quality_html(result.get("quality")) + "</div></div>")
+
+
+def beta_html(result):
+    """Curvos y esquivas (beta): cuantos hay y el aviso. No puntuan. Los analisis antiguos no los tienen."""
+    if "moves" not in result:
+        return ""
+    n = summary(result["moves"])
+    items = "".join(f'<div class="tc-stat"><b>{n[k]}</b><span>{label}</span></div>'
+                    for k, label in (("crochet", "Crochets"), ("uppercut", "Uppercuts"), ("esquiva", "Esquivas")))
+    return ('<div class="tc-beta"><div class="tc-quality-head"><span>Curvos y esquivas</span>'
+            '<b class="tc-beta-tag">Beta</b></div>'
+            f'<div class="tc-beta-stats">{items}</div>'
+            '<div class="tc-quality-msg">No cuentan para la nota ni como guardia baja. ' + escape(BETA_NOTE) + "</div></div>")
 
 
 QUALITY_COLORS = {"alta": GOOD, "media": MID, "baja": BAD}
@@ -245,9 +260,11 @@ def metrics_html(result, cfg, orientative=False):
             f'<div class="tc-how">{escape(total_how)}</div></details></div></div></div>')
 
 
-def legend_html():
+def legend_html(beta=False):
+    """Leyenda de la grafica. `beta`: el analisis trae curvos y esquivas (los antiguos no)."""
     return ('<div class="tc"><div class="tc-legend">'
             f'<span><i class="tc-dot" style="background:{LEFT}"></i>Golpe con la izquierda</span>'
             f'<span><i class="tc-dot" style="background:{RIGHT}"></i>Golpe con la derecha</span>'
             f'<span><i class="tc-dot" style="background:{BAD}"></i>Guardia baja</span>'
-            '<span>Más claro = golpe corto</span></div></div>')
+            '<span>Más claro = golpe corto</span>'
+            + ('<span><b>Beta:</b> ● crochet · ▲ uppercut · ◆ esquiva</span>' if beta else "") + "</div></div>")

@@ -41,6 +41,26 @@ punches:
                                  # (evita contar como golpe bajar el brazo)
   debounce_seconds: 0.25     # no contar dos golpes de la misma mano tan seguidos
 
+# Movimientos que no son rectos (BETA): crochet, uppercut y esquiva. NO puntuan: se muestran en la ficha y la
+# grafica, un curvo deja de contar como jab/directo y curvos y esquivas no cuentan como guardia baja.
+# Unidad T = longitud del tronco de pie (hombros-caderas): casi no cambia con el angulo de camara.
+# Calibrado con un solo boxeador (ver docs/DECISIONES.md, punto 15).
+moves:
+  enabled: true
+  hook_elbow_min: -0.08    # crochet: el codo como mucho esto (T) por debajo de su hombro (codo levantado)...
+  hook_angle_max: 80       # ...con el brazo doblado (codo en grados)...
+  hook_wrist_min: -0.25    # ...y la muneca a la altura de la cabeza (T respecto a la nariz)
+  up_speed: 6.0            # uppercut: la muneca sube al menos a esta velocidad (T por segundo)...
+  up_low: -0.65            # ...desde al menos esto por debajo de la nariz (T)...
+  up_rise: 0.4             # ...sube al menos esto (T)...
+  up_top: -0.25            # ...hasta la altura de la cara...
+  up_angle_max: 110        # ...con el codo doblado arriba (grados)
+  dodge_drop: 0.38         # esquiva: la nariz baja al menos esto (T) respecto a estar de pie
+  guard_margin_seconds:    # tramo que no cuenta para la guardia: [antes, despues] del movimiento
+    crochet: [0.3, 0.3]
+    uppercut: [0.2, 0.3]
+    esquiva: [0.2, 0.2]
+
 # 3. Extension: angulo del codo en el pico del golpe
 extension:
   good_angle: 160

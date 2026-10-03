@@ -207,7 +207,7 @@ def results_view():
 
     st.html(section_html(3, "Tu sesión", "Segundo a segundo"))
     with st.container(key="tc-card-chart"):
-        st.html(legend_html())
+        st.html(legend_html(beta="moves" in r))
         st.altair_chart(session_chart(r), width="stretch", theme=None)
 
     # El video va junto a los momentos: cada boton lo lleva a ese segundo y en el movil queda justo encima
@@ -229,7 +229,8 @@ def results_view():
                        file_name=f"{Path(r['video']).stem}_analisis.json", mime="application/json",
                        width="stretch")
     st.html('<div class="tc"><div class="tc-note">La medición es 2D: funciona mejor con la cámara fija, '
-            "de lado o en diagonal. Los ganchos se cuentan como golpes rectos.</div></div>")
+            "de lado o en diagonal. La nota juzga solo los golpes rectos; los curvos y las esquivas se detectan "
+            "en pruebas (beta) y no puntúan.</div></div>")
 
 
 def low_quality_view(r):

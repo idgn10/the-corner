@@ -21,7 +21,8 @@ mejor no dar nota que dar una falsa.
 - Must: pose, vídeo con esqueleto, detección de golpes rectos por mano, métricas, nota, fiabilidad, CLI y app.
 - Should: ficha visual cuidada, consejos por reglas, app publicada (hecho).
 - Could: consejos con la API de Claude, evolución entre sesiones, ficha compartible.
-- Won't (por ahora): ganchos/uppercuts, varias personas en el plano, tiempo real, cuentas de usuario.
+- Beta: crochet, uppercut y esquiva (no puntúan; ver abajo).
+- Won't (por ahora): puntuar curvos/esquivas, varias personas en el plano, tiempo real, cuentas de usuario.
 
 ## Stack
 - Python 3.11 (MediaPipe da problemas con versiones más nuevas).
@@ -50,6 +51,7 @@ boxeo-mvp/
     pose.py              # lectura de vídeo, landmarks por fotograma, suavizado
     metrics.py           # ángulos, guardia, mano contraria, vuelta a la guardia, base
     punches.py           # detección de golpes
+    moves.py             # curvos y esquivas (beta)
     scoring.py           # subnotas 0-100 y total ponderado
     quality.py           # fiabilidad del análisis (alta / media / baja)
     tips.py              # consejos por reglas
@@ -76,7 +78,13 @@ el último golpe (`guard.final_up_seconds`; más alto esconde fallos reales, ver
   debajo de los hombros (bajar el brazo no es golpe).
 - 0,25 s mínimo entre golpes de la misma mano. Si las dos manos "golpean" a menos de 0,15 s, cuenta la que
   más se aleja (giro del tronco).
-- Orthodox: izquierda = jab, derecha = directo. Los curvos se cuentan como rectos (fuera de alcance).
+- Orthodox: izquierda = jab, derecha = directo. Un "recto" que coincide con un curvo detectado de la misma mano no cuenta.
+
+**Curvos y esquivas (moves.py, beta, sección `moves` de config.yaml):** en T = longitud del tronco de pie.
+Crochet: codo a la altura del hombro (≥ −0,08 T), brazo ≤ 80° y muñeca a la altura de la cabeza. Uppercut: muñeca
+desde ≥ 0,65 T bajo la nariz, sube > 6 T/s al menos 0,4 T hasta la cara con el codo ≤ 110°. Esquiva: la nariz baja
+≥ 0,38 T (sin media/entera; no cuenta tras el último golpe). No puntúan; no son guardia baja; la nota juzga solo
+los rectos. Se muestran en ficha y gráfica solo con fiabilidad no baja. Ver DECISIONES punto 15.
 
 **Mano "arriba" (guard.rule = elbow):** muñeca a menos de 0,8 anchuras de hombro de la nariz y por encima del codo.
 
@@ -110,7 +118,9 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
   (jab, directo, uno_dos, uno_dos_vago, sombra). Golpes idénticos y nota total ±2. Si no se cumple, no se
   sube: se descarta o se presenta a Ignacio una tabla de antes y después.
 - Referencia actual (local, 60 fps): jab 10/0 · 92, directo 0/10 · 90, uno_dos 6/6 · 94,
-  uno_dos_vago 15/13 · 71, sombra 27/13 · 57. Todos con fiabilidad alta.
+  uno_dos_vago 15/13 · 71, sombra 22/9 · 73 (15 crochets, 12 uppercuts, 11 esquivas). Todos con fiabilidad alta.
+  Los 4 clips de rectos no deben tener ningún curvo ni esquiva. Clips de curvos y esquivas: `data/Crochet_*`,
+  `Upper_*`, `Medias_*`, `Enteras_*` (frente, 45º, 90º).
 - **El análisis lee el vídeo con OpenCV.** Leer con ffmpeg es más rápido pero cambia golpes dudosos;
   la lectura rápida (`iter_frames_fast`) es solo para el vídeo de salida.
 - Si un cambio mueve notas, tabla de antes y después **antes** del push (cada push publica la app).
@@ -127,7 +137,7 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
 - Calibrado con vídeos a 60 fps: a 30 fps la nota puede variar unos puntos (validado, no pasa). La app
   recomienda 1080p a 60 fps y avisa con menos de 50 fps. Soportar 30 fps requeriría interpolar la pose.
 - En golpes dudosos, recodificar o analizar en otra máquina puede cambiar ±1 golpe (la app publicada da
-  sombra 27/12). En un mismo equipo el análisis es determinista.
+  sombra 27/12, antes de la beta de curvos). En un mismo equipo el análisis es determinista.
 - Medición 2D: los ángulos dependen de la cámara. Grabar con cámara fija, cuerpo entero, de lado o en
   diagonal (de frente da fiabilidad baja).
 - Calibrado con un solo usuario, en casa y sin guantes.

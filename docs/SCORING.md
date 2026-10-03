@@ -39,7 +39,8 @@ Cada golpe se etiqueta con su mano. Con guardia **diestra** (`stance: orthodox`)
 **jab** y la derecha el **directo**; con guardia zurda (`southpaw`), al revés.
 
 > Ojo: un golpe corto (codo entre 125° y 160°) **sí cuenta como golpe**, pero luego baja la nota de
-> extensión. Los ganchos con el brazo bastante abierto también pasan estos filtros y se cuentan como rectos.
+> extensión. Un crochet con el brazo bastante abierto también pasa estos filtros: si además se detecta como
+> crochet (ver "Curvos y esquivas"), deja de contar como recto.
 
 ### Cuándo una mano está "arriba" (en guardia)
 
@@ -58,6 +59,29 @@ Para la guardia, además, el tramo acaba en la **bajada final**: la última vez 
 (al menos **0,1 s**, `guard.final_up_seconds`) después del último golpe. Si bajas las manos y ya no las vuelves
 a subir, has terminado y eso no cuenta como guardia baja. Si las bajas y luego vuelves a subir la guardia, sí
 cuenta: es un fallo real. Subir este valor esconde fallos (con 0,3 s ya se escondía uno del 1-2 vago).
+
+### Curvos y esquivas (beta: no puntúan)
+
+La app detecta también **crochet, uppercut y esquiva** (`boxeo/moves.py`). Se muestran como "Beta" en la ficha y
+en la gráfica, pero **la nota sigue juzgando solo los rectos**. Tienen dos efectos:
+
+- Un **curvo deja de contar como jab/directo** (si un "recto" de la misma mano coincide con él).
+- **Curvos y esquivas no cuentan como guardia baja**: sus fotogramas (con un margen de 0,2-0,3 s antes y
+  después, `moves.guard_margin_seconds`) se quitan de la guardia y de los momentos para revisar, igual que los
+  de un recto.
+
+Se miden en **T, la longitud del tronco de pie** (de hombros a caderas), que casi no cambia con el ángulo de
+cámara:
+
+| Movimiento | Regla | Ajuste |
+|---|---|---|
+| Crochet | Codo a la altura del hombro (como mucho 0,08 T por debajo), brazo doblado (≤ 80°) y muñeca a la altura de la cabeza | `hook_elbow_min`, `hook_angle_max`, `hook_wrist_min` |
+| Uppercut | La muñeca viene de ≥ 0,65 T bajo la nariz y sube a más de 6 T/s, al menos 0,4 T, hasta la cara, con el codo doblado arriba (≤ 110°) | `up_low`, `up_speed`, `up_rise`, `up_top`, `up_angle_max` |
+| Esquiva | La nariz baja ≥ 0,38 T respecto a estar de pie. No distingue media y entera. No cuenta después del último golpe | `dodge_drop` |
+
+Funciona mejor **en diagonal (45°)**. De perfil (90°) no ve los curvos del brazo de atrás, y **de frente un recto
+hacia la cámara parece un crochet**; por eso con fiabilidad baja no se muestran. Calibrado con un solo boxeador:
+detalle, aciertos y limitaciones en `docs/DECISIONES.md`, punto 15.
 
 ---
 
@@ -82,8 +106,8 @@ Los pesos suman 90 (la base está a 0), así que el "peso real" es cada peso div
 
 - **Qué mide:** si mantienes las dos manos protegiendo la cara cuando no estás golpeando.
 - **Cómo:** se cogen los fotogramas del tramo activo (sin la bajada final) que **no** están dentro de un
-  golpe (un golpe va desde su arranque hasta que la mano vuelve a la guardia). En cada uno se mira si **las dos manos
-  están arriba**. El valor es el % de esos fotogramas en los que sí.
+  golpe (un golpe va desde su arranque hasta que la mano vuelve a la guardia) ni de un curvo o una esquiva. En cada
+  uno se mira si **las dos manos están arriba**. El valor es el % de esos fotogramas en los que sí.
 - **Escala:** 40% o menos = 0 puntos · 90% o más = 100.
 
 ### Mano contraria arriba (peso 20)
@@ -287,6 +311,13 @@ frontera entre tener nota y no tenerla.
 `edge_margin` (0,3 anchuras de hombro) es lo cerca del borde que tiene que estar la muñeca para contar como
 "mano fuera del encuadre". `min_punches` (5) es el mínimo de golpes para dar nota y `min_seconds` (10 s) el
 mínimo de vídeo en el que se mide la fiabilidad. Detalle y motivos en `docs/DECISIONES.md`, puntos 7 y 13.
+
+### Curvos y esquivas (beta)
+
+Los umbrales de la tabla de "Curvos y esquivas" (sección 1), en la sección `moves`. Con `enabled: false` se
+vuelve al análisis de antes (los curvos cuentan como rectos y como guardia baja). Bajar los umbrales detecta más
+movimientos, pero también rectos y bajadas de guardia reales como curvos: comprueba siempre que los clips de
+rectos sigan sin detecciones.
 
 ### Lo que no está en `config.yaml` (está en el código)
 

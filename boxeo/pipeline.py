@@ -8,6 +8,7 @@ from pathlib import Path
 import yaml
 
 from boxeo.metrics import add_features, annotate_punches, compute_metrics, guard_timeline
+from boxeo.moves import detect_moves, drop_late_dodges, split_straights
 from boxeo.pose import extract_landmarks, smooth
 from boxeo.punches import detect_punches
 from boxeo.quality import assess
@@ -52,8 +53,12 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     fps = info["fps"]
     report(STEPS[2])
     df = add_features(smooth(raw, fps, cfg), fps, cfg)
-    punches = annotate_punches(df, detect_punches(df, fps, cfg), fps, cfg)
-    metrics = compute_metrics(df, punches, fps, cfg)
+    # Curvos y esquivas (beta, no puntuan): un curvo deja de contar como recto y no cuentan como guardia baja
+    moves = detect_moves(df, fps, cfg)
+    punches, _ = split_straights(detect_punches(df, fps, cfg), moves, fps)
+    punches = annotate_punches(df, punches, fps, cfg)
+    moves = drop_late_dodges(moves, punches)
+    metrics = compute_metrics(df, punches, fps, cfg, moves)
     scores = score(metrics, cfg)
     quality = assess(df, punches, fps, info["size"], cfg)
     # Fiabilidad baja: sin nota total y sin consejos de tecnica (mejor ningun dato que uno falso).
@@ -75,7 +80,8 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
         "metrics": metrics,
         "tips": tips,
         "punches": punches,
-        "timeline": guard_timeline(df, punches, fps, cfg),
+        "moves": moves,
+        "timeline": guard_timeline(df, punches, fps, cfg, moves),
         "quality": quality,
     }
     with open(out_dir / "metrics.json", "w", encoding="utf-8") as f:

@@ -52,7 +52,8 @@ Lo que necesita no es un informe biomecánico: es **saber qué corregir mañana*
 | **Must** | Extracción de pose, vídeo con esqueleto, detección de golpes por mano, métricas, puntuación, CLI y app local | ✅ Hecho |
 | **Should** | Ficha visual cuidada, consejos por reglas, despliegue en Streamlit Community Cloud | ✅ Ficha y consejos · 🟡 Despliegue preparado, pendiente de publicar |
 | **Could** | Consejos redactados con la API de Claude, evolución entre sesiones | ⏸️ No hecho (decisión: no usar IA generativa donde una regla basta) |
-| **Won't (por ahora)** | Distinguir ganchos/uppercuts, varias personas en plano, tiempo real | ❌ Fuera de alcance |
+| **Beta** | Detectar crochets, uppercuts y esquivas (no puntúan; dejan de contar como recto y como guardia baja) | 🧪 En pruebas, calibrado con un solo boxeador |
+| **Won't (por ahora)** | Puntuar curvos y esquivas, varias personas en plano, tiempo real | ❌ Fuera de alcance |
 
 Además del plan inicial: gráfica de la sesión, momentos para revisar con salto al vídeo y modo demo.
 
@@ -108,7 +109,7 @@ si el sistema no baja la nota en la métrica correcta, algo falla.
 | Directos | Solo directos | 0 / 10 ✅ | 90 |
 | 1-2 bueno | Combinaciones con buena técnica | 6 / 6 ✅ | **94** |
 | 1-2 vago | Las mismas combinaciones, con peor técnica a propósito | 15 / 13 ✅ | **71** |
-| Sombra libre | Sombra con movimiento y curvos | 27 / 13 | 57 |
+| Sombra libre | Sombra con movimiento, curvos y esquivas | 22 / 9 rectos + 15 crochets, 12 uppercuts y 11 esquivas (beta) | 73 |
 
 Todos los conteos coinciden con los golpes reales. El 1-2 "vago" pierde 23 puntos frente al bueno, y los
 pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión (100 → 69).
@@ -142,9 +143,9 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
    las manos en la cara, y daba 0 en guardia a una sombra en la que las manos están arriba casi la
    mitad del tiempo. La del codo **no depende de la inclinación del cuerpo**, que es lo que cambia
    en cuanto el usuario se mueve.
-6. **Los curvos se quedan contados como rectos** (no subir el codo mínimo a 140°). Subirlo filtraba
-   algunos ganchos, pero también golpes rectos cortos del clip "vago", que deben contar y penalizar.
-   Distinguir ganchos queda en el *Won't*.
+6. **Los curvos no se filtran subiendo el codo mínimo a 140°.** Eso filtraba algunos ganchos, pero también
+   golpes rectos cortos del clip "vago", que deben contar y penalizar. En su lugar, los curvos se detectan
+   aparte (beta, ver abajo) y solo entonces dejan de contar como rectos.
 7. **Vuelta a la guardia con el brazo recogido.** De perfil, el puño del jab estirado queda en la imagen
    delante de la cara y la regla de guardia lo daba por "arriba": salían vueltas de 0,0 s, imposibles.
    Ahora la mano tiene que estar arriba y con el codo a menos de 90°, y antes del siguiente golpe.
@@ -153,8 +154,10 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
 ## 8. Limitaciones conocidas
 
 - **Base no medible de perfil.** Un pie tapa al otro en la imagen; la base se calcula pero no puntúa ni da consejos.
-- **Los curvos cuentan como golpes rectos.** Solo distingue mano izquierda/derecha (jab/directo). Un gancho
-  con el brazo bastante abierto (codo > 125°) se cuenta como recto y suele bajar la nota de extensión.
+- **Curvos y esquivas en beta.** Se detectan crochet, uppercut y esquiva (sin distinguir media y entera), pero
+  no puntúan y están calibrados con un solo boxeador. Funcionan mejor en diagonal (45°); de perfil no se ven los
+  curvos del brazo de atrás y de frente un recto hacia la cámara parece un crochet. Un curvo que no se detecta
+  sigue contando como recto. Detalle en `docs/DECISIONES.md`, punto 15.
 - **Una sola persona en plano.** Si aparece otra persona, el esqueleto puede saltar de una a otra.
 - **Medición 2D.** Los ángulos dependen de la cámara; los umbrales están calibrados con vídeos casi de
   perfil, con cámara fija y cuerpo entero. Con otros ángulos de cámara habría que recalibrar.
@@ -166,8 +169,8 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
   orientación. Falta un segundo clip de frente para recalibrar. Con fiabilidad baja no se da nota (solo datos
   orientativos), así que unos umbrales demasiado estrictos dejarían sin nota vídeos que sí eran válidos.
 - **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos:
-  el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: sombra da 27/13 golpes
-  (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.
+  el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: antes de la beta de curvos, sombra
+  daba 27/13 golpes (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.
 - **Calibrado con vídeos a 60 fps:** a 30 fps la nota puede variar unos puntos, e incluso recodificar el vídeo puede cambiar ±1 golpe dudoso.
 - Vídeos de 60 s como máximo, procesados a 720p como máximo.
 
@@ -177,7 +180,7 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
 2. **Evolución entre sesiones:** guardar cada análisis y enseñar la tendencia de la nota y de cada métrica.
    Es lo que convierte un análisis puntual en un hábito.
 3. **Base medible:** pedir un ángulo de cámara en diagonal o estimar la profundidad (pose 3D de MediaPipe).
-4. **Distinguir ganchos y uppercuts** por la trayectoria de la muñeca, no solo por el codo.
+4. **Sacar de beta los curvos y las esquivas:** validarlos con otros boxeadores y decidir si puntúan.
 5. **Rondas guiadas:** "3 minutos de jab-directo" con objetivos, y comparar la sesión con la anterior.
 6. **Consejos redactados con IA** solo si las pruebas con usuarios muestran que las reglas se quedan cortas.
 

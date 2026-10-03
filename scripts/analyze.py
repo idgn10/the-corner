@@ -42,6 +42,9 @@ def main():
     print(f"Fiabilidad del análisis: {q['level']} ({q['message']})")
     print(f"Golpes: {m['n_punches']} (izq. {m['n_left']}, der. {m['n_right']}) en {m['duration_s']} s"
           f" (activo {m['active_s']} s) | persona detectada en el {m['pose_detected_pct']}% de los frames")
+    beta = m.get("moves_beta")
+    if beta and q["level"] != "baja":
+        print(f"Beta (no puntúa): {beta['crochet']} crochets, {beta['uppercut']} uppercuts, {beta['esquiva']} esquivas")
     for s in r["subscores"].values():
         score = s["score"] if s["score"] is not None else "-"
         if s["weight"] == 0:

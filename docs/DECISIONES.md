@@ -372,3 +372,62 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   regenerado: 57/100; el vídeo del ejemplo no cambia.
 - **Pendiente (no incluido):** al principio de sombra hay un tramo parecido (0,0-0,75 s, mano derecha baja antes
   del primer golpe, entrando en guardia).
+
+## 15. Curvos y esquivas en beta (decidido por Ignacio)
+
+- **Qué:** se detectan **crochet, uppercut y esquiva** (`boxeo/moves.py`, umbrales en `config.yaml`, sección
+  `moves`). No puntúan. Se muestran como "Beta" en la ficha y en la gráfica (carril "Curvos (beta)"), con el aviso
+  "Detección de curvos y esquivas en pruebas: calibrada con un solo boxeador". Con fiabilidad baja no se muestran.
+- **Efectos en el análisis:** (1) un curvo deja de contar como jab/directo; (2) curvos y esquivas no cuentan como
+  guardia baja (ni en la nota ni en los momentos para revisar), igual que los rectos; (3) la nota sigue juzgando
+  solo los rectos (también el volumen y el mínimo de 5 golpes de la fiabilidad).
+- **Unidad T = longitud del tronco de pie** (hombros-caderas). La anchura de hombros cambia ×2,5 entre frente y
+  perfil; el tronco casi no cambia con el ángulo.
+- **Reglas:**
+  - **Crochet:** codo a la altura del hombro (como mucho 0,08 T por debajo), brazo doblado (≤ 80°) y muñeca a la
+    altura de la cabeza, al menos 2 fotogramas. Quita el recto de la misma mano con pico desde 0,2 s antes hasta
+    0,15 s después (en los clips de crochet el falso recto, que es abrir el brazo, llega como mucho 0,13 s antes).
+  - **Uppercut:** la muñeca viene de ≥ 0,65 T bajo la nariz, sube a > 6 T/s al menos 0,4 T hasta la cara y acaba
+    con el codo doblado (≤ 110°). Solo quita un recto que caiga dentro del propio uppercut.
+  - **Esquiva:** la nariz baja ≥ 0,38 T respecto a estar de pie (cuantil 15 % de 4 s). No distingue media y
+    entera (83 % de acierto: no es fiable). Se ignoran las esquivas posteriores al último golpe (acercarse a la
+    cámara para pararla).
+- **Calibración:** 12 clips etiquetados (crochet, uppercut, esquiva media y entera, de frente, 45° y 90°; 8-10
+  repeticiones contadas a ojo) y revisión de sombra por Ignacio.
+
+  | Movimiento | Frente | 45° | 90° | En los 4 clips de rectos |
+  |---|---|---|---|---|
+  | Crochet | 10/10 | 9/10 | 5/10 (solo la mano cercana) | 0 |
+  | Uppercut | 8/8 | 8/8 | 5/10 (solo la mano cercana) | 0 |
+  | Esquiva | 16/16 | 20/20 | 18/18 | 0 |
+
+  9 detecciones de "otro tipo" (crochet en clips de uppercut y al revés). Mejor ángulo para todo: **45°**.
+- **Revisión de sombra por Ignacio:** corregidos el crochet derecho de 3,1 s, la esquiva entera de ~15 s, el
+  uppercut derecho de 22,5 s y el directo de 23,4 s (antes lo quitaba un uppercut que empieza después); ya no
+  sale la esquiva falsa de 37,4 s.
+- **Limitaciones conocidas:**
+  - **9,6 s de sombra:** un directo que arranca con el codo alto y doblado sale como crochet derecho. El filtro que
+    lo evita ("si después el brazo se estira, es un recto") perdía 6 crochets reales en los clips de prueba.
+  - **De frente, un recto hacia la cámara parece un crochet** (el brazo se ve acortado). En `1,5m.MOV` salen 9
+    "crochets" que son rectos; la profundidad que estima MediaPipe no los separa. Por eso la beta no se muestra con
+    fiabilidad baja. Riesgo: un vídeo casi de frente que pase el control de orientación (Crochet de frente da 0,53)
+    perdería rectos.
+  - A 90° el brazo de atrás queda tapado: no se detectan sus curvos.
+  - Calibrado con un solo boxeador y una sesión, y los umbrales se ajustaron con estos mismos clips.
+- **Validación (pipeline completo, en local):**
+
+  | Clip | Rectos (izq./der.) | Guardia % | Nota |
+  |---|---|---|---|
+  | Jabs | 10/0 = | 100 = | 92 = |
+  | Directos | 0/10 = | 96,1 = | 90 = |
+  | 1-2 bueno | 6/6 = | 95,5 = | 94 = |
+  | 1-2 vago | 15/13 = | 71,1 = | 71 = |
+  | Sombra | 27/13 → 22/9 | 48,1 → 79,1 | **57 → 73** |
+  | Crochet de frente | 5/3 → 0/0 | 81,6 → 68,5 | **81 → Sin nota** |
+  | Crochet 45° | 5/1 → 1/0 | 58,3 → 79,7 | **74 → Sin nota** |
+  | `1,5m.MOV` (de frente) | 1/0 → 0/0 | — | Sin nota = |
+
+  En los 4 clips de rectos son idénticos los golpes (fotograma a fotograma), las métricas y los momentos. El resto
+  de clips nuevos ya estaban sin nota. Sombra: guardia 16 → 78, mano contraria 43 → 27, extensión 75 → 100,
+  volumen 86 → 58 (49 rectos/min). De sus momentos para revisar solo queda 0,0-0,75 s (entrada en guardia, ver
+  punto 14).
