@@ -21,6 +21,9 @@ guard:
   rule: elbow
   max_dist_nose: 0.8       # distancia maxima muneca-nariz
   max_below_shoulder: 0.15 # (solo regla shoulders) margen por debajo de la linea de hombros
+  final_up_seconds: 0.1    # la guardia se mide hasta la ultima vez que tienes las dos manos arriba al menos
+                           # este tiempo tras el ultimo golpe: bajar los brazos al terminar no cuenta
+                           # (mas alto esconde fallos reales; ver docs/DECISIONES.md, punto 14)
 
 # Las metricas se calculan solo en el tramo activo: desde este tiempo antes del primer golpe
 # hasta este tiempo despues del ultimo (no cuenta entrar en plano ni prepararse)

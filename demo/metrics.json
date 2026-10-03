@@ -6,13 +6,13 @@
     404,
     720
   ],
-  "total": 56,
+  "total": 57,
   "subscores": {
     "guard": {
       "label": "Guardia",
       "metric": "guard_pct",
-      "value": 45.7,
-      "score": 11,
+      "value": 48.1,
+      "score": 16,
       "weight": 25
     },
     "other_hand": {
@@ -58,7 +58,7 @@
     "n_punches": 40,
     "n_left": 27,
     "n_right": 13,
-    "guard_pct": 45.7,
+    "guard_pct": 48.1,
     "other_hand_up_pct": 61.5,
     "extended_pct": 67.5,
     "extension_mean_angle": 165.7,
@@ -78,7 +78,7 @@
     }
   },
   "tips": [
-    "Entre golpes tienes las dos manos arriba solo el 46% del tiempo. Después de cada golpe, vuelve a llevar los puños a la barbilla antes de moverte.",
+    "Entre golpes tienes las dos manos arriba solo el 48% del tiempo. Después de cada golpe, vuelve a llevar los puños a la barbilla antes de moverte.",
     "Bajas la mano izquierda en el 54% de tus directos: mantenla pegada a la barbilla mientras golpeas con la otra.",
     "El 32% de tus golpes se quedan cortos (codo por debajo de 160°): termina cada golpe con el brazo estirado, como si quisieras atravesar el objetivo."
   ],
@@ -775,11 +775,6 @@
         "start": 27.84,
         "end": 28.51,
         "hand": "las dos"
-      },
-      {
-        "start": 37.12,
-        "end": 38.05,
-        "hand": "las dos"
       }
     ],
     "worst_guard": [
@@ -804,6 +799,8 @@
     "level": "alta",
     "reason": "ok",
     "message": "Buena grabación: se te ve bien, de lado y con las manos dentro del encuadre.",
+    "n_punches": 40,
+    "measured_s": 38.1,
     "visible_pct": 81.1,
     "wrist_out_pct": 0.7,
     "orientation_ratio": 0.45,

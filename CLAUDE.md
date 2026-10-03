@@ -67,6 +67,8 @@ tobillos 27/28. Distancias normalizadas por la anchura de hombros. Coordenadas d
 Landmarks con visibility < 0.5 se ignoran. Suavizado con mediana de 0,1 s. Guardia orthodox o southpaw.
 
 **Tramo activo:** de 1 s antes del primer golpe a 1 s después del último. Guardia, base y ritmo se miden solo ahí.
+La guardia, además, sin la bajada final: se mide hasta la última vez que las dos manos están arriba ≥ 0,1 s tras
+el último golpe (`guard.final_up_seconds`; más alto esconde fallos reales, ver DECISIONES punto 14).
 
 **Detección de golpes (punches.py):**
 - Máximo local de la distancia muñeca-hombro, alcanzado alejándola rápido (aumento de alcance + pico de velocidad).
@@ -108,7 +110,7 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
   (jab, directo, uno_dos, uno_dos_vago, sombra). Golpes idénticos y nota total ±2. Si no se cumple, no se
   sube: se descarta o se presenta a Ignacio una tabla de antes y después.
 - Referencia actual (local, 60 fps): jab 10/0 · 92, directo 0/10 · 90, uno_dos 6/6 · 94,
-  uno_dos_vago 15/13 · 71, sombra 27/13 · 56. Todos con fiabilidad alta.
+  uno_dos_vago 15/13 · 71, sombra 27/13 · 57. Todos con fiabilidad alta.
 - **El análisis lee el vídeo con OpenCV.** Leer con ffmpeg es más rápido pero cambia golpes dudosos;
   la lectura rápida (`iter_frames_fast`) es solo para el vídeo de salida.
 - Si un cambio mueve notas, tabla de antes y después **antes** del push (cada push publica la app).

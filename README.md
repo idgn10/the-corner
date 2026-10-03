@@ -70,7 +70,8 @@ vídeo (MP4/MOV) ─► pose (MediaPipe, 33 puntos/frame) ─► suavizado ─�
   alejándose rápido (aumento de alcance + pico de velocidad). El codo solo filtra: tiene que pasar de 125°.
   Si las dos manos "golpean" a la vez (menos de 0,15 s), solo cuenta la que más se aleja.
 - **Tramo activo:** guardia y ritmo se miden desde 1 s antes del primer golpe hasta 1 s después del
-  último, para que no cuente entrar en plano ni prepararse.
+  último, para que no cuente entrar en plano ni prepararse. Bajar los brazos al terminar tampoco cuenta
+  como guardia baja.
 - **Consejos:** por reglas, sin IA generativa: rápido, gratis, explicable y siempre con el dato real.
 
 Stack: Python 3.11 · MediaPipe · OpenCV · NumPy/pandas · Streamlit + Altair · imageio-ffmpeg.
@@ -107,7 +108,7 @@ si el sistema no baja la nota en la métrica correcta, algo falla.
 | Directos | Solo directos | 0 / 10 ✅ | 90 |
 | 1-2 bueno | Combinaciones con buena técnica | 6 / 6 ✅ | **94** |
 | 1-2 vago | Las mismas combinaciones, con peor técnica a propósito | 15 / 13 ✅ | **71** |
-| Sombra libre | Sombra con movimiento y curvos | 27 / 13 | 56 |
+| Sombra libre | Sombra con movimiento y curvos | 27 / 13 | 57 |
 
 Todos los conteos coinciden con los golpes reales. El 1-2 "vago" pierde 23 puntos frente al bueno, y los
 pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión (100 → 69).
@@ -134,7 +135,7 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
    | 1-2 vago | 59 | **71** |
    | Sombra (nota de guardia) | 0 | **14** |
 
-   Cifras del momento de la decisión; con las reglas actuales la guardia de sombra sale en 11.
+   Cifras del momento de la decisión; con las reglas actuales la guardia de sombra sale en 16.
 
    Elegí la del codo aunque separa algo menos el bueno del vago (23 puntos frente a 31). Revisando
    fotogramas de sombra entre golpes, la de hombros marcaba "guardia baja" cuando estaba agachado con

@@ -54,6 +54,11 @@ La guardia y el ritmo se miden solo en la parte del vídeo en la que estás boxe
 del primer golpe** hasta **1 s después de que termine el último** (`active_margin_seconds`). Así no cuenta
 entrar en plano, prepararte ni ir a parar la grabación.
 
+Para la guardia, además, el tramo acaba en la **bajada final**: la última vez que tienes las dos manos arriba
+(al menos **0,1 s**, `guard.final_up_seconds`) después del último golpe. Si bajas las manos y ya no las vuelves
+a subir, has terminado y eso no cuenta como guardia baja. Si las bajas y luego vuelves a subir la guardia, sí
+cuenta: es un fallo real. Subir este valor esconde fallos (con 0,3 s ya se escondía uno del 1-2 vago).
+
 ---
 
 ## 2. Las métricas
@@ -76,8 +81,8 @@ Los pesos suman 90 (la base está a 0), así que el "peso real" es cada peso div
 ### Guardia (peso 25)
 
 - **Qué mide:** si mantienes las dos manos protegiendo la cara cuando no estás golpeando.
-- **Cómo:** se cogen los fotogramas del tramo activo que **no** están dentro de un golpe (un golpe va
-  desde su arranque hasta que la mano vuelve a la guardia). En cada uno se mira si **las dos manos
+- **Cómo:** se cogen los fotogramas del tramo activo (sin la bajada final) que **no** están dentro de un
+  golpe (un golpe va desde su arranque hasta que la mano vuelve a la guardia). En cada uno se mira si **las dos manos
   están arriba**. El valor es el % de esos fotogramas en los que sí.
 - **Escala:** 40% o menos = 0 puntos · 90% o más = 100.
 
@@ -244,6 +249,7 @@ En **vuelta a la guardia** es al revés (menos es mejor): bajar `good` (0,4 s) l
 | `guard.max_dist_nose` | 0,8 | más permisivo: manos más lejos de la cara cuentan como "arriba" (sube guardia, mano contraria y vuelta) | más estricto. Con 0,7 o menos ya castigaba al 1-2 bueno |
 | `guard.rule` | `elbow` | `shoulders` usa la línea de hombros en vez del codo; castiga agacharse o meter la barbilla con las manos en la cara | — |
 | `guard.max_below_shoulder` | 0,15 | solo con `rule: shoulders`: más margen por debajo de los hombros | — |
+| `guard.final_up_seconds` | 0,1 s | esconde fallos reales: con 0,3 s una bajada real del 1-2 vago dejaba de contar (+3 de nota) | parpadeos de ruido cuentan como "subir la guardia" y vuelve a contar la bajada final |
 | `extension.good_angle` | 160° | más exigente: menos golpes cuentan como bien extendidos | más permisivo |
 | `recovery.max_seconds` | 1,5 s | un golpe sin recoger "cuesta" más en la media | castiga menos los golpes que no vuelven a la guardia |
 | `active_margin_seconds` | 1,0 s | entra más tiempo de antes y después de boxear en guardia y ritmo | se ajusta más a los golpes |

@@ -337,3 +337,38 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   | 1-2 vago | 15/13 | alta · 71 | alta · 71 | 35,5 |
   | Sombra | 27/13 | alta · 56 | alta · 56 | 38,1 |
   | De frente a 1,5 m | 1/0 | media · 21 | **baja · Sin nota** (pocos golpes) | 2,3 → 9,2 |
+
+## 14. Bajar los brazos al terminar no cuenta como guardia baja (decidido por Ignacio)
+
+- **Problema:** la guardia se medía hasta 1 s después de la vuelta del último golpe (fin del tramo activo), así
+  que bajar los brazos al terminar el ejercicio contaba como guardia baja. En el 1-2 bueno, el único "momento
+  para revisar" era el segundo 12,4 ("bajas las dos manos 0,4 s"): el final del ejercicio.
+- **Regla:** la guardia se mide hasta la **última vez que tienes las dos manos arriba** (al menos 0,1 s,
+  `guard.final_up_seconds`) después del último golpe. Si bajas las manos y ya no las vuelves a subir, has
+  terminado. Solo acorta el tramo de la guardia (nota de guardia, gráfica y momentos para revisar); ritmo,
+  base, "segundos analizados" y fiabilidad siguen con el tramo activo de siempre.
+- **Descartado: cortar justo en la vuelta del último golpe (o con un margen fijo).** Escondía un fallo real en
+  el 1-2 vago: en 34,5-35,5 s las muñecas quedan 0,5 anchuras de hombro por debajo de los hombros, igual que en
+  sus bajadas a propósito (10,6 / 20,8 / 27,7 s), y después **vuelve a subir la guardia** (35,47-35,75 s). Su
+  nota pasaba de 71 a 74 (+3, fuera de la regla de ±2).
+- **Por qué 0,1 s:** los parpadeos de "manos arriba" por ruido duran menos de 0,1 s (sombra tiene uno de 0,02 s
+  en plena bajada final) y la última guardia real del 1-2 vago dura 0,28 s. Con 0,3 s ya se escondía su fallo.
+  Si el valor se queda corto, el efecto es el de antes (cuenta la bajada final), no esconder fallos.
+- **Las 4 bajadas que dejan de contar son finales:** las manos ya no vuelven a subir hasta el final del vídeo
+  (1-2 bueno: muñeca derecha 1,3 anchuras de hombro por debajo de los hombros, camino de la cadera; sombra: las
+  dos abajo desde 37,07 s hasta el final, 38,8 s; jabs y directos: sin momento, solo cambia el %).
+- **No cambia** el texto "Guardia baja" del vídeo anotado, que se dibuja fotograma a fotograma.
+- **Validación** (pipeline completo, en local):
+
+  | Clip | Golpes | Guardia % | Nota guardia | Nota total | Momentos que desaparecen |
+  |---|---|---|---|---|---|
+  | Jabs | 10/0 = | 97,4 → 100 | 100 → 100 | 92 → 92 | — |
+  | Directos | 0/10 = | 93,2 → 96,1 | 100 → 100 | 90 → 90 | — |
+  | 1-2 bueno | 6/6 = | 91,2 → 95,5 | 100 → 100 | 94 → 94 | 12,4 s (las dos, 0,4 s) |
+  | 1-2 vago | 15/13 = | 71,1 → 71,1 | 62 → 62 | 71 → 71 | — (se mantiene el 34,5 s, fallo real) |
+  | Sombra | 27/13 = | 45,7 → 48,1 | 11 → 16 | 56 → 57 | ninguno de los 3; sale de la gráfica el tramo 37,1-38,0 s |
+
+  Clip de frente (`1,5m.MOV`): sigue "Sin nota" (1 golpe). El ejemplo (`demo/metrics.json`, sombra) se ha
+  regenerado: 57/100; el vídeo del ejemplo no cambia.
+- **Pendiente (no incluido):** al principio de sombra hay un tramo parecido (0,0-0,75 s, mano derecha baja antes
+  del primer golpe, entrando en guardia).

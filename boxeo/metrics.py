@@ -127,6 +127,29 @@ def _masks(n, punches, fps, cfg):
     return active, in_punch
 
 
+def _guard_mask(df, punches, fps, cfg):
+    """Tramo en el que se mide la guardia: el tramo activo sin la bajada final.
+
+    La guardia se mide hasta la ultima vez que las dos manos estan arriba (al menos guard.final_up_seconds)
+    despues de la vuelta del ultimo golpe: si bajas las manos y ya no las subes, has terminado y no cuenta.
+    Solo acorta el tramo activo, nunca lo alarga. Ver docs/DECISIONES.md, punto 14.
+    """
+    active, in_punch = _masks(len(df), punches, fps, cfg)
+    if not punches:
+        return active, in_punch
+    both_up = ((df["up_l"] == 1) & (df["up_r"] == 1)).to_numpy()
+    min_run = max(1, int(round(cfg["guard"]["final_up_seconds"] * fps)))
+    start = punches[-1]["frame_end"]
+    end, run = start + 1, 0
+    for i in range(start, len(df)):
+        run = run + 1 if both_up[i] else 0
+        if run >= min_run:
+            end = i + 1
+    active = active.copy()
+    active[end:] = False
+    return active, in_punch
+
+
 def guard_timeline(df, punches, fps, cfg, min_seconds=0.4, merge_seconds=0.25, worst=3):
     """Tramos con la guardia baja (fuera de los golpes, en el tramo activo) y los peores momentos.
 
@@ -134,7 +157,7 @@ def guard_timeline(df, punches, fps, cfg, min_seconds=0.4, merge_seconds=0.25, w
     hand: "izquierda", "derecha" o "las dos" (la mano que estuvo abajo la mayor parte del tramo).
     """
     n = len(df)
-    active, in_punch = _masks(n, punches, fps, cfg)
+    active, in_punch = _guard_mask(df, punches, fps, cfg)
     up_l, up_r = df["up_l"].to_numpy(float), df["up_r"].to_numpy(float)
     low = active & ~in_punch & ((up_l == 0) | (up_r == 0))
 
@@ -168,14 +191,16 @@ def guard_timeline(df, punches, fps, cfg, min_seconds=0.4, merge_seconds=0.25, w
 def compute_metrics(df, punches, fps, cfg):
     """Resumen de la sesion. Los golpes deben venir anotados con annotate_punches.
 
-    Guardia, base y ritmo se miden solo en el tramo activo (alrededor de los golpes).
+    Guardia, base y ritmo se miden solo en el tramo activo (alrededor de los golpes); la guardia, sin la
+    bajada final de manos al terminar (_guard_mask).
     """
     n = len(df)
     active, in_punch = _masks(n, punches, fps, cfg)
+    guard_active, _ = _guard_mask(df, punches, fps, cfg)
     duration = active.sum() / fps if fps else 0
 
     both_up = df["up_l"] * df["up_r"]
-    valid = both_up.notna().to_numpy() & ~in_punch & active
+    valid = both_up.notna().to_numpy() & ~in_punch & guard_active
     base_valid = df["base_ok"].notna().to_numpy() & active
 
     by_type = {}
