@@ -36,7 +36,8 @@ Lo que necesita no es un informe biomecánico: es **saber qué corregir mañana*
 3. **Mejora con tu ficha:**
    - Nota total de 0 a 100 y golpes por mano y por minuto.
    - **Tu plan para la próxima sesión:** 3 consejos ordenados por lo que más te resta, cada uno con tu dato.
-   - Tu vídeo con el esqueleto, contador de golpes e indicador de guardia (verde/rojo).
+   - Tu vídeo con el esqueleto, un rótulo en cada golpe (jab, directo, crochet, uppercut, esquiva), contador
+     de rectos, curvos y esquivas e indicador de guardia (verde/rojo).
    - **Tu sesión, segundo a segundo:** gráfica con cada golpe de cada mano y los momentos con la guardia baja.
    - **Momentos para revisar:** los tramos más largos con la guardia baja; un clic y el vídeo salta a ese segundo.
    - Detalle de cada métrica con un **"¿Cómo se calcula?"** en lenguaje sencillo.

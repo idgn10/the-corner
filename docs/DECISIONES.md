@@ -471,3 +471,30 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   con el mismo vídeo. Si algún día se guarda la evolución entre sesiones, hay que comparar dentro de una versión o
   recalcular las antiguas.
 - Se cambia en `SCORING_VERSION` (`boxeo/scoring.py`). Subirla cuando un cambio mueva notas de forma intencionada.
+
+## 18. Vídeo anotado con curvos y esquivas (decidido por Ignacio)
+
+- **Problema:** el vídeo de salida solo enseñaba los rectos (contador "Izq/Der"), aunque la ficha y la gráfica ya
+  mostraban curvos y esquivas, y durante un curvo o una esquiva salía "Guardia baja", que no cuenta en la nota.
+- **Solo cambia el dibujo** (`boxeo/render.py`): los `metrics.json` de los 5 clips de prueba son idénticos.
+- **Rótulos:** "JAB", "DIRECTO", "CROCHET IZQ/DER", "UPPER IZQ/DER" y "ESQUIVA", en el color de la mano del
+  esqueleto (azul izquierda, naranja derecha; la esquiva, en blanco). Aparecen en el instante que marca la gráfica
+  (pico del recto, centro del curvo, punto más bajo de la esquiva) y duran al menos 0,6 s, o hasta el final del
+  movimiento si dura más.
+- **Dónde:** abajo y centrados. Si coinciden varios (en sombra, hasta 3), se apilan hacia arriba y cada uno se
+  queda en su fila hasta que se quita. Arriba no caben: el marcador acaba hacia los 105 px y la cabeza empieza a
+  los 145-175 px (5 clips a 720 px de alto), así que solo cabría una fila. Abajo tapan como mucho las piernas
+  (la base no puntúa), nunca la cara, tampoco en las esquivas.
+- **Un golpe que sale como crochet y como uppercut a la vez** (2 en sombra) lleva un solo rótulo, con el nombre del
+  primero que se detecta, y cuenta una vez, igual que en el volumen de la nota.
+- **Marcador:** "RECTOS · CURVOS · ESQUIVAS" en columnas, con el número debajo, en lugar de "Izq/Der" (la mano ya se
+  ve en el rótulo y su color). Sombra acaba en 31 · 25 · 11, los mismos números que la ficha.
+- **Indicador de guardia:** durante un curvo o una esquiva, con el mismo margen que en la nota
+  (`moves.guard_margin_seconds`), no sale "Guardia baja": el indicador desaparece (si las dos manos están arriba,
+  sigue saliendo "Guardia"). Durante los rectos sigue como antes, fotograma a fotograma (punto 14).
+- **Con fiabilidad baja** el vídeo no rotula curvos ni esquivas y el marcador solo cuenta rectos, como la ficha y la
+  gráfica (punto 15).
+- **Validación:** los 5 clips de prueba dan `metrics.json` (y `landmarks.csv`) idénticos byte a byte a los de antes
+  (jab 10/0 · 92, directo 0/10 · 90, uno_dos 6/6 · 94, uno_dos_vago 15/13 · 72, sombra 22/9 · 82). El vídeo del
+  ejemplo (`demo/annotated.mp4`) se ha regenerado: 13 MB recodificado a 4,9 MB (CRF 24, SSIM 0,985);
+  `demo/metrics.json` no cambia.

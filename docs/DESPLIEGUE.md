@@ -40,7 +40,7 @@ El repo ya está preparado. Tú solo tienes que hacer los pasos de la web (unos 
 
 ## Vídeo del ejemplo (opcional)
 
-`demo/annotated.mp4` está en GitHub (única excepción a "no subir vídeos", 4,7 MB), así que el ejemplo online
+`demo/annotated.mp4` está en GitHub (única excepción a "no subir vídeos", 4,9 MB), así que el ejemplo online
 ya tiene vídeo sin configurar nada. Si cambias el ejemplo con `scripts/make_demo.py`, comprueba que el vídeo
 pesa menos de 10 MB (si no, recodifícalo: el comando está en el propio script).
 

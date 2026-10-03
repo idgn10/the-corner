@@ -58,6 +58,7 @@ Cómo grabar: móvil fijo, cuerpo entero, buena luz, 60 fps si se puede, solo t�
 
 - [x] Ficha visual tipo tarjeta deportiva: total grande, subscores con barras, golpes por mano y por minuto
 - [x] Vídeo anotado: contador de golpes, indicador de guardia verde/rojo, destello al detectar golpe
+- [x] Vídeo anotado con curvos y esquivas: rótulo de cada golpe y contador de rectos, curvos y esquivas
 - [x] Consejos más naturales con el dato concreto de la sesión
 - [x] Probar con todos los clips, commit y push
 
@@ -73,7 +74,7 @@ Cómo grabar: móvil fijo, cuerpo entero, buena luz, 60 fps si se puede, solo t�
 
 - [x] Preparar despliegue en Streamlit Community Cloud (requirements, packages.txt, descarga del modelo al arrancar)
 - [ ] Desplegar la app desde la web de Streamlit (lo haces tú, pasos en `docs/DESPLIEGUE.md`)
-- [x] (Opcional) Vídeo del ejemplo online: `demo/annotated.mp4` subido al repo (4,7 MB)
+- [x] (Opcional) Vídeo del ejemplo online: `demo/annotated.mp4` subido al repo (4,9 MB)
 - [x] README como caso de producto: problema, usuario, MoSCoW, cómo funciona, métricas, calibración, limitaciones, siguientes pasos
 - [ ] Capturas para el README (3 huecos marcados: resultados, subida y móvil)
 - [x] Commit y push

@@ -14,8 +14,9 @@ mejor no dar nota que dar una falsa.
 ## Flujo de usuario
 1. El usuario sube un vídeo corto (20-60 s) haciendo sombra o saco, casi de perfil o en diagonal.
 2. La app lo procesa (barra de progreso en 4 pasos).
-3. Muestra: vídeo con esqueleto, contador de golpes e indicador de guardia; ficha con métricas y nota;
-   tres consejos; momentos para revisar; fiabilidad del análisis. Con fiabilidad baja, "Sin nota".
+3. Muestra: vídeo con esqueleto, rótulo de cada golpe, contador (rectos, curvos, esquivas) e indicador de guardia;
+   ficha con métricas y nota; tres consejos; momentos para revisar; fiabilidad del análisis. Con fiabilidad baja,
+   "Sin nota".
 
 ## Alcance (MoSCoW)
 - Must: pose, vídeo con esqueleto, detección de golpes rectos por mano, métricas, nota, fiabilidad, CLI y app.

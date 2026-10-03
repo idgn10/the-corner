@@ -67,7 +67,9 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     tips = make_tips(metrics, scores, cfg) if reliable else recording_tips()
 
     report(STEPS[3])
-    render_video(video_path, out_dir / "annotated.mp4", df, punches, info, progress=lambda p: report(STEPS[3], p))
+    # Curvos y esquivas en el video solo con fiabilidad no baja, como en la ficha y la grafica
+    render_video(video_path, out_dir / "annotated.mp4", df, punches, info, moves if reliable else None, cfg,
+                 progress=lambda p: report(STEPS[3], p))
     df.to_csv(out_dir / "landmarks.csv", index=False, float_format="%.3f")
 
     result = {
