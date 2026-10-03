@@ -1,145 +1,128 @@
-# Boxeo MVP - Analisis de boxeo con IA
+# The Corner - Análisis de boxeo con IA
 
 ## Contexto
-Proyecto personal de Ignacio, inspirado en el analisis de padel que estudia
-partidos con camaras e IA (estimacion de pose, "esqueleto digital", ficha de jugador y coach virtual).
-Este MVP aplica la misma idea al boxeo: un video de alguien boxeando entra,
-y sale un analisis con esqueleto, metricas, puntuacion y consejos.
+Proyecto personal de Ignacio, inspirado en el análisis de pádel con cámaras e IA: estimación de pose ("esqueleto digital"),
+ficha del jugador y consejos. Aquí aplicado al boxeo: entra un vídeo de alguien haciendo sombra y sale
+un análisis con esqueleto, métricas, nota de 0 a 100 y tres consejos.
 
-Plazo: 5 dias. Prioridad absoluta: una version funcional de punta a punta lo antes posible,
-y despues pulir. Simplicidad por encima de todo.
+Ignacio no es programador: explícale siempre en español, de forma breve, qué has hecho y cómo probarlo.
+Las decisiones de producto (alcance, umbrales, pesos) las toma él. Recomienda, pero no decidas por él.
 
-Ignacio no es programador: explicale siempre en espanol, de forma breve, que has hecho y
-como probarlo. Las decisiones de producto (alcance, umbrales, pesos) las toma el.
+Principio de producto: **una nota tiene que ser verdad antes que espectacular.** Si el dato no es fiable,
+mejor no dar nota que dar una falsa.
 
 ## Flujo de usuario
-1. El usuario sube un video corto (20-60 s) de si mismo haciendo sombra o en el saco.
-2. La app procesa el video.
-3. Muestra:
-   - El video con el esqueleto dibujado encima, contador de golpes e indicador de guardia.
-   - Una ficha con las metricas y una puntuacion total de 0 a 100.
-   - Tres consejos concretos para mejorar, en espanol.
+1. El usuario sube un vídeo corto (20-60 s) haciendo sombra o saco, casi de perfil o en diagonal.
+2. La app lo procesa (barra de progreso en 4 pasos).
+3. Muestra: vídeo con esqueleto, contador de golpes e indicador de guardia; ficha con métricas y nota;
+   tres consejos; momentos para revisar; fiabilidad del análisis. Con fiabilidad baja, "Sin nota".
 
 ## Alcance (MoSCoW)
-- Must: extraccion de pose, video con esqueleto, deteccion de golpes (mano izquierda/derecha),
-  metricas basicas, puntuacion, CLI y app Streamlit local.
-- Should: ficha visual cuidada, consejos por reglas, despliegue en Streamlit Community Cloud.
-- Could: consejos redactados con la API de Claude, grafica de evolucion entre sesiones.
-- Won't (por ahora): distinguir ganchos/uppercuts, varias personas en el plano, tiempo real.
+- Must: pose, vídeo con esqueleto, detección de golpes rectos por mano, métricas, nota, fiabilidad, CLI y app.
+- Should: ficha visual cuidada, consejos por reglas, app publicada (hecho).
+- Could: consejos con la API de Claude, evolución entre sesiones, ficha compartible.
+- Won't (por ahora): ganchos/uppercuts, varias personas en el plano, tiempo real, cuentas de usuario.
 
 ## Stack
-- Python 3.11 (MediaPipe da problemas con versiones muy nuevas de Python).
-- MediaPipe Pose Landmarker (Tasks API, modo VIDEO). El modelo .task se descarga con un script
-  en `models/` (gitignored). Si MediaPipe diera problemas serios, alternativa: Ultralytics YOLO pose.
-- OpenCV, numpy, pandas, PyYAML.
-- Streamlit para la interfaz.
-- imageio-ffmpeg para codificar el video de salida en H.264.
+- Python 3.11 (MediaPipe da problemas con versiones más nuevas).
+- MediaPipe 0.10.35, Pose Landmarker (Tasks API, modo VIDEO), modelo `pose_landmarker_full`.
+  El .task se descarga con `scripts/download_model.py` en `models/` (gitignored).
+- OpenCV, numpy, pandas, PyYAML, Streamlit, imageio-ffmpeg (vídeo de salida H.264).
+- Publicada en Streamlit Community Cloud: https://thecorner-boxeo.streamlit.app/
+  **Cada push a `main` redespliega la app pública.**
 
 ## Estructura del repo
 ```
 boxeo-mvp/
   CLAUDE.md
-  README.md
+  README.md              # caso de producto
   requirements.txt
-  config.yaml            # umbrales y pesos del scoring (editable por Ignacio)
-  app.py                 # interfaz Streamlit (nombre del producto: "The Corner")
-  packages.txt           # librerias del sistema para Streamlit Cloud
+  packages.txt           # librerías del sistema para Streamlit Cloud
+  config.yaml            # umbrales y pesos (editable por Ignacio)
+  app.py                 # interfaz Streamlit ("The Corner")
+  styles.css             # estilos de la app
+  .streamlit/config.toml
   scripts/
     download_model.py
     analyze.py           # CLI: python scripts/analyze.py data/video.mp4
-    make_demo.py         # prepara demo/ desde un analisis de outputs/
+    make_demo.py         # prepara demo/ desde un análisis de outputs/
   boxeo/
-    pose.py              # landmarks por frame -> DataFrame, suavizado
-    metrics.py           # angulos, distancias, guardia, base
-    punches.py           # deteccion de golpes
-    scoring.py           # subscores 0-100 y total ponderado
+    pose.py              # lectura de vídeo, landmarks por fotograma, suavizado
+    metrics.py           # ángulos, guardia, mano contraria, vuelta a la guardia, base
+    punches.py           # detección de golpes
+    scoring.py           # subnotas 0-100 y total ponderado
+    quality.py           # fiabilidad del análisis (alta / media / baja)
     tips.py              # consejos por reglas
-    render.py            # dibujo del esqueleto y overlays, escritura H.264
-    card.py, charts.py   # ficha visual y grafica de la sesion de la app
-    pipeline.py          # todo el analisis junto (lo usan app.py y el CLI)
-  demo/                  # analisis de ejemplo: metrics.json en git, annotated.mp4 no
-  data/                  # videos de entrada (gitignored)
-  outputs/               # resultados (gitignored)
-  models/                # modelo descargado (gitignored)
+    render.py            # esqueleto y overlays, escritura H.264
+    card.py, charts.py   # ficha y gráfica de la app
+    pipeline.py          # análisis completo (lo usan app.py y el CLI)
+  docs/                  # SCORING, DECISIONES, DESPLIEGUE, ROADMAP, PLAN_Y_PROMPTS
+  demo/                  # análisis de ejemplo: metrics.json en git, annotated.mp4 no
+  data/, outputs/, models/   # gitignored
 ```
 
-## Definicion de metricas (valores iniciales, se calibraran con videos reales)
-Indices de landmarks MediaPipe: nariz 0, hombros 11/12, codos 13/14, munecas 15/16,
-caderas 23/24, rodillas 25/26, tobillos 27/28.
+## Cómo se analiza
+Landmarks MediaPipe: nariz 0, hombros 11/12, codos 13/14, muñecas 15/16, caderas 23/24, rodillas 25/26,
+tobillos 27/28. Distancias normalizadas por la anchura de hombros. Coordenadas de imagen (y hacia abajo).
+Landmarks con visibility < 0.5 se ignoran. Suavizado con mediana de 0,1 s. Guardia orthodox o southpaw.
 
-Reglas generales:
-- Normalizar todas las distancias por la anchura de hombros (distancia 11-12) para que no
-  dependan de lo cerca que este la camara.
-- Ignorar landmarks con visibility < 0.5. Suavizar con media movil o mediana de pocos frames.
-- Coordenadas de imagen: la y crece hacia abajo.
-- Guardia configurable: orthodox (mano adelantada = izquierda) o southpaw.
+**Tramo activo:** de 1 s antes del primer golpe a 1 s después del último. Guardia, base y ritmo se miden solo ahí.
 
-Metricas:
-1. Guardia: una mano esta "arriba" si la muneca esta a menos de 1.0 anchuras de hombro de la
-   nariz y por encima de la altura de los hombros. Metrica: % de frames sin golpe con ambas manos arriba.
-2. Mano contraria arriba: en cada golpe, se comprueba si la otra mano mantiene la guardia.
-   Metrica: % de golpes con la mano contraria arriba.
-3. Extension: angulo del codo (hombro-codo-muneca) en el pico del golpe. Bueno >= 160 grados.
-   Metrica: % de golpes bien extendidos y angulo medio.
-4. Vuelta a la guardia: tiempo desde el pico del golpe hasta que esa mano vuelve a la guardia
-   (mano arriba y brazo recogido: codo < 90 grados, recovery.max_elbow_angle). Si no vuelve antes
-   del pico del siguiente golpe (ni en 1.5 s), cuenta como 1.5 s. Bueno < 0.4 s. Metrica: tiempo medio.
-5. Base: distancia entre tobillos / anchura de hombros entre 1.0 y 1.6, y rodillas flexionadas
-   (angulo cadera-rodilla-tobillo < 170 grados). Metrica: % de frames con base correcta.
-6. Volumen y ritmo: golpes por minuto y velocidad pico media de la muneca.
+**Detección de golpes (punches.py):**
+- Máximo local de la distancia muñeca-hombro, alcanzado alejándola rápido (aumento de alcance + pico de velocidad).
+- En el pico, codo > 125° (solo filtra; la extensión se valora con 160°). La muñeca no puede estar muy por
+  debajo de los hombros (bajar el brazo no es golpe).
+- 0,25 s mínimo entre golpes de la misma mano. Si las dos manos "golpean" a menos de 0,15 s, cuenta la que
+  más se aleja (giro del tronco).
+- Orthodox: izquierda = jab, derecha = directo. Los curvos se cuentan como rectos (fuera de alcance).
 
-Deteccion de golpes (punches.py):
-- Un golpe se detecta sobre todo por la muneca: maximo local de la distancia muneca-hombro,
-  alcanzado alejandola rapido (aumento de alcance + pico de velocidad). El codo solo filtra:
-  en el pico debe superar 125 grados (configurable). Asi un golpe corto cuenta como golpe y
-  baja la nota de extension (que sigue valorandose con 160 grados).
-- En el pico la muneca no puede estar muy por debajo de los hombros (bajar el brazo no es golpe).
-- Debounce de 0.25 s por mano para no contar dos veces el mismo golpe.
-- Etiquetar mano izquierda/derecha y, segun la guardia, jab (mano adelantada) o directo.
+**Mano "arriba" (guard.rule = elbow):** muñeca a menos de 0,8 anchuras de hombro de la nariz y por encima del codo.
 
-## Calibracion con videos reales (2 oct 2026)
-Videos grabados casi de perfil. Cambios aprobados por Ignacio:
-- Guardia: la muneca puede quedar hasta 0.15 anchuras de hombro por debajo de la linea de hombros
-  (al meter la barbilla la mano queda algo baja).
-- Regla final de guardia (elegida por Ignacio): guard.rule = elbow. Mano arriba si la muneca esta
-  a menos de 0.8 anchuras de hombro de la nariz y por encima del codo. No depende de la inclinacion.
-- Si las dos manos "golpean" a menos de 0.15 s, solo cuenta la que mas se aleja (giro del tronco).
-- Guardia, base y ritmo se miden solo en el tramo activo (1 s antes del primer golpe a 1 s despues del ultimo).
-- Base con peso 0: de perfil un pie tapa al otro y no se puede medir.
-- Curvos: se siguen contando como rectos (fuera del alcance del MVP).
-- Vuelta a la guardia con brazo recogido (codo < 90 grados): de perfil el puno estirado queda delante
-  de la cara y la regla de guardia sola daba vueltas de 0.0 s. Golpe no recuperado antes del siguiente = 1.5 s.
-- La app publicada puede variar +-1-2 golpes frente a local en golpes dudosos (decodificacion distinta en
-  el servidor). En un mismo equipo el analisis es determinista.
+**Métricas y pesos:**
 
-## Scoring
-- Cada metrica se convierte en un subscore 0-100 con un mapeo lineal entre un umbral "malo"
-  y uno "bueno" (definidos en config.yaml).
-- Pesos iniciales: guardia 25, mano contraria 20, extension 20, vuelta a la guardia 15,
-  base 10, volumen y ritmo 10.
-- Total = media ponderada. Todo en config.yaml para que Ignacio pueda ajustarlo sin tocar codigo.
+| Métrica | Qué mide | Peso |
+|---|---|---|
+| Guardia | % del tiempo entre golpes con las dos manos arriba (fotograma a fotograma) | 25 |
+| Mano contraria | % de golpes con la otra mano arriba al menos el 50 % del golpe | 20 |
+| Extensión | % de golpes con el codo a 160° o más | 20 |
+| Vuelta a la guardia | Del pico hasta mano arriba y codo < 90° (`recovery.max_elbow_angle`). Si no vuelve antes del siguiente golpe ni en 1,5 s, cuenta 1,5 s. Bueno < 0,4 s | 15 |
+| Volumen | Golpes por minuto (≈ 20/min = 0, 70/min = 100) | 10 |
+| Base | Pies y rodillas | 0 (de perfil un pie tapa al otro) |
 
-## Consejos
-- Por reglas, sin IA: elegir las 3 metricas que mas restan a la nota total, (100 - subscore) x peso,
-  y generar un consejo en espanol con el dato concreto (ej.: "Bajas la mano derecha en el 40% de tus jabs: mantenla pegada a la barbilla").
-- La API de Claude es opcional y solo si Ignacio lo pide (coste y narrativa: no usar IA donde
-  una regla basta).
+Cada subnota es lineal entre un umbral "malo" y uno "bueno" (config.yaml). Total = media ponderada.
+**Sin golpes no hay nota.**
 
-## Salidas
-- outputs/<nombre>/annotated.mp4 (H.264), metrics.json, landmarks.csv.
-- La app Streamlit muestra el video anotado, la ficha y los consejos.
+**Fiabilidad (quality.py, sección `quality` de config.yaml):** la peor de tres medidas en el tramo activo:
+puntos clave visibles (≥ 75 % alta, < 50 % baja), mano fuera del encuadre (≤ 3 % alta, > 10 % baja; una
+muñeca a menos de 0,3 anchuras de hombro del borde cuenta como fuera, porque el detector la "pega" al borde)
+y orientación hombros ÷ tronco (≤ 0,60 alta, > 0,70 baja). **Con fiabilidad baja no hay nota** (total: null):
+pantalla "Sin nota", claves para grabar de nuevo y detalle en gris como "orientativo".
 
-## Problemas conocidos a evitar
-- OpenCV con codec mp4v genera videos que el navegador no reproduce: codificar en H.264
-  con imageio-ffmpeg.
-- Procesar a 720p como maximo para ir rapido. Limitar la app a videos de 60 s.
-- No subir nunca videos, outputs ni modelos a git.
-- La medicion es 2D: los angulos dependen del angulo de camara. Recomendado: camara fija,
-  cuerpo entero, de frente o en diagonal a unos 45 grados.
+**Consejos:** por reglas, sin IA. Las 3 métricas que más restan, (100 − subnota) × peso, con el dato
+concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio lo pide.
 
-## Forma de trabajar
-- Commits pequenos con mensajes claros; push a GitHub en cada hito que funcione.
-- Antes de anadir una dependencia pesada, preguntar.
-- Al final de cada paso: resumen breve en espanol de que se ha hecho, como probarlo y que falta.
-- Mantener README actualizado (como instalar, como usar, limitaciones).
-- MVP: si algo se complica, proponer la version mas simple y seguir.
+## Reglas de trabajo (importantes)
+- **Validación obligatoria** en cualquier cambio del análisis u optimización: pasar los 5 clips de prueba
+  (jab, directo, uno_dos, uno_dos_vago, sombra). Golpes idénticos y nota total ±2. Si no se cumple, no se
+  sube: se descarta o se presenta a Ignacio una tabla de antes y después.
+- Referencia actual (local, 60 fps): jab 10/0 · 92, directo 0/10 · 90, uno_dos 6/6 · 94,
+  uno_dos_vago 15/13 · 71, sombra 27/13 · 56. Todos con fiabilidad alta.
+- **El análisis lee el vídeo con OpenCV.** Leer con ffmpeg es más rápido pero cambia golpes dudosos;
+  la lectura rápida (`iter_frames_fast`) es solo para el vídeo de salida.
+- Si un cambio mueve notas, tabla de antes y después **antes** del push (cada push publica la app).
+- Antes de añadir una dependencia pesada, preguntar.
+- Commits pequeños con mensajes claros. Al terminar: resumen breve en español de qué se hizo, cómo probarlo y qué falta.
+- Documentar las decisiones en docs/DECISIONES.md y mantener README y docs/SCORING.md al día.
+- No subir nunca vídeos, outputs, modelos ni documentos privados.
+- MVP: si algo se complica, proponer la versión más simple.
+
+## Problemas conocidos
+- OpenCV con códec mp4v genera vídeos que el navegador no reproduce: codificar en H.264 con imageio-ffmpeg.
+- Se procesa a 720 px de alto como máximo y como máximo el primer minuto. Subida máx. 300 MB.
+- Calibrado con vídeos a 60 fps: a 30 fps la nota puede variar unos puntos (validado, no pasa). La app
+  recomienda 1080p a 60 fps y avisa con menos de 50 fps. Soportar 30 fps requeriría interpolar la pose.
+- En golpes dudosos, recodificar o analizar en otra máquina puede cambiar ±1 golpe (la app publicada da
+  sombra 27/12). En un mismo equipo el análisis es determinista.
+- Medición 2D: los ángulos dependen de la cámara. Grabar con cámara fija, cuerpo entero, de lado o en
+  diagonal (de frente da fiabilidad baja).
+- Calibrado con un solo usuario, en casa y sin guantes.
