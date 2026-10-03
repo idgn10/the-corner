@@ -165,6 +165,7 @@ pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión
 - **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos:
   el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: sombra da 27/13 golpes
   (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.
+- **Calibrado con vídeos a 60 fps:** a 30 fps la nota puede variar unos puntos, e incluso recodificar el vídeo puede cambiar ±1 golpe dudoso.
 - Vídeos de 60 s como máximo, procesados a 720p como máximo.
 
 ## 9. Siguientes pasos

@@ -189,7 +189,7 @@ de subida) son ~85 s, más que todo el análisis. Depende de la red de cada usua
 ser bastante menos). Opciones a valorar, no aplicadas:
 1. Pedir en la app grabar en **1080p a 30 fps** (Ajustes → Cámara → Grabar vídeo): archivo de aprox. la mitad y
    la mitad de fotogramas que analizar. Pero equivale a (d): los umbrales están calibrados con vídeos a 60 fps,
-   así que habría que validarlo con clips grabados a 30 fps.
+   así que habría que validarlo con clips grabados a 30 fps. **Validado en el punto 12: no cumple.**
 2. Limitar la duración recomendada a 20-30 s.
 
 ## 10. Vuelta a la guardia: la mano tiene que volver con el brazo recogido (decidido por Ignacio)
@@ -241,3 +241,50 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   otro lado. Ejemplo: **sombra da 27/13 golpes (izq./der.) en local y 27/12 online.** Es el mismo tipo de
   efecto que se vio al probar la reducción con ffmpeg (punto 9 (a)).
 - Anotado en las limitaciones del README.
+
+## 12. Validación a 30 fps: no cumple, se recomienda grabar a 60 fps (decidido por Ignacio)
+
+- **Por qué:** el iPhone graba por defecto en 1080p a 30 fps y todos los clips de calibración están a 60 fps.
+- **Cómo:** los 5 clips, convertidos a 30 fps con ffmpeg quitando un fotograma de cada dos (misma resolución,
+  HEVC a ~8 Mbit/s, aprox. lo que usa el iPhone en 1080p a 30 fps). **Control:** el mismo vídeo recodificado a
+  60 fps sin quitar fotogramas, para separar el efecto de recodificar del de los fps.
+  Regla: golpes idénticos y nota total ±2.
+
+| Clip | Golpes 60 → 30 | Nota 60 → 30 | Control: 60 recodificado | Qué cambia a 30 fps | ¿Cumple? |
+|---|---|---|---|---|---|
+| Jabs | 10/0 → 10/0 | 92 → 92 | 10/0 · 92 | nada | Sí |
+| Directos | 0/10 → 0/10 | 90 → 90 | 0/10 · 89 | nada | Sí |
+| 1-2 bueno | 6/6 → 6/6 | **94 → 86** | 6/6 · 97 | mano contraria 87 → 53 | **No** |
+| 1-2 vago | 15/13 → 15/13 | 71 → 73 | 14/13 · 73 | extensión 69 → 83 | Sí (+2) |
+| Sombra | **27/13 → 28/13** | **56 → 64** | 27/12 · 54 | extensión 75 → 96, mano contraria 43 → 60 | **No** |
+
+| Los 5 clips juntos | 60 fps | 30 fps |
+|---|---|---|
+| Tamaño de archivo | 202 MB | 138 MB (−31%) |
+| Tiempo de análisis (local) | 233 s | 111 s (−52%) |
+
+**Causas** (reglas que dependen de los fotogramas por segundo):
+
+1. **Suavizado (sesgo nuestro, la causa principal).** La mediana de 0,1 s son 7 fotogramas a 60 fps y solo 3 a
+   30: a 30 recorta menos los picos, el codo sale más estirado en el pico del golpe y la extensión se infla.
+   Comprobado con la misma pose de 60 fps quitando un fotograma de cada dos: la extensión de sombra sube de 75
+   a 100. Una ventana de 5 fotogramas a 30 fps se pasa al otro lado (sombra pierde 6 directos).
+2. **Mano contraria (azar).** Hay golpes con la otra mano arriba justo el ~50% del tiempo; con la mitad de
+   fotogramas caen a un lado u otro. En el 1-2 bueno (12 golpes) cada uno de esos golpes vale ~3,7 puntos de nota total.
+3. **Otras reglas por fotogramas, con poco efecto aquí:** la velocidad de la muñeca (entre fotogramas vecinos),
+   las ventanas en segundos redondeadas a fotogramas (0,4 / 0,25 / 0,15 s), el fotograma extra tras el pico al
+   medir el codo y la resolución del tiempo de vuelta a la guardia (17 frente a 33 ms).
+4. **MediaPipe** sigue a la persona de un fotograma al siguiente: a 30 fps los puntos salen algo distintos.
+
+- **Ruido de fondo:** solo recodificar a 60 fps ya rompe la regla en el 1-2 vago (pierde un golpe) y en sombra
+  (27/12, igual que la app publicada, punto 11), y el 1-2 bueno sube 3 puntos. La regla es más estricta que la
+  estabilidad actual con golpes dudosos, pero la extensión inflada a 30 fps es un sesgo real, no ruido.
+- **Aplicado:** en "Cómo grabar" se recomienda 1080p a 60 fps, con la ruta en el iPhone (Ajustes > Cámara >
+  Grabar vídeo > 1080p a 60 fps). Si el vídeo tiene menos de 50 fps, la ficha avisa en tono amable de que la
+  nota puede variar unos puntos. El análisis no cambia.
+- **Coste de pedir 60 fps:** archivos ~45% más grandes. El clip de directos pesa 27,7 MB a 60 fps y 19 MB a 30
+  (subida de ~83 s frente a ~57 s con la conexión de Ignacio, punto 9), y el análisis tarda el doble.
+- **Siguiente paso:** interpolar la pose a 60 fps antes de aplicar las reglas, para que trabajen igual que en la
+  calibración. Probado aparte: con la pose de 60 fps sin uno de cada dos fotogramas cumplen 4 de 5 clips; con los
+  vídeos convertidos siguen fallando el 1-2 bueno (90) y sombra (48, 27/11). Hay que validarlo con 2-3 clips
+  **grabados a 30 fps directamente con el iPhone** (no convertidos).

@@ -110,6 +110,8 @@ def upload_view():
                     "<li><span><b>Cuerpo entero</b> en el plano, de lado o en diagonal.</span></li>"
                     "<li><span><b>Buena luz</b> y solo tú en la imagen.</span></li>"
                     "<li><span><b>20-60 segundos</b> de sombra o saco, con jabs y directos.</span></li>"
+                    "<li><span><b>1080p a 60 fps.</b> En el iPhone: Ajustes &gt; Cámara &gt; Grabar vídeo "
+                    "&gt; 1080p a 60 fps.</span></li>"
                     "</ol></div>")
         with st.container(key="tc-card-demo"):
             st.html('<div class="tc"><div class="tc-card-title">¿Sin vídeo a mano?</div>'
@@ -191,6 +193,9 @@ def results_view():
         _video_block(r)
         st.button("Probar con otro vídeo", type="primary", on_click=_reset, width="stretch")
         return
+    if r.get("fps", 60) < 50:  # calibrado a 60 fps; a 30 la nota varia unos puntos (docs/DECISIONES.md, punto 12)
+        st.info(f"Tu vídeo está a {r['fps']:.0f} fps. {APP_NAME} está calibrada con vídeos a 60 fps, "
+                "así que la nota puede variar unos puntos.")
 
     c1, c2 = st.columns([5, 6], gap="large")
     with c1:
