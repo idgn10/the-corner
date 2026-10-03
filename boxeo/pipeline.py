@@ -13,7 +13,7 @@ from boxeo.pose import extract_landmarks, smooth
 from boxeo.punches import detect_punches
 from boxeo.quality import assess
 from boxeo.render import render_video
-from boxeo.scoring import score
+from boxeo.scoring import SCORING_VERSION, score
 from boxeo.tips import make_tips, recording_tips
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -60,7 +60,7 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
     moves = drop_late_dodges(moves, punches)
     metrics = compute_metrics(df, punches, fps, cfg, moves)
     scores = score(metrics, cfg)
-    quality = assess(df, punches, fps, info["size"], cfg)
+    quality = assess(df, punches, fps, info["size"], cfg, moves)
     # Fiabilidad baja: sin nota total y sin consejos de tecnica (mejor ningun dato que uno falso).
     # Las notas por metrica se guardan igual: la app las ensena como "orientativas".
     reliable = quality["level"] != "baja"
@@ -72,6 +72,7 @@ def analyze(video_path, out_dir=None, cfg=None, progress=None):
 
     result = {
         "video": video_path.name,
+        "scoring_version": SCORING_VERSION,
         "stance": cfg["stance"],
         "fps": round(fps, 2),
         "size": list(info["size"]),

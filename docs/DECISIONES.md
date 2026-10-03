@@ -379,8 +379,15 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   `moves`). No puntúan. Se muestran como "Beta" en la ficha y en la gráfica (carril "Curvos (beta)"), con el aviso
   "Detección de curvos y esquivas en pruebas: calibrada con un solo boxeador". Con fiabilidad baja no se muestran.
 - **Efectos en el análisis:** (1) un curvo deja de contar como jab/directo; (2) curvos y esquivas no cuentan como
-  guardia baja (ni en la nota ni en los momentos para revisar), igual que los rectos; (3) la nota sigue juzgando
-  solo los rectos (también el volumen y el mínimo de 5 golpes de la fiabilidad).
+  guardia baja (ni en la nota ni en los momentos para revisar), igual que los rectos; (3) la nota juzga solo los
+  rectos **salvo el volumen**, que suma los curvos (crochet y uppercut; si un mismo golpe sale como crochet y como
+  uppercut, cuenta una vez). Las esquivas no suman. El tramo del volumen abarca también los curvos. El mínimo de 5
+  golpes para tener nota sigue siendo de rectos.
+- **"Sin nota" por curvos:** si faltan rectos pero hay al menos 5 curvos y esquivas, más que rectos, y se graba de
+  lado o en diagonal, el mensaje es "Hemos detectado sobre todo curvos y esquivas. Por ahora The Corner solo puntúa
+  jabs y directos: incluye al menos 5 en tu sombra para tener nota." (Crochet de frente, uppercuts y esquivas). De
+  frente o casi de frente se mantiene el mensaje de pocos golpes, porque ahí un recto parece un crochet
+  (`1,5m.MOV`).
 - **Unidad T = longitud del tronco de pie** (hombros-caderas). La anchura de hombros cambia ×2,5 entre frente y
   perfil; el tronco casi no cambia con el ángulo.
 - **Reglas:**
@@ -414,20 +421,53 @@ ser bastante menos). Opciones a valorar, no aplicadas:
     perdería rectos.
   - A 90° el brazo de atrás queda tapado: no se detectan sus curvos.
   - Calibrado con un solo boxeador y una sesión, y los umbrales se ajustaron con estos mismos clips.
-- **Validación (pipeline completo, en local):**
+- **Validación final (versión de puntuación v2: puntos 15, 16 y 17; pipeline completo, en local):**
 
-  | Clip | Rectos (izq./der.) | Guardia % | Nota |
+  | Clip | Rectos (izq./der.) | Guardia % | Nota v1 → v2 |
   |---|---|---|---|
   | Jabs | 10/0 = | 100 = | 92 = |
-  | Directos | 0/10 = | 96,1 = | 90 = |
-  | 1-2 bueno | 6/6 = | 95,5 = | 94 = |
-  | 1-2 vago | 15/13 = | 71,1 = | 71 = |
-  | Sombra | 27/13 → 22/9 | 48,1 → 79,1 | **57 → 73** |
-  | Crochet de frente | 5/3 → 0/0 | 81,6 → 68,5 | **81 → Sin nota** |
-  | Crochet 45° | 5/1 → 1/0 | 58,3 → 79,7 | **74 → Sin nota** |
-  | `1,5m.MOV` (de frente) | 1/0 → 0/0 | — | Sin nota = |
+  | Directos | 0/10 = | 96,1 → 99,8 | 90 = |
+  | 1-2 bueno | 6/6 = | 95,5 → 100 | 94 = |
+  | 1-2 vago | 15/13 = | 71,1 → 72,3 | 71 → 72 |
+  | Sombra | 27/13 → 22/9 (+ 25 curvos) | 48,1 → 86,9 | **57 → 82** |
+  | Crochet de frente | 5/3 → 0/0 | — | **81 → Sin nota** ("sobre todo curvos y esquivas") |
+  | Crochet 45° | 5/1 → 1/0 | — | **74 → Sin nota** |
+  | `1,5m.MOV` (de frente) | 1/0 → 0/0 | — | Sin nota = (mensaje de pocos golpes) |
 
-  En los 4 clips de rectos son idénticos los golpes (fotograma a fotograma), las métricas y los momentos. El resto
-  de clips nuevos ya estaban sin nota. Sombra: guardia 16 → 78, mano contraria 43 → 27, extensión 75 → 100,
-  volumen 86 → 58 (49 rectos/min). De sus momentos para revisar solo queda 0,0-0,75 s (entrada en guardia, ver
-  punto 14).
+  En los 4 clips de rectos los golpes son idénticos fotograma a fotograma, ningún curvo ni esquiva, y los mismos
+  momentos para revisar (en el vago, los 4, incluido el fallo real de 34,5 s). Sus cambios de guardia vienen solo
+  de la entrada en guardia (punto 16). Sombra: guardia 16 → 94, mano contraria 43 → 27, extensión 75 → 100,
+  vuelta 100 = y volumen 86 → 100 (87 golpes/min con 25 curvos). Ya no tiene momentos para revisar. El ejemplo
+  (`demo/`) se ha regenerado con este análisis.
+
+## 16. Colocarse al empezar no cuenta como guardia baja (decidido por Ignacio)
+
+- **Problema:** igual que al final (punto 14), pero al principio. El tramo activo empieza 1 s antes del primer
+  golpe, y en sombra el primer "momento para revisar" era 0,0-0,75 s: la mano derecha subiendo a la guardia.
+- **Regla (simétrica a la del final):** la guardia se mide desde la **primera vez que tienes las dos manos arriba**
+  al menos 0,1 s (`guard.initial_up_seconds`) antes del primer golpe. Si no las subes antes del primer golpe, se
+  mide desde el primer golpe. Solo acorta el tramo de la guardia (nota, gráfica y momentos); ritmo, base y
+  fiabilidad no cambian.
+- **Datos:** en los 5 clips hay un único tramo con las dos manos arriba antes del primer golpe, sin parpadeos:
+
+  | Clip | Tramo activo desde | Dos manos arriba (inicio · duración) | Primer golpe | Deja de contar |
+  |---|---|---|---|---|
+  | Jabs | 9,38 s | 9,38 s · 0,98 s | 10,36 s | nada |
+  | Directos | 0,15 s | 0,48 s · 0,65 s | 1,13 s | 0,33 s |
+  | 1-2 bueno | 0,00 s | 0,23 s · 0,72 s | 0,95 s | 0,23 s |
+  | 1-2 vago | 0,00 s | 0,25 s · 0,62 s | 0,87 s | 0,25 s |
+  | Sombra | 0,00 s | 0,75 s · 0,20 s | 0,95 s | 0,75 s |
+
+- **Por qué 0,1 s:** el tramo más corto es el de sombra (0,20 s); con 0,3 s ya no se encontraría y la guardia
+  empezaría en el primer golpe. Igual que al final, subir el valor esconde fallos, y quedarse corto solo deja contar
+  la entrada en guardia, como antes.
+
+## 17. Versión de puntuación
+
+- `metrics.json` guarda `scoring_version` y la ficha la enseña discreta ("puntuación v2", junto a los segundos
+  analizados). Los análisis antiguos no tienen el campo: son **v1**.
+- **v1:** antes de curvos y esquivas. **v2:** curvos y esquivas en beta (punto 15) y entrada en guardia (punto 16).
+- **Las notas solo son comparables entre análisis con la misma versión.** Ejemplo: sombra da 57 en v1 y 82 en v2
+  con el mismo vídeo. Si algún día se guarda la evolución entre sesiones, hay que comparar dentro de una versión o
+  recalcular las antiguas.
+- Se cambia en `SCORING_VERSION` (`boxeo/scoring.py`). Subirla cuando un cambio mueva notas de forma intencionada.

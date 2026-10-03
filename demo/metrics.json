@@ -1,38 +1,39 @@
 {
   "video": "Sombra normal.MOV",
+  "scoring_version": "v2",
   "stance": "orthodox",
   "fps": 59.94,
   "size": [
     404,
     720
   ],
-  "total": 57,
+  "total": 82,
   "subscores": {
     "guard": {
       "label": "Guardia",
       "metric": "guard_pct",
-      "value": 48.1,
-      "score": 16,
+      "value": 86.9,
+      "score": 94,
       "weight": 25
     },
     "other_hand": {
       "label": "Mano contraria arriba",
       "metric": "other_hand_up_pct",
-      "value": 61.5,
-      "score": 43,
+      "value": 53.3,
+      "score": 27,
       "weight": 20
     },
     "extension": {
       "label": "Extensión",
       "metric": "extended_pct",
-      "value": 67.5,
-      "score": 75,
+      "value": 80.6,
+      "score": 100,
       "weight": 20
     },
     "recovery": {
       "label": "Vuelta a la guardia",
       "metric": "recovery_mean_s",
-      "value": 0.21,
+      "value": 0.18,
       "score": 100,
       "weight": 15
     },
@@ -46,8 +47,8 @@
     "volume": {
       "label": "Volumen y ritmo",
       "metric": "punches_per_min",
-      "value": 63.1,
-      "score": 86,
+      "value": 87.4,
+      "score": 100,
       "weight": 10
     }
   },
@@ -55,32 +56,38 @@
     "duration_s": 38.8,
     "active_s": 38.1,
     "pose_detected_pct": 100.0,
-    "n_punches": 40,
-    "n_left": 27,
-    "n_right": 13,
-    "guard_pct": 48.1,
-    "other_hand_up_pct": 61.5,
-    "extended_pct": 67.5,
-    "extension_mean_angle": 165.7,
-    "recovery_mean_s": 0.21,
+    "n_punches": 31,
+    "n_left": 22,
+    "n_right": 9,
+    "guard_pct": 86.9,
+    "other_hand_up_pct": 53.3,
+    "extended_pct": 80.6,
+    "extension_mean_angle": 169.4,
+    "recovery_mean_s": 0.18,
     "base_pct": 7.6,
-    "punches_per_min": 63.1,
-    "peak_speed_mean": 23.3,
+    "n_curved": 25,
+    "punches_per_min": 87.4,
+    "peak_speed_mean": 22.3,
     "by_type": {
       "jab": {
-        "count": 27,
-        "other_hand_down_pct": 30.8
+        "count": 22,
+        "other_hand_down_pct": 38.1
       },
       "directo": {
-        "count": 13,
-        "other_hand_down_pct": 53.8
+        "count": 9,
+        "other_hand_down_pct": 66.7
       }
+    },
+    "moves_beta": {
+      "crochet": 15,
+      "uppercut": 12,
+      "esquiva": 11
     }
   },
   "tips": [
-    "Entre golpes tienes las dos manos arriba solo el 48% del tiempo. Después de cada golpe, vuelve a llevar los puños a la barbilla antes de moverte.",
-    "Bajas la mano izquierda en el 54% de tus directos: mantenla pegada a la barbilla mientras golpeas con la otra.",
-    "El 32% de tus golpes se quedan cortos (codo por debajo de 160°): termina cada golpe con el brazo estirado, como si quisieras atravesar el objetivo."
+    "Bajas la mano izquierda en el 67% de tus directos: mantenla pegada a la barbilla mientras golpeas con la otra.",
+    "Muy buena guardia: entre golpes tienes las dos manos arriba el 87% del tiempo. Que no se te bajen cuando llegue el cansancio.",
+    "Buena extensión: estiras del todo el brazo en el 81% de tus golpes (codo a 169° de media)."
   ],
   "punches": [
     {
@@ -180,22 +187,6 @@
       "frame_end": 396
     },
     {
-      "hand": "right",
-      "type": "directo",
-      "frame_start": 395,
-      "frame_peak": 408,
-      "t_start": 6.59,
-      "t_peak": 6.807,
-      "angle_peak": 145.0,
-      "peak_speed": 11.41,
-      "reach_gain": 0.44,
-      "other_hand_up": true,
-      "extended": false,
-      "recovered": true,
-      "recovery_s": 0.05,
-      "frame_end": 411
-    },
-    {
       "hand": "left",
       "type": "jab",
       "frame_start": 490,
@@ -226,38 +217,6 @@
       "recovered": true,
       "recovery_s": 0.1,
       "frame_end": 643
-    },
-    {
-      "hand": "left",
-      "type": "jab",
-      "frame_start": 688,
-      "frame_peak": 693,
-      "t_start": 11.478,
-      "t_peak": 11.561,
-      "angle_peak": 156.6,
-      "peak_speed": 36.67,
-      "reach_gain": 1.39,
-      "other_hand_up": true,
-      "extended": false,
-      "recovered": true,
-      "recovery_s": 0.35,
-      "frame_end": 714
-    },
-    {
-      "hand": "right",
-      "type": "directo",
-      "frame_start": 711,
-      "frame_peak": 735,
-      "t_start": 11.862,
-      "t_peak": 12.262,
-      "angle_peak": 179.9,
-      "peak_speed": 17.73,
-      "reach_gain": 1.3,
-      "other_hand_up": true,
-      "extended": true,
-      "recovered": true,
-      "recovery_s": 0.517,
-      "frame_end": 766
     },
     {
       "hand": "left",
@@ -324,22 +283,6 @@
       "frame_end": 967
     },
     {
-      "hand": "right",
-      "type": "directo",
-      "frame_start": 957,
-      "frame_peak": 977,
-      "t_start": 15.966,
-      "t_peak": 16.299,
-      "angle_peak": 148.3,
-      "peak_speed": 11.49,
-      "reach_gain": 0.48,
-      "other_hand_up": true,
-      "extended": false,
-      "recovered": true,
-      "recovery_s": 0.584,
-      "frame_end": 1012
-    },
-    {
       "hand": "left",
       "type": "jab",
       "frame_start": 1072,
@@ -370,22 +313,6 @@
       "recovered": true,
       "recovery_s": 0.15,
       "frame_end": 1120
-    },
-    {
-      "hand": "left",
-      "type": "jab",
-      "frame_start": 1113,
-      "frame_peak": 1137,
-      "t_start": 18.568,
-      "t_peak": 18.969,
-      "angle_peak": 135.9,
-      "peak_speed": 31.43,
-      "reach_gain": 0.85,
-      "other_hand_up": true,
-      "extended": false,
-      "recovered": true,
-      "recovery_s": 0.184,
-      "frame_end": 1148
     },
     {
       "hand": "left",
@@ -434,22 +361,6 @@
       "recovered": true,
       "recovery_s": 0.15,
       "frame_end": 1314
-    },
-    {
-      "hand": "left",
-      "type": "jab",
-      "frame_start": 1303,
-      "frame_peak": 1325,
-      "t_start": 21.738,
-      "t_peak": 22.105,
-      "angle_peak": 152.1,
-      "peak_speed": 36.86,
-      "reach_gain": 1.33,
-      "other_hand_up": true,
-      "extended": false,
-      "recovered": true,
-      "recovery_s": 0.2,
-      "frame_end": 1337
     },
     {
       "hand": "left",
@@ -546,22 +457,6 @@
       "recovered": true,
       "recovery_s": 0.267,
       "frame_end": 1788
-    },
-    {
-      "hand": "left",
-      "type": "jab",
-      "frame_start": 1797,
-      "frame_peak": 1803,
-      "t_start": 29.98,
-      "t_peak": 30.08,
-      "angle_peak": 147.2,
-      "peak_speed": 30.82,
-      "reach_gain": 1.52,
-      "other_hand_up": true,
-      "extended": false,
-      "recovered": true,
-      "recovery_s": 0.267,
-      "frame_end": 1819
     },
     {
       "hand": "left",
@@ -676,38 +571,6 @@
       "frame_end": 2120
     },
     {
-      "hand": "right",
-      "type": "directo",
-      "frame_start": 2107,
-      "frame_peak": 2130,
-      "t_start": 35.151,
-      "t_peak": 35.535,
-      "angle_peak": 147.1,
-      "peak_speed": 20.57,
-      "reach_gain": 1.26,
-      "other_hand_up": false,
-      "extended": false,
-      "recovered": true,
-      "recovery_s": 0.217,
-      "frame_end": 2143
-    },
-    {
-      "hand": "left",
-      "type": "jab",
-      "frame_start": 2149,
-      "frame_peak": 2155,
-      "t_start": 35.852,
-      "t_peak": 35.952,
-      "angle_peak": 163.9,
-      "peak_speed": 45.36,
-      "reach_gain": 1.98,
-      "other_hand_up": true,
-      "extended": true,
-      "recovered": true,
-      "recovery_s": 0.2,
-      "frame_end": 2167
-    },
-    {
       "hand": "left",
       "type": "jab",
       "frame_start": 2187,
@@ -724,82 +587,360 @@
       "frame_end": 2221
     }
   ],
+  "moves": [
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 110,
+      "frame_end": 132,
+      "t_start": 1.84,
+      "t_end": 2.2,
+      "t": 1.97
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 179,
+      "frame_end": 183,
+      "t_start": 2.99,
+      "t_end": 3.05,
+      "t": 3.02
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 359,
+      "frame_end": 381,
+      "t_start": 5.99,
+      "t_end": 6.36,
+      "t": 6.12
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 411,
+      "frame_end": 426,
+      "t_start": 6.86,
+      "t_end": 7.11,
+      "t": 6.98
+    },
+    {
+      "type": "uppercut",
+      "hand": "left",
+      "frame_start": 545,
+      "frame_end": 555,
+      "t_start": 9.09,
+      "t_end": 9.26,
+      "t": 9.16
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 577,
+      "frame_end": 581,
+      "t_start": 9.63,
+      "t_end": 9.69,
+      "t": 9.66
+    },
+    {
+      "type": "uppercut",
+      "hand": "right",
+      "frame_start": 650,
+      "frame_end": 660,
+      "t_start": 10.84,
+      "t_end": 11.01,
+      "t": 10.96
+    },
+    {
+      "type": "crochet",
+      "hand": "left",
+      "frame_start": 689,
+      "frame_end": 690,
+      "t_start": 11.49,
+      "t_end": 11.51,
+      "t": 11.5
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 740,
+      "frame_end": 761,
+      "t_start": 12.35,
+      "t_end": 12.7,
+      "t": 12.52
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 907,
+      "frame_end": 931,
+      "t_start": 15.13,
+      "t_end": 15.53,
+      "t": 15.28
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 984,
+      "frame_end": 1002,
+      "t_start": 16.42,
+      "t_end": 16.72,
+      "t": 16.57
+    },
+    {
+      "type": "uppercut",
+      "hand": "left",
+      "frame_start": 1121,
+      "frame_end": 1132,
+      "t_start": 18.7,
+      "t_end": 18.89,
+      "t": 18.82
+    },
+    {
+      "type": "crochet",
+      "hand": "left",
+      "frame_start": 1130,
+      "frame_end": 1134,
+      "t_start": 18.85,
+      "t_end": 18.92,
+      "t": 18.89
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 1147,
+      "frame_end": 1181,
+      "t_start": 19.14,
+      "t_end": 19.7,
+      "t": 19.29
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 1161,
+      "frame_end": 1212,
+      "t_start": 19.37,
+      "t_end": 20.22,
+      "t": 19.8
+    },
+    {
+      "type": "uppercut",
+      "hand": "right",
+      "frame_start": 1223,
+      "frame_end": 1231,
+      "t_start": 20.4,
+      "t_end": 20.54,
+      "t": 20.44
+    },
+    {
+      "type": "crochet",
+      "hand": "left",
+      "frame_start": 1224,
+      "frame_end": 1234,
+      "t_start": 20.42,
+      "t_end": 20.59,
+      "t": 20.5
+    },
+    {
+      "type": "crochet",
+      "hand": "left",
+      "frame_start": 1319,
+      "frame_end": 1322,
+      "t_start": 22.01,
+      "t_end": 22.06,
+      "t": 22.03
+    },
+    {
+      "type": "uppercut",
+      "hand": "right",
+      "frame_start": 1347,
+      "frame_end": 1354,
+      "t_start": 22.47,
+      "t_end": 22.59,
+      "t": 22.56
+    },
+    {
+      "type": "uppercut",
+      "hand": "left",
+      "frame_start": 1411,
+      "frame_end": 1422,
+      "t_start": 23.54,
+      "t_end": 23.72,
+      "t": 23.64
+    },
+    {
+      "type": "uppercut",
+      "hand": "right",
+      "frame_start": 1422,
+      "frame_end": 1444,
+      "t_start": 23.72,
+      "t_end": 24.09,
+      "t": 24.04
+    },
+    {
+      "type": "uppercut",
+      "hand": "left",
+      "frame_start": 1464,
+      "frame_end": 1480,
+      "t_start": 24.42,
+      "t_end": 24.69,
+      "t": 24.49
+    },
+    {
+      "type": "uppercut",
+      "hand": "left",
+      "frame_start": 1519,
+      "frame_end": 1530,
+      "t_start": 25.34,
+      "t_end": 25.53,
+      "t": 25.43
+    },
+    {
+      "type": "uppercut",
+      "hand": "left",
+      "frame_start": 1549,
+      "frame_end": 1557,
+      "t_start": 25.84,
+      "t_end": 25.98,
+      "t": 25.93
+    },
+    {
+      "type": "uppercut",
+      "hand": "right",
+      "frame_start": 1555,
+      "frame_end": 1579,
+      "t_start": 25.94,
+      "t_end": 26.34,
+      "t": 26.14
+    },
+    {
+      "type": "crochet",
+      "hand": "left",
+      "frame_start": 1580,
+      "frame_end": 1582,
+      "t_start": 26.36,
+      "t_end": 26.39,
+      "t": 26.38
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 1596,
+      "frame_end": 1632,
+      "t_start": 26.63,
+      "t_end": 27.23,
+      "t": 26.81
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 1610,
+      "frame_end": 1645,
+      "t_start": 26.86,
+      "t_end": 27.44,
+      "t": 27.29
+    },
+    {
+      "type": "uppercut",
+      "hand": "right",
+      "frame_start": 1652,
+      "frame_end": 1679,
+      "t_start": 27.56,
+      "t_end": 28.01,
+      "t": 27.93
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 1679,
+      "frame_end": 1693,
+      "t_start": 28.01,
+      "t_end": 28.24,
+      "t": 28.13
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 1693,
+      "frame_end": 1714,
+      "t_start": 28.24,
+      "t_end": 28.59,
+      "t": 28.39
+    },
+    {
+      "type": "crochet",
+      "hand": "left",
+      "frame_start": 1796,
+      "frame_end": 1800,
+      "t_start": 29.96,
+      "t_end": 30.03,
+      "t": 30.0
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 1903,
+      "frame_end": 1923,
+      "t_start": 31.75,
+      "t_end": 32.08,
+      "t": 31.93
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 2126,
+      "frame_end": 2136,
+      "t_start": 35.47,
+      "t_end": 35.64,
+      "t": 35.55
+    },
+    {
+      "type": "crochet",
+      "hand": "left",
+      "frame_start": 2150,
+      "frame_end": 2151,
+      "t_start": 35.87,
+      "t_end": 35.89,
+      "t": 35.88
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 2162,
+      "frame_end": 2199,
+      "t_start": 36.07,
+      "t_end": 36.69,
+      "t": 36.27
+    },
+    {
+      "type": "esquiva",
+      "hand": null,
+      "frame_start": 2177,
+      "frame_end": 2228,
+      "t_start": 36.32,
+      "t_end": 37.17,
+      "t": 36.75
+    },
+    {
+      "type": "crochet",
+      "hand": "right",
+      "frame_start": 2231,
+      "frame_end": 2245,
+      "t_start": 37.22,
+      "t_end": 37.45,
+      "t": 37.34
+    }
+  ],
   "timeline": {
-    "guard_low": [
-      {
-        "start": 0.0,
-        "end": 0.75,
-        "hand": "derecha"
-      },
-      {
-        "start": 2.67,
-        "end": 3.42,
-        "hand": "derecha"
-      },
-      {
-        "start": 6.87,
-        "end": 7.34,
-        "hand": "izquierda"
-      },
-      {
-        "start": 8.78,
-        "end": 10.11,
-        "hand": "izquierda"
-      },
-      {
-        "start": 10.84,
-        "end": 11.48,
-        "hand": "las dos"
-      },
-      {
-        "start": 20.4,
-        "end": 20.94,
-        "hand": "las dos"
-      },
-      {
-        "start": 22.32,
-        "end": 22.72,
-        "hand": "derecha"
-      },
-      {
-        "start": 23.54,
-        "end": 24.72,
-        "hand": "las dos"
-      },
-      {
-        "start": 25.07,
-        "end": 27.44,
-        "hand": "izquierda"
-      },
-      {
-        "start": 27.84,
-        "end": 28.51,
-        "hand": "las dos"
-      }
-    ],
-    "worst_guard": [
-      {
-        "start": 8.78,
-        "end": 10.11,
-        "hand": "izquierda"
-      },
-      {
-        "start": 23.54,
-        "end": 24.72,
-        "hand": "las dos"
-      },
-      {
-        "start": 25.07,
-        "end": 27.44,
-        "hand": "izquierda"
-      }
-    ]
+    "guard_low": [],
+    "worst_guard": []
   },
   "quality": {
     "level": "alta",
     "reason": "ok",
     "message": "Buena grabación: se te ve bien, de lado y con las manos dentro del encuadre.",
-    "n_punches": 40,
+    "n_punches": 31,
+    "n_moves": 38,
     "measured_s": 38.1,
     "visible_pct": 81.1,
     "wrist_out_pct": 0.7,

@@ -38,7 +38,8 @@ def main():
     if q["level"] == "baja":
         print("\nSin nota: el vídeo no permite un análisis fiable (las notas por métrica son solo orientativas).")
     else:
-        print(f"\nPuntuación total: {r['total'] if r['total'] is not None else '-'} / 100")
+        print(f"\nPuntuación total: {r['total'] if r['total'] is not None else '-'} / 100 "
+              f"(puntuación {r.get('scoring_version', 'v1')})")
     print(f"Fiabilidad del análisis: {q['level']} ({q['message']})")
     print(f"Golpes: {m['n_punches']} (izq. {m['n_left']}, der. {m['n_right']}) en {m['duration_s']} s"
           f" (activo {m['active_s']} s) | persona detectada en el {m['pose_detected_pct']}% de los frames")

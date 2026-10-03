@@ -103,16 +103,19 @@ izquierda en el 54% de tus directos: mantenla pegada a la barbilla mientras golp
 Grabé 5 clips con el iPhone (casi de perfil, 60 fps), cada uno pensado como **caso de prueba**:
 si el sistema no baja la nota en la métrica correcta, algo falla.
 
-| Clip | Qué hice | Golpes detectados (izq. / der.) | Nota |
+| Clip | Qué hice | Golpes detectados (izq. / der.) | Nota (v2) |
 |---|---|---|---|
 | Jabs | Solo jabs | 10 / 0 ✅ | 92 |
 | Directos | Solo directos | 0 / 10 ✅ | 90 |
 | 1-2 bueno | Combinaciones con buena técnica | 6 / 6 ✅ | **94** |
-| 1-2 vago | Las mismas combinaciones, con peor técnica a propósito | 15 / 13 ✅ | **71** |
-| Sombra libre | Sombra con movimiento, curvos y esquivas | 22 / 9 rectos + 15 crochets, 12 uppercuts y 11 esquivas (beta) | 73 |
+| 1-2 vago | Las mismas combinaciones, con peor técnica a propósito | 15 / 13 ✅ | **72** |
+| Sombra libre | Sombra con movimiento, curvos y esquivas | 22 / 9 rectos + 15 crochets, 12 uppercuts y 11 esquivas (beta) | 82 |
 
-Todos los conteos coinciden con los golpes reales. El 1-2 "vago" pierde 23 puntos frente al bueno, y los
-pierde donde debe: guardia (100 → 62), mano contraria (87 → 70) y extensión (100 → 69).
+Todos los conteos coinciden con los golpes reales. El 1-2 "vago" pierde 22 puntos frente al bueno, y los
+pierde donde debe: guardia (100 → 65), mano contraria (87 → 70) y extensión (100 → 69).
+
+Las notas son de la **versión de puntuación v2** (curvos y esquivas en beta). Solo son comparables entre análisis
+con la misma versión: con la v1 sombra daba 57 (ver `docs/DECISIONES.md`, punto 17).
 
 **Decisiones tomadas con los datos:**
 

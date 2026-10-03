@@ -55,17 +55,22 @@ La guardia y el ritmo se miden solo en la parte del vídeo en la que estás boxe
 del primer golpe** hasta **1 s después de que termine el último** (`active_margin_seconds`). Así no cuenta
 entrar en plano, prepararte ni ir a parar la grabación.
 
-Para la guardia, además, el tramo acaba en la **bajada final**: la última vez que tienes las dos manos arriba
+Para la guardia, además, el tramo empieza en la **entrada en guardia**: la primera vez que tienes las dos manos
+arriba (al menos **0,1 s**, `guard.initial_up_seconds`) antes del primer golpe. Lo de antes es colocarte, no
+guardia baja (si no subes la guardia antes del primer golpe, se mide desde el primer golpe).
+
+Y acaba en la **bajada final**: la última vez que tienes las dos manos arriba
 (al menos **0,1 s**, `guard.final_up_seconds`) después del último golpe. Si bajas las manos y ya no las vuelves
 a subir, has terminado y eso no cuenta como guardia baja. Si las bajas y luego vuelves a subir la guardia, sí
-cuenta: es un fallo real. Subir este valor esconde fallos (con 0,3 s ya se escondía uno del 1-2 vago).
+cuenta: es un fallo real. Subir estos valores esconde fallos (con 0,3 s ya se escondía uno del 1-2 vago).
 
 ### Curvos y esquivas (beta: no puntúan)
 
 La app detecta también **crochet, uppercut y esquiva** (`boxeo/moves.py`). Se muestran como "Beta" en la ficha y
-en la gráfica, pero **la nota sigue juzgando solo los rectos**. Tienen dos efectos:
+en la gráfica, y **la nota juzga solo los rectos, salvo el volumen**. Tienen tres efectos:
 
 - Un **curvo deja de contar como jab/directo** (si un "recto" de la misma mano coincide con él).
+- Los **curvos suman al volumen** (golpes por minuto). Las esquivas no.
 - **Curvos y esquivas no cuentan como guardia baja**: sus fotogramas (con un margen de 0,2-0,3 s antes y
   después, `moves.guard_margin_seconds`) se quitan de la guardia y de los momentos para revisar, igual que los
   de un recto.
@@ -137,7 +142,8 @@ Los pesos suman 90 (la base está a 0), así que el "peso real" es cada peso div
 ### Volumen y ritmo (peso 10)
 
 - **Qué mide:** cuántos golpes lanzas.
-- **Cómo:** número de golpes ÷ duración del tramo activo, pasado a golpes por minuto.
+- **Cómo:** número de golpes ÷ duración del tramo activo, pasado a golpes por minuto. Cuentan los rectos y los
+  curvos detectados (beta: crochet y uppercut, una vez si un mismo golpe sale como los dos); las esquivas no.
 - **Escala:** 20 golpes/min o menos = 0 · 70 o más = 100.
 
 ### Base (peso 0: no cuenta)
@@ -161,8 +167,14 @@ Los pesos suman 90 (la base está a 0), así que el "peso real" es cada peso div
 Casos especiales:
 - Si una métrica no tiene datos (por ejemplo, no hay golpes con los que medir la extensión), no cuenta
   y se divide solo entre los pesos de las que sí tienen.
-- **Si se detectan menos de 5 golpes (o ninguno), no hay nota total.** Con tan pocos golpes los porcentajes no
-  dicen nada ("el 100% de tus jabs" con un solo jab). Cuenta como fiabilidad baja (ver abajo).
+- **Si se detectan menos de 5 golpes rectos (o ninguno), no hay nota total.** Con tan pocos golpes los
+  porcentajes no dicen nada ("el 100% de tus jabs" con un solo jab). Cuenta como fiabilidad baja (ver abajo). Si
+  lo que hay son sobre todo curvos y esquivas (al menos 5, más que rectos, grabando de lado o en diagonal), el
+  mensaje lo dice: "Hemos detectado sobre todo curvos y esquivas. Por ahora The Corner solo puntúa jabs y
+  directos: incluye al menos 5 en tu sombra para tener nota."
+- **Versión de puntuación:** cada análisis guarda la suya (`scoring_version`, hoy **v2**) y la ficha la enseña.
+  Las notas solo son comparables con la misma versión (v1 = antes de curvos y esquivas; `docs/DECISIONES.md`,
+  punto 17).
 - **Si la fiabilidad del análisis es baja, tampoco hay nota total** (mejor ningún dato que uno falso). La ficha
   dice "Sin nota: el vídeo no permite un análisis fiable", con el motivo medido (p. ej. "La mano sale del
   encuadre el 11% del tiempo") y cómo grabar mejor. En vez de los consejos de técnica salen 3 claves para
@@ -178,7 +190,7 @@ dice cómo es el resto del vídeo.
 
 | Qué se mide | Baja si… |
 |---|---|
-| Golpes detectados | menos de **5** |
+| Golpes rectos detectados | menos de **5** |
 | Nariz, hombros, codos y muñecas visibles a la vez | menos del **50%** del tiempo |
 | Mano fuera del encuadre (muñeca a menos de 0,3 anchuras de hombro del borde) | más del **10%** del tiempo |
 | Orientación: anchura de hombros ÷ altura del tronco | más de **0,70** (de frente) |
@@ -273,6 +285,7 @@ En **vuelta a la guardia** es al revés (menos es mejor): bajar `good` (0,4 s) l
 | `guard.max_dist_nose` | 0,8 | más permisivo: manos más lejos de la cara cuentan como "arriba" (sube guardia, mano contraria y vuelta) | más estricto. Con 0,7 o menos ya castigaba al 1-2 bueno |
 | `guard.rule` | `elbow` | `shoulders` usa la línea de hombros en vez del codo; castiga agacharse o meter la barbilla con las manos en la cara | — |
 | `guard.max_below_shoulder` | 0,15 | solo con `rule: shoulders`: más margen por debajo de los hombros | — |
+| `guard.initial_up_seconds` | 0,1 s | esconde fallos reales al empezar: con 0,3 s no encuentra la entrada en guardia de sombra (0,2 s) | vuelve a contar como guardia baja colocarse al empezar |
 | `guard.final_up_seconds` | 0,1 s | esconde fallos reales: con 0,3 s una bajada real del 1-2 vago dejaba de contar (+3 de nota) | parpadeos de ruido cuentan como "subir la guardia" y vuelve a contar la bajada final |
 | `extension.good_angle` | 160° | más exigente: menos golpes cuentan como bien extendidos | más permisivo |
 | `recovery.max_seconds` | 1,5 s | un golpe sin recoger "cuesta" más en la media | castiga menos los golpes que no vuelven a la guardia |

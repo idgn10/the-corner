@@ -82,32 +82,43 @@ def hero_html(result):
     return ('<div class="tc"><div class="tc-hero">'
             '<div class="tc-label">Tu nota de la sesión</div>'
             f'<div class="tc-hero-sub">{escape(result["video"])} · {stance} · '
-            f'{_n(m.get("active_s", m["duration_s"]))} s analizados</div>'
+            f'{_n(m.get("active_s", m["duration_s"]))} s analizados · puntuación {_version(result)}</div>'
             f'<div class="tc-score"><span class="tc-total">{total if total is not None else "–"}</span>'
             '<span class="tc-of">/ 100</span></div>'
             f'<div class="tc-verdict"><i style="background:{color(total)}"></i>{verdict(total)}</div>'
             '<div class="tc-stats">'
             f'<div class="tc-stat"><b>{m["n_left"]}</b><span>Izquierda</span></div>'
             f'<div class="tc-stat"><b>{m["n_right"]}</b><span>Derecha</span></div>'
-            f'<div class="tc-stat"><b>{ppm}</b><span>Rectos/min</span></div>'
+            f'<div class="tc-stat"><b>{ppm}</b><span>Golpes/min</span></div>'
             f'<div class="tc-stat"><b>{m["n_punches"]}</b><span>Rectos</span></div>'
             "</div>" + beta_html(result) + _quality_html(result.get("quality")) + "</div></div>")
 
 
 def beta_html(result):
-    """Curvos y esquivas (beta): cuantos hay y el aviso. No puntuan. Los analisis antiguos no los tienen."""
+    """Curvos y esquivas (beta): cuantos hay y el aviso. Solo los curvos puntuan (volumen).
+    Los analisis antiguos no los tienen."""
     if "moves" not in result:
         return ""
+    curved = result["metrics"].get("n_curved")
     n = summary(result["moves"])
     items = "".join(f'<div class="tc-stat"><b>{n[k]}</b><span>{label}</span></div>'
                     for k, label in (("crochet", "Crochets"), ("uppercut", "Uppercuts"), ("esquiva", "Esquivas")))
     return ('<div class="tc-beta"><div class="tc-quality-head"><span>Curvos y esquivas</span>'
             '<b class="tc-beta-tag">Beta</b></div>'
             f'<div class="tc-beta-stats">{items}</div>'
-            '<div class="tc-quality-msg">No cuentan para la nota ni como guardia baja. ' + escape(BETA_NOTE) + "</div></div>")
+            '<div class="tc-quality-msg">'
+            + (f"Los curvos suman al volumen ({curved} golpes); el resto de la nota juzga solo los rectos. "
+               if curved else "La nota juzga solo los rectos. ")
+            + "Ni curvos ni esquivas cuentan como guardia baja. "
+            + escape(BETA_NOTE) + "</div></div>")
 
 
 QUALITY_COLORS = {"alta": GOOD, "media": MID, "baja": BAD}
+
+
+def _version(result):
+    """Version de puntuacion (los analisis antiguos no la guardan: son v1)."""
+    return result.get("scoring_version", "v1")
 
 
 def _quality_html(q, message=True):
@@ -126,6 +137,10 @@ def _quality_reason(q):
         n = q.get("n_punches", 0)
         return "No hemos detectado ningún golpe." if n == 0 else \
             f"Solo hemos detectado {n} golpe{'s' if n > 1 else ''}."
+    if q["reason"] == "curved":
+        n, k = q.get("n_punches", 0), q.get("n_moves", 0)
+        rectos = "Ningún golpe recto" if n == 0 else f"Solo {n} golpe{'s' if n > 1 else ''} recto{'s' if n > 1 else ''}"
+        return f"{rectos} y {k} curvos y esquivas."
     if q["reason"] == "visible":
         return f"Solo se te ven bien la cara y los brazos el {_n(q['visible_pct'])}% del tiempo."
     if q["reason"] == "wrist_out":
@@ -142,7 +157,8 @@ def no_score_html(result):
     return ('<div class="tc"><div class="tc-hero">'
             '<div class="tc-label">Tu nota de la sesión</div>'
             f'<div class="tc-hero-sub">{escape(result["video"])} · {stance} · '
-            f'{_n(q.get("measured_s", m.get("active_s", m["duration_s"])))} s analizados</div>'
+            f'{_n(q.get("measured_s", m.get("active_s", m["duration_s"])))} s analizados · '
+            f'puntuación {_version(result)}</div>'
             '<div class="tc-noscore">Sin nota</div>'
             '<div class="tc-noscore-sub">El vídeo no permite un análisis fiable.</div>'
             '<div class="tc-reason"><div class="tc-label">Motivo</div>'
@@ -195,7 +211,9 @@ def _detail(key, m):
     if key == "base" and m["base_pct"] is not None:
         return f"Base correcta el {_n(m['base_pct'])}% del tiempo"
     if key == "volume" and m["punches_per_min"] is not None:
-        return f"{_n(m['punches_per_min'])} golpes por minuto"
+        curved = m.get("n_curved", 0)
+        extra = f" (contando {curved} curvos)" if curved else ""
+        return f"{_n(m['punches_per_min'])} golpes por minuto{extra}"
     return "Sin datos en este vídeo"
 
 
@@ -225,6 +243,7 @@ def explain(key, cfg):
                  "algo flexionadas. " + scale.replace(" o peor", "% o menos").replace(" o mejor", "% o más")),
         "volume": ("Contamos los golpes por minuto en la parte activa del vídeo: desde un segundo antes del "
                    "primer golpe hasta un segundo después del último (no cuenta prepararte ni salir de plano). "
+                   "Cuentan los rectos y los curvos detectados (beta); las esquivas no. "
                    f"Puntuación: {s['bad']} golpes/min o menos = 0 puntos; {s['good']} o más = 100."),
     }
     return texts.get(key, "") + " Entre esos dos valores, la nota sube en proporción."

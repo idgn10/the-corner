@@ -5,7 +5,7 @@ Distancias normalizadas por la anchura de hombros. Coordenadas de imagen: la y c
 import numpy as np
 import pandas as pd
 
-from boxeo.moves import moves_mask, summary
+from boxeo.moves import curved_punches, moves_mask, summary
 
 SIDES = {"left": "l", "right": "r"}
 
@@ -136,17 +136,30 @@ def _masks(n, punches, fps, cfg, moves=None):
 
 
 def _guard_mask(df, punches, fps, cfg, moves=None):
-    """Tramo en el que se mide la guardia: el tramo activo sin la bajada final.
+    """Tramo en el que se mide la guardia: el tramo activo sin la entrada en guardia ni la bajada final.
 
-    La guardia se mide hasta la ultima vez que las dos manos estan arriba (al menos guard.final_up_seconds)
-    despues de la vuelta del ultimo golpe: si bajas las manos y ya no las subes, has terminado y no cuenta.
-    Solo acorta el tramo activo, nunca lo alarga. Ver docs/DECISIONES.md, punto 14.
+    Empieza la primera vez que las dos manos estan arriba (al menos guard.initial_up_seconds) antes del primer
+    golpe: lo de antes es colocarse, no guardia baja (si no las subes antes, empieza en el primer golpe).
+    Acaba la ultima vez que las dos manos estan arriba (al menos guard.final_up_seconds) despues de la vuelta
+    del ultimo golpe: si bajas las manos y ya no las subes, has terminado y no cuenta.
+    Solo acorta el tramo activo, nunca lo alarga. Ver docs/DECISIONES.md, puntos 14 y 16.
     """
     active, in_punch = _masks(len(df), punches, fps, cfg, moves)
     if not punches:
         return active, in_punch
     both_up = ((df["up_l"] == 1) & (df["up_r"] == 1)).to_numpy()
-    min_run = max(1, int(round(cfg["guard"]["final_up_seconds"] * fps)))
+    g = cfg["guard"]
+
+    first = punches[0]["frame_start"]
+    min_run = max(1, int(round(g.get("initial_up_seconds", 0) * fps)))
+    begin, run = first, 0
+    for i in range(int(np.argmax(active)), first):
+        run = run + 1 if both_up[i] else 0
+        if run >= min_run:
+            begin = i - run + 1
+            break
+
+    min_run = max(1, int(round(g["final_up_seconds"] * fps)))
     start = punches[-1]["frame_end"]
     end, run = start + 1, 0
     for i in range(start, len(df)):
@@ -154,6 +167,7 @@ def _guard_mask(df, punches, fps, cfg, moves=None):
         if run >= min_run:
             end = i + 1
     active = active.copy()
+    active[:begin] = False
     active[end:] = False
     return active, in_punch
 
@@ -200,12 +214,21 @@ def compute_metrics(df, punches, fps, cfg, moves=None):
     """Resumen de la sesion. Los golpes (solo rectos) deben venir anotados con annotate_punches.
 
     Guardia, base y ritmo se miden solo en el tramo activo (alrededor de los golpes); la guardia, sin la
-    bajada final de manos al terminar (_guard_mask) ni los curvos y esquivas (`moves`, beta).
+    entrada en guardia ni la bajada final (_guard_mask) ni los curvos y esquivas (`moves`, beta).
+    El volumen cuenta rectos y curvos (crochet y uppercut); el resto de metricas, solo los rectos.
     """
     n = len(df)
     active, _ = _masks(n, punches, fps, cfg)
     guard_active, in_move = _guard_mask(df, punches, fps, cfg, moves)
     duration = active.sum() / fps if fps else 0
+    curved = curved_punches(moves or [], fps)
+    volume_s = duration
+    if curved:  # el tramo del volumen abarca tambien los curvos
+        events = punches + curved
+        margin = int(cfg["active_margin_seconds"] * fps)
+        lo = max(0, min(e["frame_start"] for e in events) - margin)
+        hi = min(n, max(e["frame_end"] for e in events) + margin + 1)
+        volume_s = (hi - lo) / fps
 
     both_up = df["up_l"] * df["up_r"]
     valid = both_up.notna().to_numpy() & ~in_move & guard_active
@@ -230,7 +253,8 @@ def compute_metrics(df, punches, fps, cfg, moves=None):
         "extension_mean_angle": _mean([p["angle_peak"] for p in punches]),
         "recovery_mean_s": _mean([p["recovery_s"] for p in punches], 2),
         "base_pct": round(100 * float(df["base_ok"][base_valid].mean()), 1) if base_valid.any() else None,
-        "punches_per_min": round(len(punches) / duration * 60, 1) if duration else None,
+        "n_curved": len(curved),
+        "punches_per_min": round((len(punches) + len(curved)) / volume_s * 60, 1) if volume_s else None,
         "peak_speed_mean": _mean([p["peak_speed"] for p in punches]),
         "by_type": by_type,
         "moves_beta": summary(moves or []),

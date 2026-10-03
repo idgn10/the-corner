@@ -229,8 +229,8 @@ def results_view():
                        file_name=f"{Path(r['video']).stem}_analisis.json", mime="application/json",
                        width="stretch")
     st.html('<div class="tc"><div class="tc-note">La medición es 2D: funciona mejor con la cámara fija, '
-            "de lado o en diagonal. La nota juzga solo los golpes rectos; los curvos y las esquivas se detectan "
-            "en pruebas (beta) y no puntúan.</div></div>")
+            "de lado o en diagonal. La nota juzga los golpes rectos; los curvos y las esquivas se detectan en "
+            "pruebas (beta): los curvos solo suman al volumen y las esquivas no puntúan.</div></div>")
 
 
 def low_quality_view(r):

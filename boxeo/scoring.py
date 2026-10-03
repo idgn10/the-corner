@@ -1,5 +1,9 @@
 """Puntuacion: subscores 0-100 por metrica y total ponderado (configurado en config.yaml)."""
 
+# Las notas solo son comparables entre analisis con la misma version (docs/DECISIONES.md, punto 17).
+# v1: antes de curvos y esquivas (sin campo en metrics.json). v2: curvos y esquivas en beta.
+SCORING_VERSION = "v2"
+
 LABELS = {
     "guard": "Guardia",
     "other_hand": "Mano contraria arriba",

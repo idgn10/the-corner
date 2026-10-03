@@ -14,6 +14,8 @@ MESSAGES = {
     ("ok", "alta"): "Buena grabación: se te ve bien, de lado y con las manos dentro del encuadre.",
     ("punches", "baja"): ("Hemos detectado muy pocos golpes para darte una nota fiable. Graba al menos 20 segundos "
                           "con jabs y directos, de lado o en diagonal: de frente casi no vemos los golpes."),
+    ("curved", "baja"): ("Hemos detectado sobre todo curvos y esquivas. Por ahora The Corner solo puntúa jabs y "
+                         "directos: incluye al menos 5 en tu sombra para tener nota."),
     ("visible", "media"): ("A ratos no se te ven bien los brazos. Con más luz y el cuerpo entero dentro del "
                            "encuadre, el análisis será más preciso."),
     ("visible", "baja"): ("Se te ve poco: los brazos o la cara salen tapados o fuera de plano buena parte del vídeo. "
@@ -63,9 +65,13 @@ def _min_window(active, min_frames):
     return window
 
 
-def assess(df, punches, fps, size, cfg):
+def assess(df, punches, fps, size, cfg, moves=None):
     """Fiabilidad del analisis a partir de lo bien que se ve a la persona en el tramo activo
-    (ampliado a un minimo de segundos) y de cuantos golpes se han detectado."""
+    (ampliado a un minimo de segundos) y de cuantos golpes rectos se han detectado.
+
+    `moves` (curvos y esquivas, beta) no cambia el nivel: solo el mensaje cuando faltan rectos pero hay
+    sobre todo curvos y esquivas, grabando de lado o en diagonal (de frente, un recto hacia la camara
+    parece un crochet: ahi se mantiene el mensaje de pocos golpes)."""
     q = cfg["quality"]
     active, _ = _masks(len(df), punches, fps, cfg)
     if not active.any():
@@ -98,6 +104,9 @@ def assess(df, punches, fps, size, cfg):
     }
     worst = min(factors.values())
     reason = "ok" if worst == 2 else next(k for k, v in factors.items() if v == worst)
+    n_moves = len(moves or [])
+    if reason == "punches" and factors["front"] == 2 and n_moves >= q["min_punches"] and n_moves > len(punches):
+        reason = "curved"
     lvl = LEVELS[worst]
     orientation = (None if ratio is None else "de lado o en diagonal" if ratio <= q["max_front_high"]
                    else "casi de frente" if ratio <= q["max_front_medium"] else "de frente")
@@ -106,6 +115,7 @@ def assess(df, punches, fps, size, cfg):
         "reason": reason,
         "message": MESSAGES[(reason, lvl)],
         "n_punches": len(punches),
+        "n_moves": n_moves,
         "measured_s": round(float(active.sum()) / fps, 1),
         "visible_pct": round(visible_pct, 1),
         "wrist_out_pct": round(wrist_out_pct, 1),

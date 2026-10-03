@@ -140,6 +140,19 @@ def drop_late_dodges(moves, punches):
     return [m for m in moves if m["type"] != "esquiva" or m["t"] <= last]
 
 
+def curved_punches(moves, fps, gap_seconds=0.15):
+    """Golpes curvos para el volumen: crochets y uppercuts, uniendo los de la misma mano que se solapan
+    (un mismo golpe a veces sale como crochet y como uppercut a la vez). Las esquivas no son golpes."""
+    out = []
+    for m in sorted((m for m in moves if m["type"] in ("crochet", "uppercut")), key=lambda m: m["frame_start"]):
+        prev = next((o for o in reversed(out) if o["hand"] == m["hand"]), None)
+        if prev and m["frame_start"] <= prev["frame_end"] + int(gap_seconds * fps):
+            prev["frame_end"] = max(prev["frame_end"], m["frame_end"])
+        else:
+            out.append({"hand": m["hand"], "frame_start": m["frame_start"], "frame_end": m["frame_end"]})
+    return out
+
+
 def moves_mask(n, moves, fps, cfg):
     """Frames dentro de un movimiento no recto (con margen): no cuentan para la guardia."""
     out = np.zeros(n, bool)

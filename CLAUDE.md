@@ -69,8 +69,9 @@ tobillos 27/28. Distancias normalizadas por la anchura de hombros. Coordenadas d
 Landmarks con visibility < 0.5 se ignoran. Suavizado con mediana de 0,1 s. Guardia orthodox o southpaw.
 
 **Tramo activo:** de 1 s antes del primer golpe a 1 s después del último. Guardia, base y ritmo se miden solo ahí.
-La guardia, además, sin la bajada final: se mide hasta la última vez que las dos manos están arriba ≥ 0,1 s tras
-el último golpe (`guard.final_up_seconds`; más alto esconde fallos reales, ver DECISIONES punto 14).
+La guardia, además, sin la entrada en guardia ni la bajada final: se mide desde la primera vez que las dos manos
+están arriba ≥ 0,1 s antes del primer golpe (`guard.initial_up_seconds`, DECISIONES punto 16) hasta la última vez
+que lo están ≥ 0,1 s tras el último golpe (`guard.final_up_seconds`; más alto esconde fallos reales, punto 14).
 
 **Detección de golpes (punches.py):**
 - Máximo local de la distancia muñeca-hombro, alcanzado alejándola rápido (aumento de alcance + pico de velocidad).
@@ -83,8 +84,10 @@ el último golpe (`guard.final_up_seconds`; más alto esconde fallos reales, ver
 **Curvos y esquivas (moves.py, beta, sección `moves` de config.yaml):** en T = longitud del tronco de pie.
 Crochet: codo a la altura del hombro (≥ −0,08 T), brazo ≤ 80° y muñeca a la altura de la cabeza. Uppercut: muñeca
 desde ≥ 0,65 T bajo la nariz, sube > 6 T/s al menos 0,4 T hasta la cara con el codo ≤ 110°. Esquiva: la nariz baja
-≥ 0,38 T (sin media/entera; no cuenta tras el último golpe). No puntúan; no son guardia baja; la nota juzga solo
-los rectos. Se muestran en ficha y gráfica solo con fiabilidad no baja. Ver DECISIONES punto 15.
+≥ 0,38 T (sin media/entera; no cuenta tras el último golpe). No son guardia baja; la nota juzga solo los rectos
+salvo el volumen, que suma los curvos (no las esquivas). Se muestran en ficha y gráfica solo con fiabilidad no baja.
+Sin nota por pocos rectos pero ≥ 5 curvos/esquivas (de lado o diagonal): mensaje "sobre todo curvos y esquivas".
+Ver DECISIONES punto 15.
 
 **Mano "arriba" (guard.rule = elbow):** muñeca a menos de 0,8 anchuras de hombro de la nariz y por encima del codo.
 
@@ -96,11 +99,13 @@ los rectos. Se muestran en ficha y gráfica solo con fiabilidad no baja. Ver DEC
 | Mano contraria | % de golpes con la otra mano arriba al menos el 50 % del golpe | 20 |
 | Extensión | % de golpes con el codo a 160° o más | 20 |
 | Vuelta a la guardia | Del pico hasta mano arriba y codo < 90° (`recovery.max_elbow_angle`). Si no vuelve antes del siguiente golpe ni en 1,5 s, cuenta 1,5 s. Bueno < 0,4 s | 15 |
-| Volumen | Golpes por minuto (≈ 20/min = 0, 70/min = 100) | 10 |
+| Volumen | Golpes por minuto, rectos + curvos detectados (≈ 20/min = 0, 70/min = 100) | 10 |
 | Base | Pies y rodillas | 0 (de perfil un pie tapa al otro) |
 
 Cada subnota es lineal entre un umbral "malo" y uno "bueno" (config.yaml). Total = media ponderada.
-**Con menos de 5 golpes no hay nota** (ver Fiabilidad).
+**Con menos de 5 golpes rectos no hay nota** (ver Fiabilidad). `metrics.json` guarda `scoring_version` (hoy v2;
+v1 = antes de curvos y esquivas). Las notas solo son comparables con la misma versión: subirla (`SCORING_VERSION`
+en scoring.py) cuando un cambio mueva notas a propósito (DECISIONES punto 17).
 
 **Fiabilidad (quality.py, sección `quality` de config.yaml):** la peor de cuatro medidas. Golpes detectados
 (< 5 = baja, `min_punches`). Y, en el tramo activo ampliado a un mínimo de 10 s o al vídeo entero si dura menos
@@ -118,7 +123,8 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
   (jab, directo, uno_dos, uno_dos_vago, sombra). Golpes idénticos y nota total ±2. Si no se cumple, no se
   sube: se descarta o se presenta a Ignacio una tabla de antes y después.
 - Referencia actual (local, 60 fps): jab 10/0 · 92, directo 0/10 · 90, uno_dos 6/6 · 94,
-  uno_dos_vago 15/13 · 71, sombra 22/9 · 73 (15 crochets, 12 uppercuts, 11 esquivas). Todos con fiabilidad alta.
+  uno_dos_vago 15/13 · 72, sombra 22/9 · 82 (15 crochets, 12 uppercuts, 11 esquivas). Todos con fiabilidad alta
+  (puntuación v2).
   Los 4 clips de rectos no deben tener ningún curvo ni esquiva. Clips de curvos y esquivas: `data/Crochet_*`,
   `Upper_*`, `Medias_*`, `Enteras_*` (frente, 45º, 90º).
 - **El análisis lee el vídeo con OpenCV.** Leer con ffmpeg es más rápido pero cambia golpes dudosos;
