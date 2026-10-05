@@ -34,10 +34,11 @@ Lo que necesita no es un informe biomecánico: es **saber qué corregir mañana*
 2. **Lo analizamos:** detectamos tu esqueleto fotograma a fotograma, contamos tus golpes y medimos
    tu técnica.
 3. **Mejora con tu ficha:**
-   - Nota total de 0 a 100 y golpes por mano y por minuto.
+   - Nota total de 0 a 100, jabs, directos y golpes por minuto.
    - **Tu plan para la próxima sesión:** 3 consejos ordenados por lo que más te resta, cada uno con tu dato.
    - Tu vídeo con el esqueleto, un rótulo en cada golpe (jab, directo, crochet, uppercut, esquiva), contador
-     de rectos, curvos y esquivas e indicador de guardia (verde/rojo).
+     de rectos, curvos y esquivas e indicador de guardia (verde/rojo cuando la nota la mide; gris durante los
+     golpes, al colocarte y al terminar).
    - **Tu sesión, segundo a segundo:** gráfica con cada golpe de cada mano y los momentos con la guardia baja.
    - **Momentos para revisar:** los tramos más largos con la guardia baja; un clic y el vídeo salta a ese segundo.
    - Detalle de cada métrica con un **"¿Cómo se calcula?"** en lenguaje sencillo.
@@ -110,7 +111,7 @@ si el sistema no baja la nota en la métrica correcta, algo falla.
 | Directos | Solo directos | 0 / 10 ✅ | 90 |
 | 1-2 bueno | Combinaciones con buena técnica | 6 / 6 ✅ | **94** |
 | 1-2 vago | Las mismas combinaciones, con peor técnica a propósito | 15 / 13 ✅ | **72** |
-| Sombra libre | Sombra con movimiento, curvos y esquivas | 22 / 9 rectos + 15 crochets, 12 uppercuts y 11 esquivas (beta) | 82 |
+| Sombra libre | Sombra con movimiento, curvos y esquivas | 22 / 9 rectos + 25 curvos (13 crochets y 12 uppercuts) y 11 esquivas (beta) | 82 |
 
 Todos los conteos coinciden con los golpes reales. El 1-2 "vago" pierde 22 puntos frente al bueno, y los
 pierde donde debe: guardia (100 → 65), mano contraria (87 → 70) y extensión (100 → 69).

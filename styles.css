@@ -126,6 +126,8 @@ video { max-height: 70vh; }
 .tc-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #34342F; }
 .tc-stat b { display: block; font-size: 28px; font-weight: 800; color: var(--tc-copper); font-variant-numeric: tabular-nums; line-height: 1.1; }
 .tc-stat span { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #A9A79A; }
+.tc-stat em { display: block; margin-top: 2px; font-size: 11px; font-style: normal; font-weight: 600; letter-spacing: 0;
+  text-transform: none; color: #7E7C72; }
 
 /* Fiabilidad del análisis (dentro de la ficha) y aviso destacado cuando es baja */
 .tc-quality { margin-top: 16px; padding-top: 14px; border-top: 1px solid #34342F; }

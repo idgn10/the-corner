@@ -141,16 +141,29 @@ def drop_late_dodges(moves, punches):
 
 
 def curved_punches(moves, fps, gap_seconds=0.15):
-    """Golpes curvos para el volumen: crochets y uppercuts, uniendo los de la misma mano que se solapan
-    (un mismo golpe a veces sale como crochet y como uppercut a la vez). Las esquivas no son golpes."""
+    """Golpes curvos: crochets y uppercuts, uniendo los de la misma mano que se solapan (un mismo golpe a veces
+    sale como crochet y como uppercut a la vez). Cada golpe toma el tipo y el instante (`type`, `t`) de lo
+    primero que se detecta. Es la lista del volumen, la ficha, la grafica y el video. Las esquivas no son golpes."""
     out = []
     for m in sorted((m for m in moves if m["type"] in ("crochet", "uppercut")), key=lambda m: m["frame_start"]):
         prev = next((o for o in reversed(out) if o["hand"] == m["hand"]), None)
         if prev and m["frame_start"] <= prev["frame_end"] + int(gap_seconds * fps):
             prev["frame_end"] = max(prev["frame_end"], m["frame_end"])
+            if m["t"] < prev["t"]:
+                prev["type"], prev["t"] = m["type"], m["t"]
         else:
-            out.append({"hand": m["hand"], "frame_start": m["frame_start"], "frame_end": m["frame_end"]})
+            out.append({"hand": m["hand"], "type": m["type"], "t": m["t"],
+                        "frame_start": m["frame_start"], "frame_end": m["frame_end"]})
     return out
+
+
+def curved_summary(moves, fps):
+    """Cuantos crochets, uppercuts y esquivas se muestran: los curvos, contados una vez (curved_punches)."""
+    n = {t: 0 for t in TYPES}
+    for g in curved_punches(moves, fps):
+        n[g["type"]] += 1
+    n["esquiva"] = sum(m["type"] == "esquiva" for m in moves)
+    return n
 
 
 def moves_mask(n, moves, fps, cfg):
@@ -164,4 +177,6 @@ def moves_mask(n, moves, fps, cfg):
 
 
 def summary(moves):
+    """Recuento bruto por tipo (moves_beta de metrics.json): un golpe que sale como crochet y como uppercut
+    cuenta en los dos. La app muestra curved_summary."""
     return {t: sum(m["type"] == t for m in moves) for t in TYPES}

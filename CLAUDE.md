@@ -124,7 +124,8 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
   (jab, directo, uno_dos, uno_dos_vago, sombra). Golpes idénticos y nota total ±2. Si no se cumple, no se
   sube: se descarta o se presenta a Ignacio una tabla de antes y después.
 - Referencia actual (local, 60 fps): jab 10/0 · 92, directo 0/10 · 90, uno_dos 6/6 · 94,
-  uno_dos_vago 15/13 · 72, sombra 22/9 · 82 (15 crochets, 12 uppercuts, 11 esquivas). Todos con fiabilidad alta
+  uno_dos_vago 15/13 · 72, sombra 22/9 · 82 (25 curvos: 13 crochets y 12 uppercuts en la app; `moves_beta` de metrics.json
+  dice 15 y 12 porque cuenta dos veces los 2 golpes que salen como los dos; 11 esquivas). Todos con fiabilidad alta
   (puntuación v2).
   Los 4 clips de rectos no deben tener ningún curvo ni esquiva. Clips de curvos y esquivas: `data/Crochet_*`,
   `Upper_*`, `Medias_*`, `Enteras_*` (frente, 45º, 90º).

@@ -3,7 +3,7 @@ import altair as alt
 import pandas as pd
 
 from boxeo.card import BAD, GRAY, LEFT, RIGHT
-from boxeo.moves import LABELS
+from boxeo.moves import LABELS, curved_punches
 
 LANES = ["Izquierda", "Derecha", "Guardia baja"]
 BETA_LANE = "Curvos (beta)"
@@ -22,10 +22,13 @@ def session_chart(result):
         for p in result["punches"]
     ], columns=["t", "carril", "golpe", "codo", "extension"])
     lanes = LANES + [BETA_LANE] if "moves" in result else LANES
+    # Cada curvo una vez (como en el volumen, la ficha y el video) y las esquivas
+    all_moves = result.get("moves", [])
+    shown = curved_punches(all_moves, result["fps"]) + [m for m in all_moves if m["type"] == "esquiva"]
     moves = pd.DataFrame([
         {"t": m["t"], "carril": BETA_LANE, "movimiento": LABELS[m["type"]],
          "mano": {"left": "Izquierda", "right": "Derecha"}.get(m["hand"], "–")}
-        for m in result.get("moves", [])
+        for m in shown
     ], columns=["t", "carril", "movimiento", "mano"])
     low = pd.DataFrame(result.get("timeline", {}).get("guard_low", []), columns=["start", "end", "hand"])
     low["carril"] = "Guardia baja"

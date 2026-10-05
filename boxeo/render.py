@@ -3,7 +3,7 @@ import cv2
 import imageio_ffmpeg
 import numpy as np
 
-from boxeo.moves import curved_punches, moves_mask
+from boxeo.moves import curved_punches
 from boxeo.pose import iter_frames_fast
 
 # Colores en BGR
@@ -12,6 +12,7 @@ RIGHT_COLOR = (0, 140, 255)    # naranja: lado derecho
 CENTER_COLOR = (230, 230, 230)
 GREEN = (60, 200, 60)
 RED = (40, 40, 230)
+NEUTRAL = (150, 150, 150)      # gris: la nota no mide la guardia en ese momento
 HAND_COLORS = {"left": LEFT_COLOR, "right": RIGHT_COLOR}
 
 BONES = [
@@ -59,8 +60,8 @@ def build_tags(punches, moves, fps, tag_seconds=0.6):
 
     Aparece en el instante que marca la grafica (pico del recto, centro del curvo, punto mas bajo de la esquiva)
     y dura al menos tag_seconds. Un golpe que sale como crochet y como uppercut a la vez cuenta una vez, como en
-    el volumen de la nota (moves.curved_punches), con el nombre del primero que se detecta. Si coinciden varios
-    rotulos, cada uno ocupa una fila libre y no se mueve hasta que se quita.
+    el volumen de la nota, la ficha y la grafica (moves.curved_punches), con el nombre del primero que se detecta.
+    Si coinciden varios rotulos, cada uno ocupa una fila libre y no se mueve hasta que se quita.
     """
     hold = int(round(tag_seconds * fps))
     tags = []
@@ -69,12 +70,9 @@ def build_tags(punches, moves, fps, tag_seconds=0.6):
         tags.append({"start": f, "end": f + hold, "text": "JAB" if p["type"] == "jab" else "DIRECTO",
                      "color": HAND_COLORS[p["hand"]], "kind": "rectos"})
     for g in curved_punches(moves, fps):
-        parts = [m for m in moves if m["type"] in MOVE_TAGS and m["hand"] == g["hand"]
-                 and g["frame_start"] <= m["frame_start"] <= g["frame_end"]]
-        first = min(parts, key=lambda m: m["t"])
-        f = int(round(first["t"] * fps))
+        f = int(round(g["t"] * fps))
         tags.append({"start": f, "end": max(f + hold, g["frame_end"]),
-                     "text": f"{MOVE_TAGS[first['type']]} {SIDE_TAGS[g['hand']]}",
+                     "text": f"{MOVE_TAGS[g['type']]} {SIDE_TAGS[g['hand']]}",
                      "color": HAND_COLORS[g["hand"]], "kind": "curvos"})
     for m in moves:
         if m["type"] == "esquiva":
@@ -121,10 +119,11 @@ def draw_frame(img, row, counts, guard_up, flash_side=None, tags=()):
     scale = h / 720
     pad = int(20 * scale)
     _draw_counter(img, counts, scale, pad)
-    if guard_up is not None:
-        color = GREEN if guard_up else RED
-        cv2.circle(img, (pad + int(12 * scale), int(92 * scale)), int(12 * scale), color, -1, cv2.LINE_AA)
-        _label(img, "Guardia" if guard_up else "Guardia baja", (pad + int(34 * scale), int(104 * scale)), color, 0.9 * scale)
+    # Guardia: verde arriba, rojo baja y gris cuando la nota no la mide (siempre visible, para que no parpadee)
+    color = NEUTRAL if guard_up is None else GREEN if guard_up else RED
+    cv2.circle(img, (pad + int(12 * scale), int(92 * scale)), int(12 * scale), color, -1, cv2.LINE_AA)
+    _label(img, "Guardia baja" if guard_up is False else "Guardia", (pad + int(34 * scale), int(104 * scale)),
+           color, 0.9 * scale)
     # Rotulos abajo y centrados, apilados hacia arriba: arriba no caben bajo el marcador sin tapar la cara.
     # Dejan libre la franja de abajo, donde el reproductor pone sus controles al pausar
     for t in tags:
@@ -134,13 +133,13 @@ def draw_frame(img, row, counts, guard_up, flash_side=None, tags=()):
     return img
 
 
-def render_video(video_path, out_path, df, punches, info, moves=None, cfg=None, flash_seconds=0.15, progress=None):
+def render_video(video_path, out_path, df, punches, info, guard_eval, moves=None, flash_seconds=0.15, progress=None):
     """Escribe el video anotado en H.264 (reproducible en navegador), al tamano de analisis (720p como maximo).
 
+    `guard_eval`: frames en los que la nota mide la guardia (metrics.guard_frames). Solo ahi sale el indicador
+    en verde o en rojo; en el resto (golpes, curvos, esquivas, entrada en guardia y bajada final), en gris.
     `moves`: curvos y esquivas (beta) que se rotulan y cuentan; None si no se muestran (fiabilidad baja).
-    Durante ellos (con el margen de la nota, moves.guard_margin_seconds en config) no sale "Guardia baja",
-    porque no cuenta como tal. Lee el original con el lector rapido (ffmpeg): el video de salida no interviene
-    en el analisis.
+    Lee el original con el lector rapido (ffmpeg): el video de salida no interviene en el analisis.
     """
     fps, size = info["fps"], info["size"]
     n = len(df)
@@ -150,9 +149,8 @@ def render_video(video_path, out_path, df, punches, info, moves=None, cfg=None, 
         for f in range(p["frame_peak"], p["frame_peak"] + flash + 1):
             peaks[f] = "l" if p["hand"] == "left" else "r"
     counts = {"rectos": 0} if moves is None else {"rectos": 0, "curvos": 0, "esquivas": 0}
-    moves = moves or []
-    tags = build_tags(punches, moves, fps)
-    no_guard = moves_mask(n, moves, fps, cfg) if moves else np.zeros(n, bool)
+    tags = build_tags(punches, moves or [], fps)
+    both_up = (df["up_l"] * df["up_r"]).to_numpy(float)
 
     writer = imageio_ffmpeg.write_frames(
         str(out_path), size, fps=fps, codec="libx264", pix_fmt_out="yuv420p",
@@ -167,10 +165,7 @@ def render_video(video_path, out_path, df, punches, info, moves=None, cfg=None, 
             for t in tags:
                 if t["start"] == i:
                     counts[t["kind"]] += 1
-            up_l, up_r = row["up_l"], row["up_r"]
-            guard_up = None if np.isnan(up_l) or np.isnan(up_r) else bool(up_l and up_r)
-            if guard_up is False and no_guard[i]:
-                guard_up = None
+            guard_up = bool(both_up[i]) if guard_eval[i] else None
             draw_frame(frame, row, counts, guard_up, peaks.get(i), [t for t in tags if t["start"] <= i <= t["end"]])
             writer.send(np.ascontiguousarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
     finally:

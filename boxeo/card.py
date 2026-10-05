@@ -1,7 +1,7 @@
 """Componentes visuales de la app (HTML). El estilo esta en styles.css (lo carga app.py)."""
 from html import escape
 
-from boxeo.moves import summary
+from boxeo.moves import curved_summary
 from boxeo.tips import RECORDING_KEYS, ranked_keys
 
 # Paleta de The Corner (la misma que styles.css y .streamlit/config.toml)
@@ -79,6 +79,8 @@ def hero_html(result):
     m, total = result["metrics"], result["total"]
     stance = "Diestro" if result.get("stance") == "orthodox" else "Zurdo"
     ppm = _n(m["punches_per_min"]) if m.get("punches_per_min") is not None else "–"
+    curved = m.get("n_curved", 0)
+    ppm_note = f"<em>incluye {curved} curvo{'s' if curved > 1 else ''}</em>" if curved else ""
     return ('<div class="tc"><div class="tc-hero">'
             '<div class="tc-label">Tu nota de la sesión</div>'
             f'<div class="tc-hero-sub">{escape(result["video"])} · {stance} · '
@@ -87,20 +89,20 @@ def hero_html(result):
             '<span class="tc-of">/ 100</span></div>'
             f'<div class="tc-verdict"><i style="background:{color(total)}"></i>{verdict(total)}</div>'
             '<div class="tc-stats">'
-            f'<div class="tc-stat"><b>{m["n_left"]}</b><span>Izquierda</span></div>'
-            f'<div class="tc-stat"><b>{m["n_right"]}</b><span>Derecha</span></div>'
-            f'<div class="tc-stat"><b>{ppm}</b><span>Golpes/min</span></div>'
+            f'<div class="tc-stat"><b>{m["by_type"]["jab"]["count"]}</b><span>Jabs</span></div>'
+            f'<div class="tc-stat"><b>{m["by_type"]["directo"]["count"]}</b><span>Directos</span></div>'
+            f'<div class="tc-stat"><b>{ppm}</b><span>Golpes/min{ppm_note}</span></div>'
             f'<div class="tc-stat"><b>{m["n_punches"]}</b><span>Rectos</span></div>'
             "</div>" + beta_html(result) + _quality_html(result.get("quality")) + "</div></div>")
 
 
 def beta_html(result):
-    """Curvos y esquivas (beta): cuantos hay y el aviso. Solo los curvos puntuan (volumen).
-    Los analisis antiguos no los tienen."""
+    """Curvos y esquivas (beta): cuantos hay y el aviso. Solo los curvos puntuan (volumen). Cada curvo cuenta
+    una vez, como en el volumen, la grafica y el video. Los analisis antiguos no los tienen."""
     if "moves" not in result:
         return ""
     curved = result["metrics"].get("n_curved")
-    n = summary(result["moves"])
+    n = curved_summary(result["moves"], result["fps"])
     items = "".join(f'<div class="tc-stat"><b>{n[k]}</b><span>{label}</span></div>'
                     for k, label in (("crochet", "Crochets"), ("uppercut", "Uppercuts"), ("esquiva", "Esquivas")))
     return ('<div class="tc-beta"><div class="tc-quality-head"><span>Curvos y esquivas</span>'

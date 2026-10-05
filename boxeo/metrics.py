@@ -172,6 +172,13 @@ def _guard_mask(df, punches, fps, cfg, moves=None):
     return active, in_punch
 
 
+def guard_frames(df, punches, fps, cfg, moves=None):
+    """Frames en los que la nota mide la guardia: tramo de _guard_mask, fuera de golpes, curvos y esquivas,
+    y con las dos manos localizadas. Lo usan la nota (compute_metrics) y el indicador del video anotado."""
+    active, in_move = _guard_mask(df, punches, fps, cfg, moves)
+    return (df["up_l"] * df["up_r"]).notna().to_numpy() & ~in_move & active
+
+
 def guard_timeline(df, punches, fps, cfg, moves=None, min_seconds=0.4, merge_seconds=0.25, worst=3):
     """Tramos con la guardia baja (fuera de los golpes, curvos y esquivas, en el tramo activo) y los peores momentos.
 
@@ -219,7 +226,6 @@ def compute_metrics(df, punches, fps, cfg, moves=None):
     """
     n = len(df)
     active, _ = _masks(n, punches, fps, cfg)
-    guard_active, in_move = _guard_mask(df, punches, fps, cfg, moves)
     duration = active.sum() / fps if fps else 0
     curved = curved_punches(moves or [], fps)
     volume_s = duration
@@ -231,7 +237,7 @@ def compute_metrics(df, punches, fps, cfg, moves=None):
         volume_s = (hi - lo) / fps
 
     both_up = df["up_l"] * df["up_r"]
-    valid = both_up.notna().to_numpy() & ~in_move & guard_active
+    valid = guard_frames(df, punches, fps, cfg, moves)
     base_valid = df["base_ok"].notna().to_numpy() & active
 
     by_type = {}

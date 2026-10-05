@@ -499,3 +499,26 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   (jab 10/0 · 92, directo 0/10 · 90, uno_dos 6/6 · 94, uno_dos_vago 15/13 · 72, sombra 22/9 · 82). El vídeo del
   ejemplo (`demo/annotated.mp4`) se ha regenerado: 13 MB recodificado a 4,9 MB (CRF 24, SSIM 0,985);
   `demo/metrics.json` no cambia.
+
+## 19. El vídeo y la ficha cuentan lo mismo (decidido por Ignacio)
+
+- **Problema:** el indicador del vídeo marcaba "Guardia baja" fotograma a fotograma también durante los rectos, al
+  colocarse y al terminar, que la nota no cuenta. En sombra salía en rojo 7,8 s y la nota cuenta 0,9 s, mientras la
+  ficha decía guardia 94 y "No hay momentos largos con la guardia baja". Y los curvos daban tres cifras: la ficha,
+  15 crochets + 12 uppercuts (27) y "25 golpes" en la misma tarjeta; la gráfica, 27 marcas; el vídeo, 25.
+- **Indicador de guardia:** usa los mismos fotogramas que la nota (`metrics.guard_frames`, que usa también
+  `compute_metrics`). Verde o rojo solo donde la nota mide la guardia; en el resto (rectos, curvos y esquivas con su
+  margen, antes de subir la guardia, la bajada final y fotogramas sin las dos manos), "Guardia" en gris. No
+  desaparece, para que no parpadee. Sustituye al indicador del punto 18.
+- **Curvos:** ficha, gráfica, marcador y rótulos salen de `moves.curved_punches`, la lista del volumen: un golpe que
+  sale como crochet y como uppercut a la vez cuenta una vez, con el tipo de lo primero que se detecta. Sombra: 13
+  crochets + 12 uppercuts = 25 en todas partes. `moves_beta` de `metrics.json` (y la línea "Beta" del CLI) se queda
+  con el recuento bruto (15 y 12).
+- **Textos de la ficha:** "Izquierda / Derecha" pasa a "Jabs / Directos" (con guardia zurda el jab es la derecha), y
+  "Golpes/min" lleva debajo "incluye N curvos" cuando los hay (87 golpes/min junto a 31 rectos no cuadraba).
+- **No cambia ninguna nota.** Los 5 clips de prueba y los 2 de control (`Crochet_frente` y `1,5m`, Sin nota) dan
+  `metrics.json` y `landmarks.csv` idénticos byte a byte a los de antes. Medido en los píxeles del vídeo de sombra:
+  7,8 s en rojo antes y 0,92 s ahora, lo mismo que la nota, sin ningún fotograma distinto (en el 1-2 vago, 4,1 s
+  en vídeo y nota). En sombra el indicador está en gris el 82% del vídeo: casi todo son golpes.
+- **Ejemplo:** `demo/annotated.mp4` regenerado desde un análisis nuevo de sombra (4,8 MB, CRF 24);
+  `demo/metrics.json` no cambia.
