@@ -142,8 +142,7 @@ En Streamlit Community Cloud entras con tu cuenta de GitHub, eliges el repo y te
 ## PASO 6. Demo y envío (martes)
 
 1. **Graba la pantalla (1-2 minutos):** subes un vídeo, sale el análisis y explicas dos decisiones de producto (qué dejaste fuera y por qué).
-2. **Mensaje a un contacto:** lo redactamos juntos con el enlace de la app, el repo y la demo.
-3. **Margen:** si algo se ha roto, se arregla hoy.
+2. **Margen:** si algo se ha roto, se arregla hoy.
 
 ---
 

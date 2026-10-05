@@ -60,8 +60,6 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
 - **Estructura:** problema, usuario, qué hace, MoSCoW con estado, cómo funciona, métricas y scoring,
   validación y decisiones de calibración (con la tabla codo frente a hombros), limitaciones y siguientes pasos.
   La instalación y el uso van al final: el README lo leerá antes alguien de producto que un desarrollador.
-
-  Si quieres nombrarla, es una línea al principio.
 - **Usuario objetivo que he escrito:** boxeador amateur o de fitness boxing que entrena solo. Revísalo:
   es la hipótesis principal del producto.
 - **Capturas:** 3 huecos marcados con "📸 CAPTURA PENDIENTE" (resultados, subida y móvil). Las rutas

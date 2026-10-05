@@ -83,5 +83,4 @@ Cómo grabar: móvil fijo, cuerpo entero, buena luz, 60 fps si se puede, solo t�
 ## Martes: demo y envío
 
 - [ ] Grabar demo de pantalla (1-2 min) con dos decisiones de producto explicadas
-- [ ] Redactar el mensaje a un contacto con enlace a la app, al repo y a la demo
 - [ ] Margen para arreglos
