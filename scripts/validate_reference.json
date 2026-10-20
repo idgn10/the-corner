@@ -1,0 +1,149 @@
+{
+ "scoring_version": "v2",
+ "clips": {
+  "jab": {
+   "rectos_izq": 10,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 0,
+   "nota": 92
+  },
+  "directo": {
+   "rectos_izq": 0,
+   "rectos_der": 10,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 0,
+   "nota": 90
+  },
+  "uno_dos": {
+   "rectos_izq": 6,
+   "rectos_der": 6,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 0,
+   "nota": 94
+  },
+  "uno_dos_vago": {
+   "rectos_izq": 15,
+   "rectos_der": 13,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 0,
+   "nota": 72
+  },
+  "sombra": {
+   "rectos_izq": 22,
+   "rectos_der": 9,
+   "crochets": 13,
+   "uppercuts": 12,
+   "esquivas": 11,
+   "nota": 82
+  },
+  "frente_1,5m": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 9,
+   "uppercuts": 0,
+   "esquivas": 0,
+   "nota": null
+  },
+  "crochet_frente": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 7,
+   "uppercuts": 3,
+   "esquivas": 0,
+   "nota": null
+  },
+  "crochet_45": {
+   "rectos_izq": 1,
+   "rectos_der": 0,
+   "crochets": 9,
+   "uppercuts": 0,
+   "esquivas": 0,
+   "nota": null
+  },
+  "crochet_90": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 5,
+   "uppercuts": 0,
+   "esquivas": 0,
+   "nota": null
+  },
+  "upper_frente": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 1,
+   "uppercuts": 8,
+   "esquivas": 0,
+   "nota": null
+  },
+  "upper_45": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 8,
+   "esquivas": 0,
+   "nota": null
+  },
+  "upper_90": {
+   "rectos_izq": 1,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 5,
+   "esquivas": 0,
+   "nota": null
+  },
+  "medias_frente": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 8,
+   "nota": null
+  },
+  "medias_45": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 10,
+   "nota": null
+  },
+  "medias_90": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 10,
+   "nota": null
+  },
+  "enteras_frente": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 8,
+   "nota": null
+  },
+  "enteras_45": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 10,
+   "nota": null
+  },
+  "enteras_90": {
+   "rectos_izq": 0,
+   "rectos_der": 0,
+   "crochets": 0,
+   "uppercuts": 0,
+   "esquivas": 8,
+   "nota": null
+  }
+ }
+}
