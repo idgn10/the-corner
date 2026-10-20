@@ -4,6 +4,8 @@ Arranque: streamlit run app.py   (modo demo directo: http://localhost:8501/?demo
 """
 import json
 import os
+import shutil
+import tempfile
 from pathlib import Path
 
 import cv2
@@ -144,18 +146,22 @@ def process(upload, stance):
             bar.progress(1.0, text="¡Listo! Preparando tu ficha…")
 
     show(0.0, STEPS[0])
-    out_dir = ROOT / "outputs" / "app" / Path(upload.name).stem
-    out_dir.mkdir(parents=True, exist_ok=True)
-    video_path = out_dir / f"input{Path(upload.name).suffix.lower()}"
-    video_path.write_bytes(upload.getbuffer())
-
-    max_s = cfg["video"]["max_seconds"]
-    if _duration(video_path) > max_s:
-        st.info(f"Tu vídeo dura más de {max_s} s: analizaremos el primer minuto.")
-
+    # Cada subida en su carpeta temporal de nombre aleatorio (nunca el nombre del archivo), que se borra entera al
+    # terminar, salga bien o mal: en el disco no queda nada. El video con esqueleto queda solo en la memoria de la
+    # sesion (docs/DECISIONES.md, punto 20)
+    out_dir = Path(tempfile.mkdtemp(prefix="thecorner-"))
     try:
+        suffix = Path(upload.name).suffix.lower()
+        video_path = out_dir / f"input{suffix if suffix in ('.mp4', '.mov', '.m4v') else '.mp4'}"
+        video_path.write_bytes(upload.getbuffer())
+
+        max_s = cfg["video"]["max_seconds"]
+        if _duration(video_path) > max_s:
+            st.info(f"Tu vídeo dura más de {max_s} s: analizaremos el primer minuto.")
+
         _model()
         result = analyze(video_path, out_dir, load_config(stance=stance), progress=show)
+        video = (out_dir / "annotated.mp4").read_bytes()
     except Exception as e:  # mensaje amable + detalle tecnico plegado
         bar.empty()
         steps_box.empty()
@@ -163,7 +169,10 @@ def process(upload, stance):
         with st.expander("Detalle técnico"):
             st.code(f"{type(e).__name__}: {e}")
         return
-    st.session_state.update(result=result, video=str(out_dir / "annotated.mp4"), source="upload", seek=0)
+    finally:
+        shutil.rmtree(out_dir, ignore_errors=True)
+    result["video"] = upload.name  # el nombre original, solo para mostrarlo en la ficha
+    st.session_state.update(result=result, video=video, source="upload", seek=0)
     st.rerun()
 
 
@@ -262,8 +271,8 @@ def low_quality_view(r):
 
 
 def _video_block(r):
-    video = st.session_state.get("video")
-    if video and (str(video).startswith("http") or Path(video).exists()):
+    video = st.session_state.get("video")  # bytes (subida) o ruta/URL (ejemplo)
+    if isinstance(video, bytes) or (video and (str(video).startswith("http") or Path(video).exists())):
         seek = st.session_state.get("seek", 0)
         st.video(video, start_time=seek, autoplay=bool(seek), muted=True)
     else:

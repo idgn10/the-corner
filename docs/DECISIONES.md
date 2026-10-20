@@ -520,3 +520,25 @@ ser bastante menos). Opciones a valorar, no aplicadas:
   en vídeo y nota). En sombra el indicador está en gris el 82% del vídeo: casi todo son golpes.
 - **Ejemplo:** `demo/annotated.mp4` regenerado desde un análisis nuevo de sombra (4,8 MB, CRF 24);
   `demo/metrics.json` no cambia.
+
+## 20. Privacidad de las subidas: carpeta aleatoria y nada guardado en el servidor
+
+- **Problema (auditoría del 20 de octubre):** cada vídeo subido se guardaba en `outputs/app/<nombre del archivo>/`.
+  Dos personas que suben a la vez un vídeo con el mismo nombre (`IMG_1234.MOV`) compartían carpeta y una podía ver
+  el vídeo y la ficha de la otra. Además el vídeo subido, el vídeo con esqueleto, `landmarks.csv` y `metrics.json`
+  se quedaban en el servidor sin borrarse nunca.
+- **Ahora:** cada subida va a una carpeta temporal del sistema con nombre aleatorio (`tempfile.mkdtemp`, prefijo
+  `thecorner-`, solo legible por la app), que se borra entera al terminar el análisis, salga bien, falle o se
+  interrumpa (cerrar la pestaña a mitad). El vídeo con esqueleto pasa a la memoria de la sesión, que es lo que
+  Streamlit ya hacía al mostrarlo desde la ruta; la ficha y el JSON ya estaban en memoria. Se liberan con "Analizar
+  otro vídeo" o unos 2 minutos después de cerrar la pestaña (Streamlit guarda ese tiempo la sesión por si vuelve). `landmarks.csv` y `metrics.json` no los usa la app: se borran con la carpeta.
+- **El nombre del archivo** solo se muestra en la ficha (antes salía "input.mov") y da nombre al JSON descargado.
+  Nunca se usa como ruta: dentro de la carpeta el vídeo se llama `input` con la extensión del archivo si es
+  .mp4, .mov o .m4v (si no, .mp4).
+- **Prueba:** con la app en local y Chrome sin ventana, tres personas en navegadores aislados suben a la vez un
+  archivo llamado `IMG_1234.MOV` (Jabs, Directos y uno roto). Antes, las tres veían la ficha y el vídeo de Directos
+  (90) y el vídeo de Jabs se quedaba en disco. Ahora, cada una ve lo suyo (92, 90 y el aviso de vídeo ilegible),
+  con tres carpetas distintas que desaparecen al terminar; cerrando la pestaña a mitad, la carpeta se borra en 1 s.
+- **No cambia el análisis ni la nota:** `scripts/validate.py` da SÍ (los 18 clips iguales a la referencia).
+- **Límite:** si el proceso muere de golpe (por ejemplo, el servidor se queda sin memoria) puede quedar una carpeta
+  en la carpeta temporal del sistema hasta que el servidor se reinicie.

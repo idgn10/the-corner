@@ -135,6 +135,9 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
 - Antes de añadir una dependencia pesada, preguntar.
 - Commits pequeños con mensajes claros. Al terminar: resumen breve en español de qué se hizo, cómo probarlo y qué falta.
 - Documentar las decisiones en docs/DECISIONES.md y mantener README y docs/SCORING.md al día.
+- **Privacidad de las subidas:** la app no guarda nada en disco. Cada subida va a una carpeta temporal con
+  nombre aleatorio que se borra al terminar (también si falla); el nombre del archivo nunca se usa como ruta,
+  solo se muestra en la ficha (DECISIONES punto 20).
 - No subir nunca vídeos, salvo demo/annotated.mp4 (vídeo del ejemplo, menos de 10 MB). Tampoco outputs,
   modelos ni documentos privados.
 - MVP: si algo se complica, proponer la versión más simple.
