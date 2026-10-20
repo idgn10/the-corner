@@ -53,7 +53,7 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   2. **Adjunto de una Release de GitHub** con la URL directa al .mp4 en `DEMO_VIDEO_URL`. Tampoco va al
      código, pero el enlace es público.
   3. **Subirlo al repo** (13 MB) añadiendo `!demo/annotated.mp4` al `.gitignore`. Es lo más simple pero
-     rompe la regla de no subir vídeos y tu cara queda en un repo público.
+     rompe la regla de no subir vídeos y el vídeo queda en un repo público.
 
 ## 4. README como caso de producto
 
@@ -64,7 +64,7 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   es la hipótesis principal del producto.
 - **Capturas:** 3 huecos marcados con "📸 CAPTURA PENDIENTE" (resultados, subida y móvil). Las rutas
   esperadas son `docs/img/resultados.png`, `docs/img/subida.png` y `docs/img/movil.png`. No las he puesto
-  yo porque salen tu cara y tu casa: decide tú qué enseñar. Para hacerlas, abre la app con `?demo=1`.
+  yo porque se ve a la persona grabada: decide tú qué enseñar. Para hacerlas, abre la app con `?demo=1`.
 - **Siguientes pasos:** los he ordenado poniendo primero validar con usuarios y la evolución entre sesiones.
 
 ## 5. Despliegue (preparado, no publicado)
@@ -82,7 +82,7 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   vídeos de 60 fps (habría que revisar que la detección sigue igual). No lo he hecho.
 - Los pasos de la web están en `docs/DESPLIEGUE.md`.
 
-## 6. Rediseño visual "The Corner" (inspirado en un gimnasio de boxeo de Madrid, sin su marca)
+## 6. Rediseño visual "The Corner"
 
 - **Solo aspecto:** tema en `.streamlit/config.toml` y un único `styles.css` que carga `app.py`. No cambia
   nada del análisis, la detección ni la puntuación (la nota de los clips sale igual).
