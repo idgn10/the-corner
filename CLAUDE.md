@@ -12,11 +12,14 @@ Principio de producto: **una nota tiene que ser verdad antes que espectacular.**
 mejor no dar nota que dar una falsa.
 
 ## Flujo de usuario
-1. El usuario sube un vídeo corto (20-60 s) haciendo sombra o saco, casi de perfil o en diagonal.
+1. El usuario lee "Cómo grabar" (un solo texto en `boxeo/recording.py`, con dibujos) y sube un vídeo de sombra
+   libre de 20-60 s: móvil en vertical a 1,2 m, a unos 2 m, entre su frente y su hombro adelantado (unos 45°),
+   cuerpo entero, y una prueba de 5 segundos antes de grabar.
+   Nada más subirlo, la app avisa de fotogramas por segundo, duración y orientación (antes de analizar).
 2. La app lo procesa (barra de progreso en 4 pasos).
-3. Muestra: vídeo con esqueleto, rótulo de cada golpe, contador (rectos, curvos, esquivas) e indicador de guardia;
-   ficha con métricas y nota; tres consejos; momentos para revisar; fiabilidad del análisis. Con fiabilidad baja,
-   "Sin nota".
+3. Muestra: nota y vídeo con esqueleto juntos (rótulo de cada golpe, contador e indicador de guardia, con leyenda);
+   momentos para revisar el fallo del primer consejo; consejos; gráfica; detalle con "Bien / Regular / A mejorar";
+   fiabilidad del análisis. Con fiabilidad baja, "Sin nota" con la causa de la grabación primero.
 
 ## Alcance (MoSCoW)
 - Must: pose, vídeo con esqueleto, detección de golpes rectos por mano, métricas, nota, fiabilidad, CLI y app.
@@ -115,6 +118,8 @@ baja; una muñeca a menos de 0,3 anchuras de hombro del borde cuenta como fuera,
 borde) y orientación hombros ÷ tronco (≤ 0,60 alta, > 0,70 baja; de frente real midió 0,62, umbral pendiente de
 un segundo clip de frente). **Con fiabilidad baja no hay nota** (total: null): pantalla "Sin nota", claves para
 grabar de nuevo y detalle en gris como "orientativo". Clip de control: `1,5m.MOV` (de frente) = Sin nota.
+Si lo que no se ve es sobre todo el brazo de atrás (codo y muñeca sin ver a la vez > 50 %, `profile_rear_hidden`),
+el motivo es "casi de perfil" (`reason: profile`); solo cambia el texto, no el nivel (DECISIONES punto 23).
 
 **Consejos:** por reglas, sin IA. Las 3 métricas que más restan, (100 − subnota) × peso, con el dato
 concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio lo pide.
@@ -145,8 +150,9 @@ concreto. Con 85 o más, consejo de refuerzo. La API de Claude solo si Ignacio l
 ## Problemas conocidos
 - OpenCV con códec mp4v genera vídeos que el navegador no reproduce: codificar en H.264 con imageio-ffmpeg.
 - Se procesa a 720 px de alto como máximo y solo el primer minuto. Subida máx. 300 MB.
-- Calibrado con vídeos a 60 fps: a 30 fps la nota puede variar unos puntos (validado, no pasa). La app
-  recomienda 1080p a 60 fps y avisa con menos de 50 fps. Soportar 30 fps requeriría interpolar la pose.
+- Calibrado con vídeos a 60 fps: a 30 fps la nota de sombra libre sale hasta 7 puntos más baja (copias convertidas,
+  DECISIONES punto 22). La app recomienda 1080p a 60 fps y, con menos de 50 fps, da la nota marcada como
+  "Orientativa" con un aviso (`FPS_POLICY` en `boxeo/recording.py`). Soportar 30 fps requeriría interpolar la pose.
 - En golpes dudosos, recodificar o analizar en otra máquina puede cambiar ±1 golpe (la app publicada da
   sombra 27/12, antes de la beta de curvos). En un mismo equipo el análisis es determinista.
 - Medición 2D: los ángulos dependen de la cámara. Grabar con cámara fija, cuerpo entero, de lado o en

@@ -177,8 +177,8 @@ Casos especiales:
   punto 17).
 - **Si la fiabilidad del análisis es baja, tampoco hay nota total** (mejor ningún dato que uno falso). La ficha
   dice "Sin nota: el vídeo no permite un análisis fiable", con el motivo medido (p. ej. "La mano sale del
-  encuadre el 11% del tiempo") y cómo grabar mejor. En vez de los consejos de técnica salen 3 claves para
-  grabar: casi de perfil o en diagonal, cuerpo entero en el plano y a 2-3 m de la cámara. El vídeo y el detalle
+  encuadre el 11% del tiempo") y cómo grabar mejor. En vez de los consejos de técnica sale "Cómo grabar",
+  la misma lista que en la entrada (`boxeo/recording.py`). El vídeo y el detalle
   por métrica se ven igual, marcados como **"Orientativo"**; la gráfica de la sesión y los momentos para
   revisar no se muestran. Con fiabilidad alta o media todo funciona como siempre.
 
@@ -199,6 +199,11 @@ dice cómo es el resto del vídeo.
 
 Ojo con la orientación: el primer clip real de frente dio **0,62** (se suponía 0,75-0,8), así que de frente
 suele salir "media" por orientación. Lo que deja ese vídeo sin nota es que casi no se detectan golpes.
+
+**Casi de perfil** (solo cambia el texto del motivo, no la fiabilidad): si la baja es por puntos visibles y lo que
+falta es sobre todo el brazo de atrás (codo y muñeca sin ver a la vez más del **50%** del tiempo, con cara, hombros
+y brazo de delante a la vista al menos el 75%), "Sin nota" dice "Tu brazo derecho, el de atrás, queda tapado por tu
+cuerpo el 67 % del tiempo: el móvil te ve casi de perfil" y cómo colocarse. Ver `docs/DECISIONES.md`, punto 23.
 Detalle en `docs/DECISIONES.md`, punto 13.
 
 ### Los 3 consejos

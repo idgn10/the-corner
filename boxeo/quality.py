@@ -6,26 +6,62 @@ import numpy as np
 import pandas as pd
 
 from boxeo.metrics import _masks, dist
+from boxeo.recording import FRAME, PLACE, profile_advice
 
 KEY_POINTS = ["nose", "l_shoulder", "r_shoulder", "l_elbow", "r_elbow", "l_wrist", "r_wrist"]
 LEVELS = ["baja", "media", "alta"]
 
-MESSAGES = {
-    ("ok", "alta"): "Buena grabación: se te ve bien, de lado y con las manos dentro del encuadre.",
-    ("punches", "baja"): ("Hemos detectado muy pocos golpes para darte una nota fiable. Graba al menos 20 segundos "
-                          "con jabs y directos, de lado o en diagonal: de frente casi no vemos los golpes."),
+MESSAGES = {  # mismas palabras que "Como grabar" (boxeo/recording.py)
+    ("ok", "alta"): "Buena grabación: se te ve entero, con buen ángulo y con los puños dentro de la imagen.",
+    ("punches", "baja"): ("Hemos detectado muy pocos golpes rectos para darte una nota fiable. Graba de 20 a 60 "
+                          "segundos de sombra con al menos 5 jabs o directos, con el móvil " + PLACE + "."),
     ("curved", "baja"): ("Hemos detectado sobre todo curvos y esquivas. Por ahora The Corner solo puntúa jabs y "
                          "directos: incluye al menos 5 en tu sombra para tener nota."),
-    ("visible", "media"): ("A ratos no se te ven bien los brazos. Con más luz y el cuerpo entero dentro del "
-                           "encuadre, el análisis será más preciso."),
-    ("visible", "baja"): ("Se te ve poco: los brazos o la cara salen tapados o fuera de plano buena parte del vídeo. "
-                          "Graba con buena luz y con el cuerpo entero dentro del encuadre."),
-    ("wrist_out", "media"): "A veces se te sale la mano del encuadre al golpear: aléjate un paso de la cámara.",
-    ("wrist_out", "baja"): "Se te sale la mano del encuadre en muchos golpes: aléjate un par de pasos de la cámara.",
-    ("front", "media"): ("Estás casi de frente a la cámara: gírala un poco para que te vea de lado o en diagonal."),
-    ("front", "baja"): ("Estás de frente a la cámara: así los golpes van hacia el objetivo y los brazos parecen "
-                        "más cortos. Ponte de lado o en diagonal."),
+    ("visible", "media"): ("A ratos no se te ven bien los brazos. Graba con buena luz, " + FRAME + "."),
+    ("visible", "baja"): ("Se te ve poco: los brazos o la cara salen tapados o fuera de la imagen buena parte del "
+                          "vídeo. Graba con buena luz, " + FRAME + "."),
+    ("profile", "baja"): ("El móvil te ve casi de perfil: tu brazo de atrás queda tapado por tu cuerpo la mayor "
+                          "parte del vídeo. " + profile_advice().replace("\n", " ")),
+    ("wrist_out", "media"): ("A veces se te sale el puño de la imagen al golpear: aleja un poco el móvil, hasta "
+                             "dejar un palmo de margen por encima de los brazos y por debajo de los pies."),
+    ("wrist_out", "baja"): ("Se te sale el puño de la imagen en muchos golpes: aleja el móvil hasta dejar un palmo "
+                            "de margen por encima de los brazos y por debajo de los pies."),
+    ("front", "media"): "Estás casi de frente a la cámara: pon el móvil " + PLACE + ".",
+    ("front", "baja"): ("Estás de frente a la cámara: así los golpes van hacia el móvil y los brazos parecen más "
+                        "cortos. Pon el móvil " + PLACE + "."),
 }
+
+
+# Que hacer, sin repetir el motivo: en "Sin nota" el motivo ya sale antes con su dato
+ADVICE = {
+    "wrist_out": "Aleja el móvil hasta dejar un palmo de margen por encima de los brazos y por debajo de los pies.",
+    "front": "De frente, los golpes van hacia el móvil y los brazos parecen más cortos. Pon el móvil " + PLACE + ".",
+    "visible": "Graba con buena luz, " + FRAME + ".",
+}
+
+
+def advice(reason, level, stance=None):
+    """Que hacer ante cada motivo (con pocos golpes o sobre todo curvos, su mensaje completo). Casi de perfil,
+    con los lados de la guardia elegida."""
+    if reason == "profile":
+        return profile_advice(stance)
+    return ADVICE.get(reason) or MESSAGES.get((reason, level), "")
+
+
+def profile(q, cfg):
+    """Lo que falla es sobre todo el brazo de atras: codo y muneca sin ver a la vez la mayor parte del tiempo y el
+    resto (cara, hombros y brazo de delante) bien visible. Solo cambia el texto del motivo, no la fiabilidad.
+    No usa la orientacion (hombros / tronco): con los clips de hoy, el corte de perfil tiene muy poco margen."""
+    t = cfg["quality"]
+    hidden, rest = q.get("rear_arm_hidden_pct"), q.get("rest_visible_pct")
+    return (hidden is not None and rest is not None
+            and hidden > t["profile_rear_hidden"] and rest >= t["min_visible_high"])
+
+
+def message(q):
+    """Mensaje de la fiabilidad con los textos de ahora: los analisis guardados (como el ejemplo de la app)
+    llevan en metrics.json el mensaje de su dia."""
+    return MESSAGES.get((q.get("reason"), q.get("level")), q.get("message", ""))
 
 
 def _wrist_out(df, size, edge_margin):
@@ -80,6 +116,10 @@ def assess(df, punches, fps, size, cfg, moves=None):
 
     visible = df[[f"{k}_v" for k in KEY_POINTS]].notna().all(axis=1).to_numpy()
     visible_pct = 100 * float(visible[active].mean())
+    # Solo para el texto del motivo (casi de perfil): codo y muneca de la mano de atras, y todo lo demas
+    rear_arm_points = ["l_elbow", "l_wrist"] if cfg.get("stance") == "southpaw" else ["r_elbow", "r_wrist"]
+    rear_hidden = df[[f"{k}_v" for k in rear_arm_points]].isna().all(axis=1).to_numpy()
+    rest = df[[f"{k}_v" for k in KEY_POINTS if k not in rear_arm_points]].notna().all(axis=1).to_numpy()
 
     person = (df["l_shoulder_v"].notna() & df["r_shoulder_v"].notna()).to_numpy() & active
     wrist_out_pct = 100 * float(_wrist_out(df, size, q["edge_margin"])[person].mean()) if person.any() else 0.0
@@ -107,6 +147,10 @@ def assess(df, punches, fps, size, cfg, moves=None):
     n_moves = len(moves or [])
     if reason == "punches" and factors["front"] == 2 and n_moves >= q["min_punches"] and n_moves > len(punches):
         reason = "curved"
+    rear_arm = {"rear_arm_hidden_pct": round(100 * float(rear_hidden[active].mean()), 1),
+                "rest_visible_pct": round(100 * float(rest[active].mean()), 1)}
+    if reason == "visible" and worst == 0 and profile(rear_arm, cfg):
+        reason = "profile"
     lvl = LEVELS[worst]
     orientation = (None if ratio is None else "de lado o en diagonal" if ratio <= q["max_front_high"]
                    else "casi de frente" if ratio <= q["max_front_medium"] else "de frente")
@@ -121,4 +165,5 @@ def assess(df, punches, fps, size, cfg, moves=None):
         "wrist_out_pct": round(wrist_out_pct, 1),
         "orientation_ratio": None if ratio is None else round(ratio, 2),
         "orientation": orientation,
+        **rear_arm,
     }

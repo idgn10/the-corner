@@ -2,11 +2,11 @@
 import altair as alt
 import pandas as pd
 
-from boxeo.card import BAD, GRAY, LEFT, RIGHT
+from boxeo.card import GRAY, GUARD_LOW, LEFT, RIGHT
 from boxeo.moves import LABELS, curved_punches
 
 LANES = ["Izquierda", "Derecha", "Guardia baja"]
-BETA_LANE = "Curvos (beta)"
+BETA_LANE = "Curvos y esquivas"
 SHAPES = {"Crochet": "circle", "Uppercut": "triangle-up", "Esquiva": "diamond"}
 
 
@@ -17,7 +17,7 @@ def session_chart(result):
             "carril": "Izquierda" if p["hand"] == "left" else "Derecha",
             "golpe": "Jab" if p["type"] == "jab" else "Directo",
             "codo": p["angle_peak"],
-            "extension": "Completa" if p.get("extended") else "Corta",
+            "extension": "Brazo estirado" if p.get("extended") else "Sin estirar",
         }
         for p in result["punches"]
     ], columns=["t", "carril", "golpe", "codo", "extension"])
@@ -40,11 +40,12 @@ def session_chart(result):
     ticks = alt.Chart(punches).mark_tick(thickness=4, size=26, cornerRadius=2).encode(
         x=x, y=y,
         color=alt.Color("carril:N", scale=alt.Scale(domain=["Izquierda", "Derecha"], range=[LEFT, RIGHT]), legend=None),
-        opacity=alt.Opacity("extension:N", scale=alt.Scale(domain=["Completa", "Corta"], range=[1.0, 0.5]), legend=None),
+        opacity=alt.Opacity("extension:N", scale=alt.Scale(domain=["Brazo estirado", "Sin estirar"], range=[1.0, 0.5]),
+                            legend=None),
         tooltip=[alt.Tooltip("golpe:N", title="Golpe"), alt.Tooltip("t:Q", title="Segundo", format=".1f"),
-                 alt.Tooltip("codo:Q", title="Codo (°)", format=".0f"), alt.Tooltip("extension:N", title="Extensión")],
+                 alt.Tooltip("codo:Q", title="Codo (°)", format=".0f"), alt.Tooltip("extension:N", title="Brazo")],
     )
-    bars = alt.Chart(low).mark_bar(height=18, cornerRadius=6, color=BAD, opacity=0.9).encode(
+    bars = alt.Chart(low).mark_bar(height=18, cornerRadius=6, color=GUARD_LOW, opacity=0.9).encode(
         x=alt.X("start:Q", scale=alt.Scale(domain=[0, end_t], nice=False)), x2="end:Q", y=y,
         tooltip=[alt.Tooltip("start:Q", title="Desde (s)", format=".1f"), alt.Tooltip("duracion:Q", title="Duración (s)"),
                  alt.Tooltip("hand:N", title="Mano abajo")],
@@ -54,7 +55,7 @@ def session_chart(result):
         shape=alt.Shape("movimiento:N", scale=alt.Scale(domain=list(SHAPES), range=list(SHAPES.values())), legend=None),
         color=alt.Color("mano:N", scale=alt.Scale(domain=["Izquierda", "Derecha", "–"], range=[LEFT, RIGHT, GRAY]),
                         legend=None),
-        tooltip=[alt.Tooltip("movimiento:N", title="Movimiento (beta)"), alt.Tooltip("mano:N", title="Mano"),
+        tooltip=[alt.Tooltip("movimiento:N", title="Movimiento (en pruebas)"), alt.Tooltip("mano:N", title="Mano"),
                  alt.Tooltip("t:Q", title="Segundo", format=".1f")],
     )
     return (

@@ -15,6 +15,11 @@ RED = (40, 40, 230)
 NEUTRAL = (150, 150, 150)      # gris: la nota no mide la guardia en ese momento
 HAND_COLORS = {"left": LEFT_COLOR, "right": RIGHT_COLOR}
 
+
+def hex_color(bgr):
+    """Color BGR de OpenCV en hexadecimal, para usar los mismos colores en la grafica y las leyendas de la app."""
+    return "#{:02X}{:02X}{:02X}".format(*bgr[::-1])
+
 BONES = [
     ("l_shoulder", "r_shoulder", CENTER_COLOR), ("l_hip", "r_hip", CENTER_COLOR),
     ("l_shoulder", "l_hip", LEFT_COLOR), ("r_shoulder", "r_hip", RIGHT_COLOR),

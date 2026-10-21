@@ -8,6 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from boxeo.card import label  # noqa: E402
 from boxeo.pipeline import analyze, load_config  # noqa: E402
 
 
@@ -45,12 +46,13 @@ def main():
           f" (activo {m['active_s']} s) | persona detectada en el {m['pose_detected_pct']}% de los frames")
     beta = m.get("moves_beta")
     if beta and q["level"] != "baja":
-        print(f"Beta (no puntúa): {beta['crochet']} crochets, {beta['uppercut']} uppercuts, {beta['esquiva']} esquivas")
-    for s in r["subscores"].values():
+        print(f"Curvos y esquivas (en pruebas, no puntúan): {beta['crochet']} crochets, {beta['uppercut']} uppercuts, "
+              f"{beta['esquiva']} esquivas")
+    for key, s in r["subscores"].items():
         score = s["score"] if s["score"] is not None else "-"
         if s["weight"] == 0:
             score = "off"
-        print(f"  {s['label']:<24} {str(score):>4}   ({s['metric']} = {s['value']})")
+        print(f"  {label(key, s):<24} {str(score):>4}   ({s['metric']} = {s['value']})")
     print("\nCómo grabar mejor:" if q["level"] == "baja" else "\nConsejos:")
     for t in r["tips"]:
         print(f"  - {t}")

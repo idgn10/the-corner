@@ -542,3 +542,150 @@ ser bastante menos). Opciones a valorar, no aplicadas:
 - **No cambia el análisis ni la nota:** `scripts/validate.py` da SÍ (los 18 clips iguales a la referencia).
 - **Límite:** si el proceso muere de golpe (por ejemplo, el servidor se queda sin memoria) puede quedar una carpeta
   en la carpeta temporal del sistema hasta que el servidor se reinicie.
+
+## 21. Experiencia de uso: cómo grabar, orden y lenguaje
+
+Solo textos, orden, diseño y avisos: no cambia el análisis, ni las notas, ni los golpes (`scripts/validate.py` da SÍ
+tras cada cambio). Los nombres internos de las métricas y la estructura de `metrics.json` no cambian.
+
+- **Un solo "Cómo grabar"** en `boxeo/recording.py`, igual en la entrada, en "Sin nota" ("Graba de nuevo así"), en
+  los avisos de fiabilidad, en el pie de la ficha y en la terminal: móvil en vertical y fijo a 1,2 m del suelo y
+  recto, con la cámara trasera; a unos 2 m, en diagonal delante de la persona, del lado de su mano adelantada; cuerpo
+  entero con un palmo de margen por encima de los brazos y por debajo de los pies; sombra libre y quieto en el sitio,
+  sin saco, sin guantes y sin vendas; de 20 a 60 s a 60 fotogramas por segundo (paso exacto del iPhone y una línea
+  general para Android); solo una persona, buena luz y sin espejos detrás. Desaparecen "de lado", "casi de perfil" y
+  "o saco" de todo lo que ve el usuario.
+- **Privacidad** en la pantalla de subida: "No guardamos tu vídeo: se borra del servidor al terminar el análisis."
+- **Análisis guardados** (como el ejemplo de la app): el mensaje de fiabilidad se muestra con el texto de ahora
+  (`quality.message`), no con el que guardó `metrics.json` en su día.
+- **Dibujos:** `st.html` quita las etiquetas `<svg>`; los dibujos van como imagen con los datos incrustados
+  (`card.svg_img`), sin archivos aparte.
+- **Orden de la entrada:** "Cómo grabar" va en la primera columna y "Sube tu vídeo" en la segunda, así en el móvil
+  (donde las columnas se apilan) sale antes del botón de subir. En el móvil hay un enlace arriba, "¿Ya tienes el
+  vídeo? Ve a subirlo", para quien ya sabe grabar. El primer paso de la cabecera pasa a "Graba y sube tu vídeo".
+- **Dibujos** (`boxeo/drawings.py`, SVG escrito a mano): visto desde arriba (móvil a unos 2 m y 45° delante de la
+  persona, del lado de su mano adelantada, con su dirección de golpeo) y visto desde un costado (móvil a 1,2 m del suelo y
+  un palmo de margen arriba y abajo; el pie de foto no dice "de lado" para no confundir con cómo grabar). Las manos con los colores del esqueleto del vídeo. Para zurdos, el pie de foto dice
+  "igual pero en espejo". Salen también en "Graba de nuevo así".
+- **Lenguaje de gimnasio** (solo lo que ve el usuario; las claves y el `label` de `metrics.json` no cambian): las
+  guardias pasan a **"Guardia entre golpes"** y **"Guardia al golpear"** (antes "Guardia" y "Mano contraria
+  arriba"), "Volumen y ritmo" a "Golpes por minuto", "Beta" a "En pruebas", "golpe corto" a "brazo sin estirar",
+  "Descargar datos (JSON)" a "Descargar datos", "fps" a "fotogramas por segundo" (con el paso exacto del iPhone) y
+  "objetivo" desaparece (era la lente de la cámara o la meta). La ficha deja de enseñar "puntuación v2" (sigue en
+  `metrics.json`). "Rectos" lleva debajo "jabs + directos" para que no parezca un cuarto tipo de golpe.
+- **El detalle dice si el valor es bueno:** "Bien" / "Regular" / "A mejorar" (con los mismos cortes que los colores:
+  80 y 60) y lo que hace falta para sacar 100 (el umbral "bueno" de `config.yaml`). Con fiabilidad baja, sin esa
+  palabra (son datos orientativos).
+- **Consejos con el texto de ahora:** la app vuelve a generar los consejos a partir de los datos guardados
+  (`card.current_tips`), así el ejemplo no enseña textos antiguos. Salen en el mismo orden y con los mismos datos.
+- **Avisos nada más subir** (antes de pulsar "Analizar"): la app lee con OpenCV, desde una carpeta temporal que se
+  borra en el acto, los fotogramas por segundo, la duración y la orientación del vídeo, y avisa de: menos de 50
+  fotogramas por segundo (según la política de abajo), más de 60 s (solo se analiza el primer minuto), menos de 20 s
+  (puede que no haya golpes suficientes; se puede analizar igual), vídeo en horizontal y vídeo que no se puede leer.
+- **Vídeos a menos de 50 fotogramas por segundo:** umbral y política en una sola constante (`MIN_FPS` y
+  `FPS_POLICY` en `boxeo/recording.py`): `"aviso"` (nota con aviso), `"orientativa"` (nota con la etiqueta
+  "Orientativa") o `"sin_nota"` (pantalla "Sin nota" con el motivo). Solo cambia lo que enseña la app: el análisis y
+  `metrics.json` son los mismos. Probadas las tres con un clip convertido a 30. Decidida `"orientativa"` (punto 22).
+- **"Sin nota" da primero la causa de la grabación:** el puño fuera de la imagen, de frente o poco visible, y después
+  "pocos golpes", que suele ser su consecuencia (`card.causes`, con los datos guardados y los umbrales de
+  `config.yaml`; la fiabilidad no cambia). Los demás motivos salen debajo, en "También". Clip de frente (`1,5m.MOV`):
+  antes "No hemos detectado ningún golpe"; ahora "El puño se sale de la imagen el 13% del tiempo", y también "casi
+  de frente" y "ningún golpe recto".
+- **"Orientativo"** una sola vez con su explicación (junto al vídeo); el detalle conserva solo la etiqueta. En ese
+  detalle, "Golpes por minuto" sale sin número cuando suma curvos, porque con fiabilidad baja los curvos no se
+  enseñan (de frente un recto parece un crochet) y el número contradecía "ningún golpe recto".
+- **Resultado:** la nota y el vídeo con esqueleto van juntos arriba ("(01) Así ha ido" y "(02) Mírate"); debajo del
+  vídeo, su leyenda y los momentos para revisar (en el móvil quedan justo debajo del vídeo que mueven). Después los
+  consejos, la gráfica y el detalle. El vídeo vertical se muestra a su tamaño, sin franjas negras.
+- **Leyenda bajo el vídeo:** verde = guardia arriba, rojo = guardia baja, gris = "mientras golpeas no se mide la
+  guardia (tampoco al colocarte ni al terminar)"; azul = mano izquierda, naranja = mano derecha, y los rótulos.
+- **Mismos colores en vídeo y gráfica:** la gráfica pasa de negro/cobre a los colores del esqueleto (azul izquierda,
+  naranja derecha) y la guardia baja al rojo del indicador del vídeo. Salen de `render.py` (`hex_color`): el vídeo
+  no cambia.
+- **Momentos para revisar = el fallo del primer consejo** (`card.review_moments`): guardia al golpear, los golpes
+  del tipo que más falla con la otra mano abajo (3, repartidos por la sesión); extensión, los 3 golpes con el brazo
+  menos estirado; vuelta a la guardia, los 3 más lentos; guardia entre golpes, los 3 tramos más largos con la guardia
+  baja, como antes. Si el primer consejo es el ritmo (no tiene un momento concreto) o una felicitación, se enseñan los
+  tramos de guardia baja si los hay. Ejemplo (sombra): antes "No hay momentos largos con la guardia baja"; ahora 3
+  directos con la izquierda abajo, que es su primer consejo.
+- **Felicitaciones aparte:** los consejos de mejora salen numerados bajo "Tu plan para la próxima sesión"; los de
+  refuerzo (subnota de 85 o más), con ✓ bajo "Lo que ya haces bien". Si todos son de refuerzo, ese es el título.
+- **Qué significa la nota**, bajo el veredicto: "desde 70, buen nivel, con un par de cosas que pulir; desde 85,
+  técnica sólida, solo quedan detalles" (los mismos cortes que el veredicto).
+- **Segunda pasada** (app en local, como un usuario nuevo, en ordenador y a 390 px): en "Sin nota" el motivo y el
+  consejo ya no repiten la misma frase (`quality.advice`: qué hacer, sin repetir el motivo); los dibujos pasan a
+  ocupar cada uno su fila cuando la columna es estrecha (en "Sin nota" salían a ~10 px de letra); el nombre del archivo
+  se muestra decodificado (un navegador mandaba `%22Vago%22.MOV`). Comprobado: durante el análisis la barra de
+  progreso sale justo bajo el botón también en el móvil, y pulsar un momento lleva el vídeo a ese segundo.
+- **Más fricciones arregladas:** el selector de archivos dice "Elegir vídeo" y "Hasta 300 MB · MP4, MOV o M4V" en vez
+  de "Upload" y "300MB per file" (se tapa el texto de Streamlit con CSS; si se cambia `maxUploadSize`, cambiar también
+  el texto en `styles.css`); si no hay curvos ni esquivas, una línea en vez de tres ceros; en el ejemplo, el botón
+  principal dice "Analizar mi vídeo"; "clip" pasa a "vídeo" en los errores; el aviso de persona poco visible usa las
+  palabras de "Cómo grabar"; la terminal usa los nombres nuevos de las métricas.
+
+## 22. Vídeos a menos de 50 fotogramas por segundo: nota orientativa (decidido por Ignacio)
+
+- **Por qué:** el iPhone graba a 30 por defecto y The Corner está ajustada con vídeos a 60. Medido el 20 de octubre
+  con copias a 30 de los 5 clips de referencia (un fotograma de cada dos, y también la otra mitad), más un control a
+  60 recodificado igual para separar el ruido de recodificar:
+  - **en los 4 clips de rectos**, a 30 cambia lo mismo que solo recodificar: ±1-3 puntos y, como mucho, un golpe
+    dudoso, en las dos direcciones;
+  - **en sombra libre**, la nota baja siempre: 82 → 75 y 76 (−7 y −6). A 30 se detectan 3-4 curvos menos y algunos
+    pasan a contar como rectos; con menos tiempo "dentro de un golpe", baja la guardia entre golpes. El control a 60
+    se queda en 81: es por los fotogramas, no por recodificar.
+- **Aplicado:** `FPS_POLICY = "orientativa"`. Con menos de 50 fotogramas por segundo la app da la nota con la etiqueta
+  **"Orientativa"** y este aviso, nada más subir el vídeo y encima del resultado: "Con 30 fotogramas por segundo la
+  nota suele salir hasta 7 puntos más baja. Graba a 60 para tu nota de verdad." El análisis, los golpes y
+  `metrics.json` no cambian (`scripts/validate.py` da SÍ).
+- **Ni nota normal ni "Sin nota":** con la nota normal, una de 30 parecería igual de fiable que una de 60 y engañaría
+  al comparar sesiones; sin nota frustraría la primera subida (el iPhone viene a 30), cuando en los rectos la
+  diferencia es del tamaño del ruido.
+- **Pendiente:** grabar tres clips a 30 con el iPhone (jab, 1-2 y 30 s de sombra). Lo medido son copias convertidas,
+  no vídeos grabados a 30 (el iPhone a 30 suele dar más desenfoque en los puños). Si bajan más de 7 puntos, pasar a
+  `"sin_nota"`.
+
+## 23. "Cómo grabar" más concreto y motivo "casi de perfil" en "Sin nota" (21 oct 2026)
+
+Solo textos y dibujos: no cambia el análisis, ni la fiabilidad, ni las notas, ni los golpes (`scripts/validate.py`
+da SÍ).
+
+- **Por qué:** un vídeo real de sombra (iPhone 17, diestro) salió "Sin nota" con "Solo se te ven bien la cara y los
+  brazos el 29% del tiempo" y el consejo de buena luz y cuerpo entero, que ya cumplía. El móvil estaba del lado
+  correcto, pero casi de perfil (unos 65-75° desde hacia donde golpeaba; los de referencia, unos 40°): en guardia el
+  brazo derecho queda escondido detrás de la cabeza y al lanzar el jab el móvil le ve la espalda. Cara, hombros y
+  brazo izquierdo se veían el 100% del tiempo. "En diagonal" no bastaba para colocarse bien.
+- **Punto 2 de "Cómo grabar":** "A unos 2 m. Ponte en guardia mirando al móvil y gira un poco hacia tu derecha (si
+  eres zurdo, hacia tu izquierda) hasta que el móvil quede entre tu frente y tu hombro adelantado. Golpea siempre
+  hacia donde miras ahora." La frase corta que repiten los avisos, el pie de la ficha y la terminal pasa a "a unos
+  2 m, entre tu frente y tu hombro adelantado" (`PLACE` en `boxeo/recording.py`).
+- **Paso nuevo, "Prueba de 5 segundos antes de grabar"**, justo después de "Cuerpo entero" (es lo que comprueba), en
+  la entrada y en "Graba de nuevo así": se te tienen que ver la cara y los dos puños; si el puño de atrás queda
+  detrás de la cabeza, girar un poco hacia el móvil; brazos arriba y un jab largo para comprobar el margen.
+  Con la cámara trasera no te ves desde tu sitio, así que el paso se llama "Prueba de 5 segundos" y empieza por
+  "Graba 5 segundos de prueba, míralos y bórralos antes de grabar de verdad" (antes decía "mira la pantalla").
+- **60 fotogramas por segundo:** se añade el atajo del iPhone (en la cámara, en modo vídeo, tocar el «30» de la
+  esquina para que ponga «60»).
+- **Dibujo visto desde arriba:** la cabeza lleva nariz, para que se vea hacia dónde mira la persona; la flecha pasa
+  a "Hacia donde miras y golpeas"; el rótulo "Mano adelantada" pasa a "Hombro adelantado", en el hombro. El móvil
+  sigue a 45°, entre la frente y el hombro adelantado, como dice el texto.
+- **Motivo nuevo en "Sin nota", "casi de perfil":** sale en vez de "se te ve poco" (fiabilidad baja por puntos
+  visibles) cuando lo que falla es sobre todo el brazo de atrás: su codo y su muñeca sin ver a la vez más del 50% del
+  tiempo (`quality.profile_rear_hidden` en `config.yaml`) y cara, hombros y brazo de delante vistos al menos el 75%
+  (`min_visible_high`; así, con mala luz, sigue saliendo el motivo general). Se mide en la misma ventana que la
+  fiabilidad y con la guardia elegida (diestro: brazo derecho; zurdo: izquierdo).
+  - **Motivo:** "Tu brazo derecho, el de atrás, queda tapado por tu cuerpo el 67 % del tiempo: el móvil te ve casi
+    de perfil."
+  - **Qué hacer:** el punto 2 y la prueba de 5 segundos, con "derecha/izquierda" según la guardia.
+- **Medido** (codo y muñeca de atrás sin ver a la vez, % del tiempo): los 5 de referencia, 1-14%; clips a 45°,
+  21-36%; clips a 90°, 78-100%; el vídeo real, 67%. El corte en 50% los separa con margen.
+- **No usa la orientación (hombros ÷ tronco):** el corte de 0,35 que separaría perfil de diagonal sale de pocos
+  clips y con poco hueco (perfil 0,20-0,33, 45° 0,39-0,42).
+- **Qué cambia en `metrics.json`:** la fiabilidad guarda dos datos más (`rear_arm_hidden_pct` y
+  `rest_visible_pct`) y, cuando el motivo es este, `reason` es `"profile"` en vez de `"visible"`. El nivel no cambia.
+  Los análisis guardados sin esos datos (como el ejemplo) siguen con el motivo de antes.
+- **Efecto en los clips de control:** los cuatro a 90° (todos "Sin nota" por curvos y esquivas) pasan de "se te ve
+  poco" a "casi de perfil", que es lo que son. `1,5m.MOV` (de frente) no cambia de motivo.
+- **"Casi de perfil" vuelve** a lo que ve el usuario (el punto 21 lo quitó de "Cómo grabar"): aquí describe lo que
+  ha pasado en el vídeo, no cómo grabar.
+- **Límites:** un solo vídeo real con este problema y una sola persona. Si se elige la guardia equivocada, el brazo
+  de atrás es el otro y sale el motivo general.

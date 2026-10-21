@@ -60,6 +60,13 @@ div[class*="st-key-tc-card"] { padding: 22px 22px 18px; }
 [data-testid="stFileUploaderDropzone"] {
   background: var(--tc-bg) !important; border: 1.5px dashed #BDBCB4 !important; border-radius: 18px !important;
 }
+/* Streamlit escribe "Upload" y "300MB per file" en inglés y no se puede cambiar con una opción: se tapan y se
+   escribe el texto en español (el límite es el de maxUploadSize en .streamlit/config.toml) */
+[data-testid="stFileUploaderDropzone"] button [data-testid="stMarkdownContainer"] p { font-size: 0 !important; }
+[data-testid="stFileUploaderDropzone"] button [data-testid="stMarkdownContainer"] p::after {
+  content: "Elegir vídeo"; font-size: 15px; }
+[data-testid="stFileUploaderDropzoneInstructions"] span { font-size: 0 !important; }
+[data-testid="stFileUploaderDropzoneInstructions"] span::after { content: "Hasta 300 MB · MP4, MOV o M4V"; font-size: 14px; }
 
 /* Vídeo */
 [data-testid="stVideo"], video { border-radius: 20px; background: #000; }
@@ -150,12 +157,33 @@ video { max-height: 70vh; }
 .tc-noscore-sub { font-size: 17px; font-weight: 700; color: var(--tc-beige); margin-top: 6px; }
 .tc-reason { margin-top: 16px; padding: 14px 16px; border-radius: 16px; background: #222220; border-left: 4px solid var(--tc-bad); }
 .tc-reason-text { font-size: 15px; font-weight: 700; color: var(--tc-beige); margin-top: 4px; }
+.tc-reason-more { margin-top: 12px; }
+.tc-reason-list { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.5; color: #C9C7B3; }
+.tc-reason-list li { margin-top: 4px; }
+.tc-reason-list b { color: var(--tc-beige); }
 .tc-key-title { font-size: 16px; font-weight: 800; }
 .tc-badge { display: inline-block; vertical-align: middle; margin-left: 12px; padding: 5px 12px; border-radius: 999px;
   background: #F4ECDC; border: 1.5px solid var(--tc-mid); color: #6E521C; font-family: var(--tc-sans);
   font-size: 12.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; }
 .tc-orient { font-size: 14.5px; line-height: 1.5; color: #6E521C; background: #F4ECDC; border-radius: 16px;
   padding: 12px 16px; margin: -2px 0 14px; }
+
+/* Consejos: los de mejora numerados; los de refuerzo aparte, con ✓ */
+.tc-tips-sub { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--tc-gray);
+  margin: 8px 0 -2px; }
+.tc-tip-good { background: #F3F6F1; border-color: #D5E0D2; }
+.tc-tip-good .tc-tip-num { color: var(--tc-good); font-family: var(--tc-sans); font-size: 30px; line-height: 1.2; }
+/* Leyenda bajo el vídeo y la escala de la nota */
+.tc-vlegend { font-size: 13px; line-height: 1.55; color: #3D3D39; margin: 10px 0 4px; display: grid; gap: 6px; }
+.tc-vlegend b { color: var(--tc-black); }
+.tc-round { border-radius: 50% !important; width: 10px !important; height: 10px !important; margin: 0 4px 0 2px !important; vertical-align: -1px !important; }
+.tc-scale { font-size: 13px; line-height: 1.45; color: #A9A79A; margin-top: 12px; }
+/* Momentos para revisar */
+.tc-moments-head { font-size: 14px; line-height: 1.5; color: #3D3D39; margin: 14px 0 10px; }
+.tc-moments-head b { color: var(--tc-black); }
+[class*="st-key-moment"] button p { white-space: normal; text-align: left; line-height: 1.3; }
+/* Vídeo vertical: a su tamaño y centrado, sin franjas negras a los lados */
+[data-testid="stVideo"] { width: auto !important; max-width: 100%; display: block; margin: 0 auto; }
 
 /* Consejos */
 .tc-tips { display: grid; gap: 12px; }
@@ -181,7 +209,9 @@ video { max-height: 70vh; }
 .tc-mscore { font-family: var(--tc-cond); font-size: 34px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
 .tc-bar { height: 10px; border-radius: 999px; background: #ECEBE5; margin: 9px 0 7px; overflow: hidden; }
 .tc-bar i { display: block; height: 100%; border-radius: 999px; }
-.tc-detail { font-size: 14px; color: #3D3D39; }
+.tc-detail { font-size: 14px; line-height: 1.5; color: #3D3D39; }
+.tc-detail b { font-weight: 800; }
+.tc-detail span { color: var(--tc-gray); }
 .tc details { margin-top: 8px; }
 .tc summary { cursor: pointer; font-size: 13.5px; font-weight: 700; color: var(--tc-black); list-style: none;
   text-decoration: underline; text-decoration-color: var(--tc-copper); text-decoration-thickness: 2px; text-underline-offset: 4px; }
@@ -196,12 +226,27 @@ video { max-height: 70vh; }
 .tc-howto li:first-child { border-top: none; }
 .tc-howto li:before { content: counter(tc, decimal-leading-zero); font-family: var(--tc-cond); font-weight: 700;
   font-size: 20px; color: var(--tc-black); min-width: 26px; line-height: 1.2; }
+/* Dibujos de "Cómo grabar": uno al lado del otro si caben; si no (móvil), uno debajo del otro */
+.tc-draw { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin: 0 0 14px; }
+.tc-draw figure { margin: 0; }
+.tc-draw-top { flex: 1 1 300px; max-width: 400px; }
+.tc-draw-side { flex: 1 1 200px; max-width: 250px; }
+.tc-draw img { display: block; width: 100%; height: auto; }
+.tc-draw figcaption { font-size: 12.5px; line-height: 1.4; color: var(--tc-gray); margin-top: 6px; }
+/* Enlace para saltar a la subida: solo en el móvil, donde "Cómo grabar" queda encima */
+.tc-jump { display: none; margin: -4px 0 12px; }
+.tc-jump a { font-size: 14px; font-weight: 700; color: var(--tc-black); text-decoration: underline;
+  text-decoration-color: var(--tc-copper); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .tc-card-title { font-family: var(--tc-cond); font-weight: 700; text-transform: uppercase; font-size: 26px; line-height: 1; }
 .tc-card-sub { font-size: 14px; color: var(--tc-gray); margin-top: 6px; }
 .tc-note { font-size: 13px; color: var(--tc-gray); margin-top: 10px; }
+.tc-privacy { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; font-size: 13.5px;
+  font-weight: 600; color: var(--tc-black); line-height: 1.45; }
+.tc-privacy img { flex: none; margin-top: 2px; }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 640px) {
+  .tc-jump { display: block; }
   .block-container { padding-left: 1rem; padding-right: 1rem; padding-top: 1rem; }
   .tc-brand { font-size: 36px; }
   .tc-tag { font-size: 15px; }

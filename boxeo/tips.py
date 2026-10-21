@@ -3,6 +3,7 @@
 Lo que resta cada metrica = (100 - subscore) x peso. Asi un 55 en volumen (peso 10) pesa menos
 que un 63 en guardia (peso 25).
 """
+from boxeo.recording import FRAME, PLACE, howto_lines
 
 
 def _n(x, nd=0):
@@ -57,18 +58,18 @@ def _tip(key, m, cfg, sub_score):
     if key == "extension":
         good = cfg["extension"]["good_angle"]
         short = 100 - m["extended_pct"]
-        return (f"El {_n(short)}% de tus golpes se quedan cortos (codo por debajo de {good}°): "
-                "termina cada golpe con el brazo estirado, como si quisieras atravesar el objetivo.")
+        return (f"En el {_n(short)}% de tus golpes no llegas a estirar el brazo (codo por debajo de {good}°): "
+                "termina cada golpe con el brazo estirado, como si quisieras atravesar a tu rival.")
     if key == "recovery":
         target = _n(cfg["scoring"]["recovery"]["good"], 1)
         return (f"Tardas {_n(m['recovery_mean_s'], 2)} s de media en devolver la mano a la guardia: "
-                f"recógela igual de rápido que la lanzas (objetivo: menos de {target} s).")
+                f"recógela igual de rápido que la lanzas (lo bueno: {target} s o menos).")
     if key == "base":
         return (f"Tu base es correcta solo el {_n(m['base_pct'])}% del tiempo: separa los pies algo más "
                 "que los hombros y mantén las rodillas ligeramente flexionadas.")
     if key == "volume":
         return (f"Vas a {_n(m['punches_per_min'])} golpes por minuto. Para subir el ritmo, prueba series "
-                f"de 20-30 segundos a tope (objetivo: {cfg['scoring']['volume']['good']} o más).")
+                f"de 20-30 segundos a tope (lo bueno: {cfg['scoring']['volume']['good']} o más).")
     return None
 
 
@@ -81,27 +82,16 @@ def ranked_keys(scores):
     return [k for _, _, k in ranked]
 
 
-# Con fiabilidad baja no se dan consejos de tecnica (saldrian de datos poco fiables): se dan estas 3 claves
-# para volver a grabar. (titulo, explicacion)
-RECORDING_KEYS = [
-    ("Casi de perfil o en diagonal",
-     "No de frente: así se ve bien cómo estiras el brazo y cuándo vuelves a la guardia."),
-    ("Cuerpo entero en el plano",
-     "De la cabeza a los pies, también cuando estiras el brazo: que el puño no se salga de la imagen."),
-    ("A 2-3 metros de la cámara",
-     "Con el móvil fijo, apoyado o en trípode."),
-]
-
-
 def recording_tips():
-    return [f"{title}. {text}" for title, text in RECORDING_KEYS]
+    """Con fiabilidad baja no se dan consejos de tecnica (saldrian de datos poco fiables): se da "Como grabar"."""
+    return howto_lines()
 
 
 def make_tips(metrics, scores, cfg, n=3):
     """Lista de hasta `n` consejos en espanol, empezando por la metrica que mas resta a la nota."""
     if not metrics.get("n_punches"):
-        return ["No he detectado golpes. Comprueba que se te ve el cuerpo entero, con la cámara fija "
-                "de lado o en diagonal, y que lanzas golpes rectos estirando el brazo."]
+        return [f"No hemos detectado golpes. Graba de 20 a 60 segundos de sombra con jabs y directos, con el móvil "
+                f"{PLACE}, {FRAME}."]
     subs = scores["subscores"]
     tips = [_tip(k, metrics, cfg, subs[k]["score"]) for k in ranked_keys(scores)[:n]]
     return [t for t in tips if t]

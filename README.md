@@ -1,6 +1,6 @@
 # The Corner · Análisis de boxeo con IA
 
-Subes un vídeo de 20-60 segundos haciendo sombra o en el saco y, en un minuto, recibes tu vídeo con el
+Subes un vídeo de 20-60 segundos haciendo sombra y, en un minuto, recibes tu vídeo con el
 esqueleto dibujado, una ficha con tu nota de 0 a 100, tu sesión segundo a segundo y tres consejos
 concretos para la próxima vez.
 
@@ -176,7 +176,9 @@ con la misma versión: con la v1 sombra daba 57 (ver `docs/DECISIONES.md`, punto
 - **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos:
   el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: antes de la beta de curvos, sombra
   daba 27/13 golpes (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.
-- **Calibrado con vídeos a 60 fps:** a 30 fps la nota puede variar unos puntos, e incluso recodificar el vídeo puede cambiar ±1 golpe dudoso.
+- **Calibrado con vídeos a 60 fps:** a 30 fps la nota de sombra libre sale hasta 7 puntos más baja (en los clips de
+  rectos, ±1-3), así que con menos de 50 fps la app da la nota marcada como "Orientativa". Incluso recodificar el
+  vídeo puede cambiar ±1 golpe dudoso.
 - Vídeos de 60 s como máximo, procesados a 720p como máximo.
 
 ## 9. Siguientes pasos
@@ -220,8 +222,12 @@ python scripts/analyze.py data/mi_video.mov [--stance southpaw]
 Genera en `outputs/mi_video/`: `annotated.mp4` (H.264), `metrics.json` (métricas, notas, consejos,
 golpes y línea de tiempo) y `landmarks.csv` (puntos del cuerpo por frame).
 
-**Cómo grabar:** móvil fijo con la cámara trasera, cuerpo entero, de lado o en diagonal, buena luz,
-solo tú en el plano, 20-60 s.
+**Cómo grabar** (el mismo texto en toda la app, en `boxeo/recording.py`): móvil en vertical y fijo, a 1,2 m del
+suelo y recto, con la cámara trasera; a unos 2 m, en guardia mirando al móvil y girando un poco hasta que quede
+entre la frente y el hombro adelantado (golpeando siempre hacia donde se mira); cuerpo entero con un palmo de
+margen por encima de los brazos y por debajo de los pies; una prueba de 5 segundos que se graba, se mira y se borra
+antes de grabar de verdad (cara y dos puños a la vista, nada fuera de la imagen); sombra libre y quieto en el sitio, sin saco, sin guantes y sin vendas;
+de 20 a 60 s a 60 fotogramas por segundo; solo una persona en la imagen, con buena luz y sin espejos detrás.
 
 **Despliegue:** ver [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md).
 
