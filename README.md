@@ -1,207 +1,205 @@
-# The Corner · Análisis de boxeo con IA
+[🇪🇸 Español](README.es.md) · **🇬🇧 English**
 
-Subes un vídeo de 20-60 segundos haciendo sombra y, en un minuto, recibes tu vídeo con el
-esqueleto dibujado, una ficha con tu nota de 0 a 100, tu sesión segundo a segundo y tres consejos
-concretos para la próxima vez.
+# The Corner · AI boxing analysis
 
-La idea viene del análisis de pádel con cámaras e IA (estimación de pose, "esqueleto digital", ficha de
-jugador y coach virtual), aplicada a un deporte en el que casi siempre se entrena solo.
+A personal product prototype, built with Claude Code. I don't write code by hand: I own the product,
+the decisions and the validation, and Claude Code writes the code. Live app: https://thecorner-boxeo.streamlit.app/
+(sample result without uploading anything: `?demo=1`).
 
-> 📸 **CAPTURA PENDIENTE:** pantalla de resultados completa (nota, consejos, vídeo y gráfica).
-> `![Resultados](docs/img/resultados.png)`
+You upload a 20-60 second shadowboxing video and, within about a minute, you get back your video with the
+skeleton drawn on it, a card with your score from 0 to 100, your session second by second, and three
+concrete tips for next time.
+
+The idea comes from camera-and-AI padel analysis (pose estimation, "digital skeleton", player card and
+virtual coach), applied to a sport where people almost always train alone.
 
 ---
 
-## 1. El problema
+## 1. The problem
 
-En boxeo amateur la mayor parte del entrenamiento técnico es **sombra y saco, sin nadie mirando**.
-Los errores que más castigan en un combate (bajar la guardia, dejar caer la mano que no golpea,
-no extender el brazo, tardar en recoger) son justo los que uno no ve en sí mismo. Las opciones hoy:
+In amateur boxing most technical training is **shadowboxing and bag work with nobody watching**.
+The mistakes that cost the most in a fight (dropping your guard, letting the non-punching hand fall,
+not extending the arm, being slow to recover) are exactly the ones you can't see in yourself. Today's options:
 
-- **Entrenador o compañero:** caro o no siempre disponible.
-- **Grabarse y revisarlo:** lento, y sin criterio claro de qué mirar.
-- **Apps de fitness con boxeo:** cuentan golpes o calorías, no corrigen técnica.
+- **Coach or training partner:** expensive or not always available.
+- **Filming yourself and reviewing it:** slow, and with no clear criteria for what to look at.
+- **Fitness apps with boxing:** they count punches or calories; they don't correct technique.
 
-## 2. Usuario
+## 2. User
 
-**Boxeador amateur o de fitness boxing que entrena solo** varias veces por semana, en casa o en el
-gimnasio, y que quiere mejorar la técnica entre clase y clase. Tiene un móvil y 5 minutos.
-Lo que necesita no es un informe biomecánico: es **saber qué corregir mañana** y poder comprobar si mejora.
+**An amateur or fitness-boxing athlete who trains alone** several times a week, at home or at the gym, and
+wants to improve technique between classes. They have a phone and 5 minutes.
+What they need is not a biomechanics report: it's to **know what to fix tomorrow** and to be able to check
+whether they are improving.
 
-## 3. Qué hace
+## 3. What it does
 
-1. **Sube tu vídeo** desde el móvil (MP4 o MOV del iPhone, tal cual) y elige tu guardia (diestro o zurdo).
-2. **Lo analizamos:** detectamos tu esqueleto fotograma a fotograma, contamos tus golpes y medimos
-   tu técnica.
-3. **Mejora con tu ficha:**
-   - Nota total de 0 a 100, jabs, directos y golpes por minuto.
-   - **Tu plan para la próxima sesión:** 3 consejos ordenados por lo que más te resta, cada uno con tu dato.
-   - Tu vídeo con el esqueleto, un rótulo en cada golpe (jab, directo, crochet, uppercut, esquiva), contador
-     de rectos, curvos y esquivas e indicador de guardia (verde/rojo cuando la nota la mide; gris durante los
-     golpes, al colocarte y al terminar).
-   - **Tu sesión, segundo a segundo:** gráfica con cada golpe de cada mano y los momentos con la guardia baja.
-   - **Momentos para revisar:** los tramos más largos con la guardia baja; un clic y el vídeo salta a ese segundo.
-   - Detalle de cada métrica con un **"¿Cómo se calcula?"** en lenguaje sencillo.
+1. **Upload your video** from your phone (MP4 or iPhone MOV, as is) and choose your stance (orthodox or southpaw).
+2. **We analyze it:** we detect your skeleton frame by frame, count your punches and measure your technique.
+3. **Improve with your card:**
+   - Total score from 0 to 100, jabs, crosses and punches per minute.
+   - **Your plan for the next session:** 3 tips ordered by how much each one costs you, each with your own data.
+   - Your video with the skeleton, a label on every punch (jab, cross, hook, uppercut, dodge), a counter
+     of straight punches, curved punches and dodges, and a guard indicator (green/red when the score measures it;
+     grey during punches, while getting into position and at the end).
+   - **Your session, second by second:** a chart with every punch of each hand and the moments with the guard down.
+   - **Moments to review:** the longest stretches with the guard down; one click and the video jumps to that second.
+   - Detail of each metric with a plain-language **"How is it calculated?"**.
 
-> 📸 **CAPTURA PENDIENTE:** pantalla de subida. `![Subida](docs/img/subida.png)`
->
-> 📸 **CAPTURA PENDIENTE:** la app en el móvil. `![Móvil](docs/img/movil.png)`
+## 4. Scope (MoSCoW)
 
-## 4. Alcance (MoSCoW)
-
-| Prioridad | Qué | Estado |
+| Priority | What | Status |
 |---|---|---|
-| **Must** | Extracción de pose, vídeo con esqueleto, detección de golpes por mano, métricas, puntuación, CLI y app local | ✅ Hecho |
-| **Should** | Ficha visual cuidada, consejos por reglas, despliegue en Streamlit Community Cloud | ✅ Ficha y consejos · 🟡 Despliegue preparado, pendiente de publicar |
-| **Could** | Consejos redactados con la API de Claude, evolución entre sesiones | ⏸️ No hecho (decisión: no usar IA generativa donde una regla basta) |
-| **Beta** | Detectar crochets, uppercuts y esquivas (no puntúan; dejan de contar como recto y como guardia baja) | 🧪 En pruebas, calibrado con un solo boxeador |
-| **Won't (por ahora)** | Puntuar curvos y esquivas, varias personas en plano, tiempo real | ❌ Fuera de alcance |
+| **Must** | Pose extraction, video with skeleton, per-hand punch detection, metrics, scoring, CLI and local app | ✅ Done |
+| **Should** | Polished card, rule-based tips, deployment on Streamlit Community Cloud | ✅ Done (app published on Streamlit Community Cloud) |
+| **Could** | Tips written with the Claude API, progress across sessions | ⏸️ Not done (decision: don't use generative AI where a rule is enough) |
+| **Beta** | Detect hooks, uppercuts and dodges (they don't score; they stop counting as a straight punch and as a low guard) | 🧪 Being tested, calibrated with a single boxer |
+| **Won't (for now)** | Scoring curved punches and dodges, several people in frame, real time | ❌ Out of scope |
 
-Además del plan inicial: gráfica de la sesión, momentos para revisar con salto al vídeo y modo demo.
+Beyond the initial plan: session chart, moments to review with a jump to the video, and a demo mode.
 
-## 5. Cómo funciona
+## 5. How it works
 
 ```
-vídeo (MP4/MOV) ─► pose (MediaPipe, 33 puntos/frame) ─► suavizado ─► golpes ─► métricas ─► notas ─► consejos
-                                                                           └──► vídeo anotado (H.264)
+video (MP4/MOV) ─► pose (MediaPipe, 33 points/frame) ─► smoothing ─► punches ─► metrics ─► scores ─► tips
+                                                                          └──► annotated video (H.264)
 ```
 
-- **Pose:** MediaPipe Pose Landmarker en modo vídeo, sobre el vídeo reducido a 720p como máximo.
-  Se ignoran los puntos con visibilidad < 0,5 y se suaviza con mediana móvil de 0,1 s.
-- **Escala:** todas las distancias se miden en "anchuras de hombro" para no depender de lo cerca que esté la cámara.
-- **Golpes:** se detectan **por la muñeca**: el momento en que está más lejos del hombro, al que llega
-  alejándose rápido (aumento de alcance + pico de velocidad). El codo solo filtra: tiene que pasar de 125°.
-  Si las dos manos "golpean" a la vez (menos de 0,15 s), solo cuenta la que más se aleja.
-- **Tramo activo:** guardia y ritmo se miden desde 1 s antes del primer golpe hasta 1 s después del
-  último, para que no cuente entrar en plano ni prepararse. Bajar los brazos al terminar tampoco cuenta
-  como guardia baja.
-- **Consejos:** por reglas, sin IA generativa: rápido, gratis, explicable y siempre con el dato real.
+- **Pose:** MediaPipe Pose Landmarker in video mode, on the video downscaled to 720p at most.
+  Points with visibility < 0.5 are ignored and the signal is smoothed with a 0.1 s moving median.
+- **Scale:** every distance is measured in "shoulder widths" so it doesn't depend on how close the camera is.
+- **Punches:** detected **from the wrist**: the moment it is furthest from the shoulder, reached by moving
+  away quickly (increase in reach + speed peak). The elbow only acts as a filter: it must exceed 125°.
+  If both hands "punch" at the same time (less than 0.15 s apart), only the one that goes furthest counts.
+- **Active segment:** guard and rhythm are measured from 1 s before the first punch to 1 s after the
+  last one, so that stepping into frame or getting ready doesn't count. Lowering your arms at the end doesn't
+  count as a low guard either.
+- **Tips:** rule-based, no generative AI: fast, free, explainable and always with the real figure.
 
 Stack: Python 3.11 · MediaPipe · OpenCV · NumPy/pandas · Streamlit + Altair · imageio-ffmpeg.
 
-## 6. Métricas y scoring
+## 6. Metrics and scoring
 
-Cada métrica se convierte en una nota de 0 a 100 con una recta entre un umbral "malo" (0) y uno
-"bueno" (100). La nota total es la media ponderada. Todo se ajusta en [`config.yaml`](config.yaml) sin tocar código.
-Explicación completa, con un ejemplo paso a paso: [docs/SCORING.md](docs/SCORING.md).
+Each metric becomes a score from 0 to 100 through a straight line between a "bad" threshold (0) and a
+"good" one (100). The total score is the weighted average. Everything can be tuned in [`config.yaml`](config.yaml) without touching code.
+Full explanation, with a step-by-step example: [docs/SCORING.md](docs/SCORING.md) (in Spanish).
 
-| Métrica | Qué mide | 0 puntos | 100 puntos | Peso |
+| Metric | What it measures | 0 points | 100 points | Weight |
 |---|---|---|---|---|
-| **Guardia** | % del tiempo entre golpes con las dos manos arriba | ≤ 40% | ≥ 90% | 25 |
-| **Mano contraria arriba** | % de golpes en los que la otra mano protege la cara | ≤ 40% | ≥ 90% | 20 |
-| **Extensión** | % de golpes con el codo a ≥ 160° en el pico | ≤ 30% | ≥ 80% | 20 |
-| **Vuelta a la guardia** | Segundos medios desde el pico hasta volver a la guardia (mano arriba y codo < 90°) | ≥ 0,8 s | ≤ 0,4 s | 15 |
-| **Volumen y ritmo** | Golpes por minuto en el tramo activo | ≤ 20 | ≥ 70 | 10 |
-| ~~Base~~ | Separación de pies y rodillas flexionadas | — | — | 0 (ver limitaciones) |
+| **Guard** | % of time between punches with both hands up | ≤ 40% | ≥ 90% | 25 |
+| **Opposite hand up** | % of punches in which the other hand protects the face | ≤ 40% | ≥ 90% | 20 |
+| **Extension** | % of punches with the elbow at ≥ 160° at the peak | ≤ 30% | ≥ 80% | 20 |
+| **Return to guard** | Average seconds from the peak until back in guard (hand up and elbow < 90°) | ≥ 0.8 s | ≤ 0.4 s | 15 |
+| **Volume and rhythm** | Punches per minute in the active segment | ≤ 20 | ≥ 70 | 10 |
+| ~~Stance~~ | Foot separation and bent knees | — | — | 0 (see limitations) |
 
-**Mano "arriba":** la muñeca está a menos de 0,8 anchuras de hombro de la nariz **y por encima del codo**.
+**Hand "up":** the wrist is less than 0.8 shoulder widths from the nose **and above the elbow**.
 
-**Consejos:** se eligen las 3 métricas que más restan a la nota, `(100 − nota) × peso`. Con nota ≥ 85
-el consejo es de refuerzo; por debajo, de corrección y siempre con el dato (p. ej. *"Bajas la mano
-izquierda en el 54% de tus directos: mantenla pegada a la barbilla mientras golpeas con la otra."*).
+**Tips:** the 3 metrics that subtract the most from the score are chosen, `(100 − score) × weight`. With a score ≥ 85
+the tip is one of reinforcement; below that, it is a correction and always comes with the figure (e.g. *"You drop your
+left hand in 54% of your crosses: keep it glued to your chin while you punch with the other."*).
 
-## 7. Validación y decisiones de calibración
+## 7. Validation and calibration decisions
 
-Grabé 5 clips con el iPhone (casi de perfil, 60 fps), cada uno pensado como **caso de prueba**:
-si el sistema no baja la nota en la métrica correcta, algo falla.
+I recorded 5 clips with an iPhone (almost side-on, 60 fps), each designed as a **test case**:
+if the system doesn't lower the score on the right metric, something is wrong.
 
-| Clip | Qué hice | Golpes detectados (izq. / der.) | Nota (v2) |
+| Clip | What I did | Punches detected (left / right) | Score (v2) |
 |---|---|---|---|
-| Jabs | Solo jabs | 10 / 0 ✅ | 92 |
-| Directos | Solo directos | 0 / 10 ✅ | 90 |
-| 1-2 bueno | Combinaciones con buena técnica | 6 / 6 ✅ | **94** |
-| 1-2 vago | Las mismas combinaciones, con peor técnica a propósito | 15 / 13 ✅ | **72** |
-| Sombra libre | Sombra con movimiento, curvos y esquivas | 22 / 9 rectos + 25 curvos (13 crochets y 12 uppercuts) y 11 esquivas (beta) | 82 |
+| Jabs | Jabs only | 10 / 0 ✅ | 92 |
+| Crosses | Crosses only | 0 / 10 ✅ | 90 |
+| 1-2 good | Combinations with good technique | 6 / 6 ✅ | **94** |
+| 1-2 lazy | The same combinations, with deliberately worse technique | 15 / 13 ✅ | **72** |
+| Free shadowboxing | Shadowboxing with movement, curved punches and dodges | 22 / 9 straight punches + 25 curved (13 hooks and 12 uppercuts) and 11 dodges (beta) | 82 |
 
-Todos los conteos coinciden con los golpes reales. El 1-2 "vago" pierde 22 puntos frente al bueno, y los
-pierde donde debe: guardia (100 → 65), mano contraria (87 → 70) y extensión (100 → 69).
+All counts match the real punches. The "lazy" 1-2 loses 22 points against the good one, and it loses them
+where it should: guard (100 → 65), opposite hand (87 → 70) and extension (100 → 69).
 
-Las notas son de la **versión de puntuación v2** (curvos y esquivas en beta). Solo son comparables entre análisis
-con la misma versión: con la v1 sombra daba 57 (ver `docs/DECISIONES.md`, punto 17).
+The scores are from **scoring version v2** (curved punches and dodges in beta). They are only comparable between analyses
+with the same version: with v1, free shadowboxing scored 57 (see `docs/DECISIONES.md`, point 17; in Spanish).
 
-**Decisiones tomadas con los datos:**
+**Decisions made with the data:**
 
-1. **Detección por la muñeca, codo mínimo de 125°** (el plan inicial pedía pasar de 110° a 150°).
-   Con el criterio inicial, un golpe corto no contaba como golpe: el clip "sin extender" habría
-   tenido menos golpes en vez de peor extensión. Ahora un golpe corto cuenta y baja la nota de extensión.
-2. **Filtro de golpes simultáneos.** Al girar el tronco en un jab, la mano de atrás se mueve lo justo
-   para parecer un golpe. Si las dos manos "golpean" a menos de 0,15 s, solo cuenta la que más se aleja.
-3. **Tramo activo.** Los primeros 10 s del clip de jabs eran entrar en plano y prepararse: bajaban la
-   guardia (44 puntos) y el ritmo sin motivo.
-4. **Base con peso 0.** Grabando de perfil, un pie tapa al otro y los tobillos salen "juntos" en la
-   imagen (18-31 px frente a 80 px de hombros). Medirlo daba 0% en todos los clips: no es mala técnica,
-   es que la cámara no lo puede ver.
-5. **Regla de guardia: codo en vez de hombros.** La regla inicial ("muñeca por encima de la línea de
-   hombros") castigaba la buena técnica: al meter la barbilla o agacharse para esquivar, la mano está
-   en la cara pero por debajo de los hombros. Comparé dos alternativas sobre los 5 clips:
+1. **Wrist-based detection, minimum elbow of 125°** (the initial plan asked for going from 110° to 150°).
+   With the initial criterion a short punch did not count as a punch: the "not extended" clip would have
+   had fewer punches instead of worse extension. Now a short punch counts and lowers the extension score.
+2. **Simultaneous-punch filter.** When rotating the torso on a jab, the back hand moves just enough
+   to look like a punch. If both hands "punch" less than 0.15 s apart, only the one that goes furthest counts.
+3. **Active segment.** The first 10 s of the jabs clip were stepping into frame and getting ready: they lowered the
+   guard (44 points) and the rhythm for no reason.
+4. **Stance with weight 0.** Filming side-on, one foot hides the other and the ankles appear "together" in the
+   image (18-31 px against 80 px of shoulders). Measuring it gave 0% in every clip: it isn't bad technique,
+   it's that the camera can't see it.
+5. **Guard rule: elbow instead of shoulders.** The initial rule ("wrist above the shoulder line")
+   punished good technique: when tucking the chin or ducking to dodge, the hand is at the face
+   but below the shoulders. I compared two alternatives on the 5 clips:
 
-   | Clip | Hombros (con margen de 0,15) | **Codo (nariz < 0,8)** |
+   | Clip | Shoulders (with 0.15 margin) | **Elbow (nose < 0.8)** |
    |---|---|---|
-   | 1-2 bueno | 90 | **94** |
-   | 1-2 vago | 59 | **71** |
-   | Sombra (nota de guardia) | 0 | **14** |
+   | 1-2 good | 90 | **94** |
+   | 1-2 lazy | 59 | **71** |
+   | Shadowboxing (guard score) | 0 | **14** |
 
-   Cifras del momento de la decisión; con las reglas actuales la guardia de sombra sale en 16.
+   These figures are from the time of the decision; with the current rules the shadowboxing guard score is 16.
 
-   Elegí la del codo aunque separa algo menos el bueno del vago (23 puntos frente a 31). Revisando
-   fotogramas de sombra entre golpes, la de hombros marcaba "guardia baja" cuando estaba agachado con
-   las manos en la cara, y daba 0 en guardia a una sombra en la que las manos están arriba casi la
-   mitad del tiempo. La del codo **no depende de la inclinación del cuerpo**, que es lo que cambia
-   en cuanto el usuario se mueve.
-6. **Los curvos no se filtran subiendo el codo mínimo a 140°.** Eso filtraba algunos ganchos, pero también
-   golpes rectos cortos del clip "vago", que deben contar y penalizar. En su lugar, los curvos se detectan
-   aparte (beta, ver abajo) y solo entonces dejan de contar como rectos.
-7. **Vuelta a la guardia con el brazo recogido.** De perfil, el puño del jab estirado queda en la imagen
-   delante de la cara y la regla de guardia lo daba por "arriba": salían vueltas de 0,0 s, imposibles.
-   Ahora la mano tiene que estar arriba y con el codo a menos de 90°, y antes del siguiente golpe.
-   En sombra, los golpes con vuelta en menos de 0,1 s bajan de 17 a 3; las notas totales no cambian.
+   I chose the elbow rule even though it separates good from lazy a little less (23 points against 31). Checking
+   frames of shadowboxing between punches, the shoulder rule marked "guard down" when the boxer was ducking with
+   hands at the face, and gave 0 in guard to a shadowboxing clip where the hands are up almost half
+   of the time. The elbow rule **doesn't depend on body lean**, which changes as soon as the user moves.
+6. **Curved punches are not filtered by raising the minimum elbow to 140°.** That filtered some hooks, but also
+   short straight punches from the "lazy" clip, which must count and be penalized. Instead, curved punches are detected
+   separately (beta, see below) and only then stop counting as straight punches.
+7. **Return to guard with the arm tucked.** Side-on, the extended jab fist ends up in the image
+   in front of the face and the guard rule counted it as "up": returns of 0.0 s came out, which are impossible.
+   Now the hand has to be up with the elbow below 90°, and before the next punch.
+   In shadowboxing, returns in under 0.1 s drop from 17 to 3; the total scores don't change.
 
-## 8. Limitaciones conocidas
+## 8. Known limitations
 
-- **Base no medible de perfil.** Un pie tapa al otro en la imagen; la base se calcula pero no puntúa ni da consejos.
-- **Curvos y esquivas en beta.** Se detectan crochet, uppercut y esquiva (sin distinguir media y entera), pero
-  no puntúan y están calibrados con un solo boxeador. Funcionan mejor en diagonal (45°); de perfil no se ven los
-  curvos del brazo de atrás y de frente un recto hacia la cámara parece un crochet. Un curvo que no se detecta
-  sigue contando como recto. Detalle en `docs/DECISIONES.md`, punto 15.
-- **Una sola persona en plano.** Si aparece otra persona, el esqueleto puede saltar de una a otra.
-- **Medición 2D.** Los ángulos dependen de la cámara; los umbrales están calibrados con vídeos casi de
-  perfil, con cámara fija y cuerpo entero. Con otros ángulos de cámara habría que recalibrar.
-- **Calibrado con una sola persona** (5 clips). Falta validar con otros cuerpos, niveles y móviles.
-- **La fiabilidad del análisis es una estimación.** Avisa si no se te ve bien, si se te sale la mano del
-  encuadre, si estás de frente o si hay menos de 5 golpes, pero sus umbrales salen de pocos clips de una
-  persona. El único clip real de frente dio una orientación de 0,62 (se suponía 0,75-0,8), por debajo del
-  umbral de "de frente" (0,70): queda sin nota porque de frente casi no se detectan golpes, no por la
-  orientación. Falta un segundo clip de frente para recalibrar. Con fiabilidad baja no se da nota (solo datos
-  orientativos), así que unos umbrales demasiado estrictos dejarían sin nota vídeos que sí eran válidos.
-- **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos:
-  el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: antes de la beta de curvos, sombra
-  daba 27/13 golpes (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.
-- **Calibrado con vídeos a 60 fps:** a 30 fps la nota de sombra libre sale hasta 7 puntos más baja (en los clips de
-  rectos, ±1-3), así que con menos de 50 fps la app da la nota marcada como "Orientativa". Incluso recodificar el
-  vídeo puede cambiar ±1 golpe dudoso.
-- Vídeos de 60 s como máximo, procesados a 720p como máximo.
+- **Stance can't be measured side-on.** One foot hides the other in the image; stance is computed but doesn't score or give tips.
+- **Curved punches and dodges are in beta.** Hooks, uppercuts and dodges are detected (without telling half and full dodges apart), but
+  they don't score and are calibrated with a single boxer. They work best at a diagonal (45°); side-on the
+  curved punches of the back arm are not seen, and from the front a straight punch toward the camera looks like a hook. A curved punch that isn't detected
+  still counts as a straight punch. Details in `docs/DECISIONES.md`, point 15 (in Spanish).
+- **Only one person in frame.** If another person appears, the skeleton may jump from one to the other.
+- **2D measurement.** Angles depend on the camera; the thresholds are calibrated with videos almost
+  side-on, with a fixed camera and the full body in frame. Other camera angles would need recalibration.
+- **Calibrated with a single person** (5 clips). It still has to be validated with other bodies, levels and phones.
+- **The reliability of the analysis is an estimate.** It warns if you can't be seen well, if a hand leaves the
+  frame, if you are facing the camera or if there are fewer than 5 punches, but its thresholds come from few clips of one
+  person. The only real front-facing clip gave an orientation of 0.62 (0.75-0.8 was expected), below the
+  "front-facing" threshold (0.70): it gets no score because almost no punches are detected from the front, not because of the
+  orientation. A second front-facing clip is needed to recalibrate. With low reliability no score is given (only indicative
+  data), so thresholds that are too strict would leave valid videos without a score.
+- **The published app can vary by ±1-2 punches against the local analysis** on clips with doubtful punches:
+  the server decodes the video slightly differently. Example: before the curved-punch beta, shadowboxing
+  gave 27/13 punches (left/right) locally and 27/12 online. On a single machine the analysis is deterministic.
+- **Calibrated with 60 fps videos:** at 30 fps the free shadowboxing score comes out up to 7 points lower (on the
+  straight-punch clips, ±1-3), so with less than 50 fps the app gives the score marked as "Indicative". Even re-encoding the
+  video can change ±1 doubtful punch.
+- Videos of 60 s at most, processed at 720p at most.
 
-## 9. Siguientes pasos
+## 9. Next steps
 
-1. **Validar con 5-10 usuarios reales** (otros cuerpos, niveles y ángulos de cámara) y recalibrar umbrales.
-2. **Evolución entre sesiones:** guardar cada análisis y enseñar la tendencia de la nota y de cada métrica.
-   Es lo que convierte un análisis puntual en un hábito.
-3. **Base medible:** pedir un ángulo de cámara en diagonal o estimar la profundidad (pose 3D de MediaPipe).
-4. **Sacar de beta los curvos y las esquivas:** validarlos con otros boxeadores y decidir si puntúan.
-5. **Rondas guiadas:** "3 minutos de jab-directo" con objetivos, y comparar la sesión con la anterior.
-6. **Consejos redactados con IA** solo si las pruebas con usuarios muestran que las reglas se quedan cortas.
+1. **Validate with 5-10 real users** (other bodies, levels and camera angles) and recalibrate thresholds.
+2. **Progress across sessions:** save each analysis and show the trend of the score and of each metric.
+   It's what turns a one-off analysis into a habit.
+3. **Measurable stance:** ask for a diagonal camera angle or estimate depth (MediaPipe 3D pose).
+4. **Take curved punches and dodges out of beta:** validate them with other boxers and decide whether they score.
+5. **Guided rounds:** "3 minutes of jab-cross" with goals, and compare the session with the previous one.
+6. **AI-written tips** only if user testing shows the rules fall short.
 
 ---
 
-## Instalación y uso
+## Installation and usage
 
-Requiere Python 3.11.
+Requires Python 3.11.
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python scripts/download_model.py   # descarga el modelo de pose en models/ (la app también lo hace sola)
+python scripts/download_model.py   # downloads the pose model into models/ (the app also does it on its own)
 ```
 
 **App:**
@@ -210,43 +208,43 @@ python scripts/download_model.py   # descarga el modelo de pose en models/ (la a
 streamlit run app.py
 ```
 
-Se abre en http://localhost:8501. Para enseñar un ejemplo sin subir nada: http://localhost:8501/?demo=1
-(el ejemplo se prepara con `python scripts/make_demo.py outputs/<clip>`).
+It opens at http://localhost:8501. To show a sample without uploading anything: http://localhost:8501/?demo=1
+(the sample is prepared with `python scripts/make_demo.py outputs/<clip>`).
 
 **Terminal:**
 
 ```bash
-python scripts/analyze.py data/mi_video.mov [--stance southpaw]
+python scripts/analyze.py data/my_video.mov [--stance southpaw]
 ```
 
-Genera en `outputs/mi_video/`: `annotated.mp4` (H.264), `metrics.json` (métricas, notas, consejos,
-golpes y línea de tiempo) y `landmarks.csv` (puntos del cuerpo por frame).
+It generates in `outputs/my_video/`: `annotated.mp4` (H.264), `metrics.json` (metrics, scores, tips,
+punches and timeline) and `landmarks.csv` (body points per frame).
 
-**Cómo grabar** (el mismo texto en toda la app, en `boxeo/recording.py`): móvil en vertical y fijo, a 1,2 m del
-suelo y recto, con la cámara trasera; a unos 2 m, en guardia mirando al móvil y girando un poco hasta que quede
-entre la frente y el hombro adelantado (golpeando siempre hacia donde se mira); cuerpo entero con un palmo de
-margen por encima de los brazos y por debajo de los pies; una prueba de 5 segundos que se graba, se mira y se borra
-antes de grabar de verdad (cara y dos puños a la vista, nada fuera de la imagen); sombra libre y quieto en el sitio, sin saco, sin guantes y sin vendas;
-de 20 a 60 s a 60 fotogramas por segundo; solo una persona en la imagen, con buena luz y sin espejos detrás.
+**How to record** (the same text across the whole app, in `boxeo/recording.py`): phone in portrait and fixed, at 1.2 m
+above the floor and level, with the rear camera; about 2 m away, in guard facing the phone and turning a little until it sits
+between your forehead and your front shoulder (always punching toward where you look); full body with a hand's width of
+margin above your arms and below your feet; a 5-second test that you record, watch and delete
+before recording for real (face and both fists in view, nothing outside the image); free shadowboxing standing in place, no bag, no gloves and no wraps;
+20 to 60 s at 60 frames per second; only one person in the image, with good light and no mirrors behind.
 
-**Despliegue:** ver [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md).
+**Deployment:** see [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md) (in Spanish).
 
-## Estructura
+## Structure
 
 ```
-app.py                 interfaz Streamlit
-config.yaml            umbrales y pesos (editable sin tocar código)
+app.py                 Streamlit interface
+config.yaml            thresholds and weights (editable without touching code)
 boxeo/
-  pose.py              vídeo -> puntos del cuerpo por frame, suavizado
-  metrics.py           ángulos, guardia, base, tramo activo, línea de tiempo
-  punches.py           detección de golpes
-  scoring.py           notas 0-100 y total ponderado
-  tips.py              consejos por reglas
-  render.py            vídeo anotado en H.264
-  card.py, charts.py   ficha visual y gráfica de la sesión
-  pipeline.py          todo junto (lo usan la app y el CLI)
+  pose.py              video -> body points per frame, smoothing
+  metrics.py           angles, guard, stance, active segment, timeline
+  punches.py           punch detection
+  scoring.py           scores 0-100 and weighted total
+  tips.py              rule-based tips
+  render.py            annotated video in H.264
+  card.py, charts.py   visual card and session chart
+  pipeline.py          everything together (used by the app and the CLI)
 scripts/               analyze.py, download_model.py, make_demo.py
-demo/                  análisis de ejemplo para el modo demo (metrics.json y annotated.mp4,
-                       el único vídeo en git)
-docs/                  plan, roadmap, decisiones y despliegue
+demo/                  pre-analyzed sample for demo mode (metrics.json and annotated.mp4,
+                       the only video in git)
+docs/                  plan, roadmap, decisions and deployment (in Spanish)
 ```

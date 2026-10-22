@@ -19,7 +19,7 @@ El repo ya está preparado. Tú solo tienes que hacer los pasos de la web (unos 
 2. Pulsa **Create app** (arriba a la derecha) y elige **Deploy a public app from GitHub**
    (puede aparecer como "Yup, I have an app").
 3. Rellena:
-   - **Repository:** `idgn10/boxeo-mvp`
+   - **Repository:** `idgn10/the-corner`
    - **Branch:** `main`
    - **Main file path:** `app.py`
    - **App URL:** el subdominio que quieras, por ejemplo `thecorner-boxeo` → `https://thecorner-boxeo.streamlit.app`
