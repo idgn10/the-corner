@@ -38,7 +38,7 @@ mejor no dar nota que dar una falsa.
 
 ## Estructura del repo
 ```
-boxeo-mvp/
+the-corner/
   CLAUDE.md
   README.md              # caso de producto
   requirements.txt

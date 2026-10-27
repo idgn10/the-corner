@@ -62,9 +62,9 @@ Decisiones tomadas mientras trabajaba solo (2 oct 2026). Cada una dice qué hice
   La instalación y el uso van al final: el README lo leerá antes alguien de producto que un desarrollador.
 - **Usuario objetivo que he escrito:** boxeador amateur o de fitness boxing que entrena solo. Revísalo:
   es la hipótesis principal del producto.
-- **Capturas:** 3 huecos marcados con "📸 CAPTURA PENDIENTE" (resultados, subida y móvil). Las rutas
-  esperadas son `docs/img/resultados.png`, `docs/img/subida.png` y `docs/img/movil.png`. No las he puesto
-  yo porque se ve a la persona grabada: decide tú qué enseñar. Para hacerlas, abre la app con `?demo=1`.
+- **Capturas:** había 3 huecos marcados como captura pendiente (resultados, subida y móvil); se han quitado del
+  README hasta tener las imágenes. Las rutas previstas son `docs/img/resultados.png`, `docs/img/subida.png` y
+  `docs/img/movil.png`. Para hacerlas, abre la app con `?demo=1`.
 - **Siguientes pasos:** los he ordenado poniendo primero validar con usuarios y la evolución entre sesiones.
 
 ## 5. Despliegue (preparado, no publicado)
@@ -689,3 +689,30 @@ da SÍ).
   ha pasado en el vídeo, no cómo grabar.
 - **Límites:** un solo vídeo real con este problema y una sola persona. Si se elige la guardia equivocada, el brazo
   de atrás es el otro y sale el motivo general.
+
+## Limitaciones en detalle
+
+El README resume las limitaciones en pocas líneas. Este es el detalle completo, tal como estaba en el README:
+
+- **Base no medible de perfil.** Un pie tapa al otro en la imagen; la base se calcula pero no puntúa ni da consejos.
+- **Curvos y esquivas en beta.** Se detectan crochet, uppercut y esquiva (sin distinguir media y entera), pero
+  no puntúan y están calibrados con un solo boxeador. Funcionan mejor en diagonal (45°); de perfil no se ven los
+  curvos del brazo de atrás y de frente un recto hacia la cámara parece un crochet. Un curvo que no se detecta
+  sigue contando como recto. Detalle en el punto 15.
+- **Una sola persona en plano.** Si aparece otra persona, el esqueleto puede saltar de una a otra.
+- **Medición 2D.** Los ángulos dependen de la cámara; los umbrales están calibrados con vídeos casi de
+  perfil, con cámara fija y cuerpo entero. Con otros ángulos de cámara habría que recalibrar.
+- **Calibrado con una sola persona** (5 clips). Falta validar con otros cuerpos, niveles y móviles.
+- **La fiabilidad del análisis es una estimación.** Avisa si no se te ve bien, si se te sale la mano del
+  encuadre, si estás de frente o si hay menos de 5 golpes, pero sus umbrales salen de pocos clips de una
+  persona. El único clip real de frente dio una orientación de 0,62 (se suponía 0,75-0,8), por debajo del
+  umbral de "de frente" (0,70): queda sin nota porque de frente casi no se detectan golpes, no por la
+  orientación. Falta un segundo clip de frente para recalibrar. Con fiabilidad baja no se da nota (solo datos
+  orientativos), así que unos umbrales demasiado estrictos dejarían sin nota vídeos que sí eran válidos.
+- **La app publicada puede variar ±1-2 golpes frente al análisis en local** en clips con golpes dudosos:
+  el servidor decodifica el vídeo de forma ligeramente distinta. Ejemplo: antes de la beta de curvos, sombra
+  daba 27/13 golpes (izq./der.) en local y 27/12 online. En un mismo equipo el análisis es determinista.
+- **Calibrado con vídeos a 60 fps:** a 30 fps la nota de sombra libre sale hasta 7 puntos más baja (en los clips de
+  rectos, ±1-3), así que con menos de 50 fps la app da la nota marcada como "Orientativa". Incluso recodificar el
+  vídeo puede cambiar ±1 golpe dudoso.
+- Vídeos de 60 s como máximo, procesados a 720p como máximo.

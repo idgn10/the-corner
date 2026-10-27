@@ -24,13 +24,13 @@ No hace falta conectar nada de Google: MediaPipe es una librería de Google, per
 
    **Mac:**
    ```
-   mkdir -p ~/Documents/boxeo-mvp && mv ~/Downloads/CLAUDE.md ~/Documents/boxeo-mvp/
-   cd ~/Documents/boxeo-mvp && claude
+   mkdir -p ~/Documents/the-corner && mv ~/Downloads/CLAUDE.md ~/Documents/the-corner/
+   cd ~/Documents/the-corner && claude
    ```
    **Windows (PowerShell):**
    ```
-   mkdir $HOME\Documents\boxeo-mvp; Move-Item $HOME\Downloads\CLAUDE.md $HOME\Documents\boxeo-mvp\
-   cd $HOME\Documents\boxeo-mvp; claude
+   mkdir $HOME\Documents\the-corner; Move-Item $HOME\Downloads\CLAUDE.md $HOME\Documents\the-corner\
+   cd $HOME\Documents\the-corner; claude
    ```
 3. Con Claude Code abierto, pega el **Prompt 0**.
 4. Si te pide iniciar sesión en GitHub, escribe dentro de Claude Code:
@@ -47,7 +47,7 @@ Lee CLAUDE.md. Vamos a preparar el proyecto desde cero en esta carpeta:
 3. Crea la estructura de carpetas de CLAUDE.md, un .gitignore (.venv, data/, outputs/, models/, cualquier vídeo) y un README básico.
 4. Inicializa git y haz el primer commit.
 5. Comprueba con `gh auth status` si estoy logueado en GitHub. Si no, para y dime que ejecute `! gh auth login`.
-6. Crea el repositorio público boxeo-mvp en mi cuenta con gh y sube el commit.
+6. Crea el repositorio público the-corner en mi cuenta con gh y sube el commit.
 Al terminar, dame el enlace del repo y un resumen breve en español.
 ```
 

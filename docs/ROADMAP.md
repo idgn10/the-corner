@@ -10,7 +10,7 @@ Plan de trabajo por días (de [PLAN_Y_PROMPTS.md](PLAN_Y_PROMPTS.md)). Marca cad
 - [x] Estructura de carpetas, `.gitignore` y README básico
 - [x] Inicializar git y primer commit
 - [x] Login en GitHub
-- [x] Crear repo público `boxeo-mvp` y subir el commit
+- [x] Crear repo público `the-corner` y subir el commit
 
 ### Paso 1. Grabar vídeos de prueba (en `data/`, .MOV del iPhone, casi de perfil)
 - [x] Jabs: solo mano izquierda
